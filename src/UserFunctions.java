@@ -24,12 +24,11 @@ public class UserFunctions {
     private static final String SHOW_COMMAND = "show";
     private static final String SHUFFLE_COMMAND = "shuffle";
 
-    /* 
+    /** 
      * Processes the given input and performs the appropriate function.
-     * Parameters:
-     *   input: The command being processed.
-     * Returns:
-     *   If the quit command was given, returns false; otherwise, returns true.
+     *
+     * @param input The command being processed.
+     * @return If the quit command was given, returns false; otherwise, returns true.
      */
     public bool parseCommand(String input) {
         if (input == null) 
