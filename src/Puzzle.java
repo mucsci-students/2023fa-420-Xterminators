@@ -4,6 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class Puzzle {
+    /** The minimum length for a word to be considered valid and earn points. */
+    private final static int MINIMUM_WORD_LENGTH = 4;
+
+    /** The number of bonus points recived for finding a pangram. */
+    private final static int PANGRAM_BONUS = 7;
+
     private String seedWord;
     private char[] letters;
     private ArrayList<String> validWords;
@@ -52,7 +58,23 @@ public class Puzzle {
      *         0 if the guess is invalid
      */
     private int wordValue(String word) {
-        // TODO Implement logic and fomulas
+        // If validWords does not contain word ignoring case, return 0
+        if (validWords.stream().noneMatch(s -> s.equalsIgnoreCase(word))) {
+            return 0;
+        }
+
+        int wordValue;
+        if (word.length() == MINIMUM_WORD_LENGTH) {
+            wordValue = 1;
+        } else {
+            wordValue = word.length();
+        }
+
+        if (isPangram(word)) {
+            wordValue += PANGRAM_BONUS;
+        }
+
+        return wordValue;
     }
 
     /**
