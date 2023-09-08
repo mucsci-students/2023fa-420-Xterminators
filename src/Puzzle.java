@@ -47,7 +47,20 @@ public class Puzzle {
      *          the number of points earned if the word is a valid guess
      */
     public int guess(String word) {
-        // TODO Implement checking logic
+        // If the word is already found, return -1
+        if (foundWords.stream().anyMatch(s -> s.equalsIgnoreCase(word))) {
+            return -1;
+        }
+
+        int points = wordValue(word);
+
+        // If points (wordValue) != 0, then the word is valid
+        if (points != 0) {
+            foundWords.add(word);
+            earnedPoints += points;
+        }
+        
+        return points;
     }
 
     /**
