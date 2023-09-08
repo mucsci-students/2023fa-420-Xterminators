@@ -62,6 +62,11 @@ public class Puzzle {
      * @return if the word is a pangram
      */
     private boolean isPangram(String word) {
-        // TODO Implement pangram check
+        for (char c : letters) {
+            if (word.indexOf(c) == -1) {
+                return false;
+            }
+        }
+        return true;
     }
 }
