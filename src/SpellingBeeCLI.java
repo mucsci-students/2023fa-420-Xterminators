@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Input {
+public class SpellingBeeCLI {
 
     public static void main(String[] args) {
         String input = "";

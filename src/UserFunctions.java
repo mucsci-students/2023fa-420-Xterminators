@@ -15,14 +15,14 @@ public class UserFunctions {
         display = new List<>();
     }
 
-    private String exitCommand = "exit";
-    private String foundCommand = "found";
-    private String helpCommand = "help";
-    private String loadCommand = "load";
-    private String newCommand = "new";
-    private String saveCommand = "save";
-    private String showCommand = "show";
-    private String shuffleCommand = "shuffle";
+    private static final String EXIT_COMMAND = "exit";
+    private static final String FOUND_COMMAND = "found";
+    private static final String HELP_COMMAND = "help";
+    private static final String LOAD_COMMAND = "load";
+    private static final String NEW_COMMAND = "new";
+    private static final String SAVE_COMMAND = "save";
+    private static final String SHOW_COMMAND = "show";
+    private static final String SHUFFLE_COMMAND = "shuffle";
 
     /* 
      * Processes the given input and performs the appropriate function.
@@ -45,28 +45,28 @@ public class UserFunctions {
         }
 
         switch (command.toLowerCase()) {
-            case exitCommand:
+            case EXIT_COMMAND:
                 //TODO call save puzzle function (is that in Puzzle or UserFunctions?)
                 return false;
-            case helpCommand:
+            case HELP_COMMAND:
                 printCommands();
                 break;
-            case newCommand:
+            case NEW_COMMAND:
                 if (inputs.length > 1)
                     createNewPuzzle(inputs[1]);
                 else
                     createNewPuzzle("");
                 break;
-            case shuffleCommand:
+            case SHUFFLE_COMMAND:
                 shuffleLetters();
                 break;
-            case foundCommand:
+            case FOUND_COMMAND:
                 showFoundWords();
                 break;
-            case saveCommand:
+            case SAVE_COMMAND:
                 savePuzzle();
                 break;
-            case loadCommand:
+            case LOAD_COMMAND:
                 loadPuzzle();
                 break;
             default:
@@ -84,14 +84,14 @@ public class UserFunctions {
             newline = "\r\n";
 
         String help = "Commands " + newline +
-        "Exit the game       : " + exitCommand + newline + 
-        "See found words     : " + foundCommand + newline + 
-        "Print this list     : " + helpCommand + newline +
-        "Load saved puzzle   : " + loadCommand + newline + 
-        "Create new puzzle   : " + newCommand + newline + 
-        "Save current puzzle : " + saveCommand + newline + 
-        "Reprint the puzzle  : " + showCommand + newline +
-        "Shuffle letters     : " + shuffleCommand + newline;
+        "Exit the game       : " + EXIT_COMMAND + newline + 
+        "See found words     : " + FOUND_COMMAND + newline + 
+        "Print this list     : " + HELP_COMMAND + newline +
+        "Load saved puzzle   : " + LOAD_COMMAND + newline + 
+        "Create new puzzle   : " + NEW_COMMAND + newline + 
+        "Save current puzzle : " + SAVE_COMMAND + newline + 
+        "Reprint the puzzle  : " + SHOW_COMMAND + newline +
+        "Shuffle letters     : " + SHUFFLE_COMMAND + newline;
 
         System.out.println(help); 
     }
