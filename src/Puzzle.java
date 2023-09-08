@@ -59,7 +59,7 @@ public class Puzzle {
      * Checks if the word is a pangram (contains all seven puzzle letters)
      * 
      * @param word The word to check for pangram
-     * @return if the word is a pangram
+     * @return true if the word is a pangram, false otherwise
      */
     private boolean isPangram(String word) {
         for (char c : letters) {
