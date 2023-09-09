@@ -6,7 +6,7 @@ public class UserFunctions {
     private List<String> display;
 
     public UserFunctions() {
-        puzzle = new Puzzle();
+        puzzle = null;
         display = new List<>();
     }
 
@@ -34,16 +34,17 @@ public class UserFunctions {
      * @return If the quit command was given, returns false; otherwise, returns true.
      */
     public bool parseCommand(String input) {
-        if (input == null) 
+        if (input == null) {
             return true;
-
+        }
         // This is in case we want to allow passing in the seed word for the new puzzle 
         // directly with the "new" command
         String command = input;
-        if (input.contains(" "))
-        {
+        String parameter = "";
+        if (input.contains(" ")) {
             String[] inputs = input.split(" ");
             command = inputs[0];
+            parameter = inputs[1];
         }
 
         switch (command.toLowerCase()) {
@@ -54,8 +55,8 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (inputs.length > 1)
-                    createNewPuzzle(inputs[1]);
+                if (parameter != null && !parameter.equals(""))
+                    createNewPuzzle(parameter);
                 else
                     createNewPuzzle("");
                 break;
@@ -114,15 +115,15 @@ public class UserFunctions {
     }
 
     private void showFoundWords() {
-        if (puzzle != null)
-        {
-            String newline = getNewLineCharacter();
-            String output = "";
-            for (String word : puzzle.getFoundWords())
-                output += word + newline;
-            
-            System.out.println(output);
-        }
+        if (puzzle == null)
+            return;
+
+        String newline = getNewLineCharacter();
+        String output = "";
+        for (String word : puzzle.getFoundWords())
+            output += word + newline;
+        
+        System.out.println(output);
     }
 
     private void savePuzzle() {
@@ -134,15 +135,18 @@ public class UserFunctions {
     }
 
     private void guessWord(String word) {
+        if (puzzle == null)
+            return;
+
         int wasValid = puzzle.guess(word);
 
         if (wasValid < 0) {
             System.out.println("You already found this word.");
-        }
-        else if (wasValid == 0) {
+
+        } else if (wasValid == 0) {
             System.out.println("Your guess was not a valid word. Try again!");
-        }
-        else {
+            
+        } else {
             System.out.println("Good job! Your word was worth " + wasValid + " points.");
         }
     }
