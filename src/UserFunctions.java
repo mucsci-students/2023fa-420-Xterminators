@@ -1,7 +1,6 @@
 public class UserFunctions {
 
-    // This needs the Puzzle class
-    // private Puzzle puzzle;
+    private Puzzle puzzle;
 
     private List<String> display;
 
@@ -11,7 +10,7 @@ public class UserFunctions {
     //}
 
     public UserFunctions() {
-        //_puzzle = new Puzzle();
+        puzzle = new Puzzle();
         display = new List<>();
     }
 
@@ -101,7 +100,8 @@ public class UserFunctions {
     }
 
     private void shuffleLetters() {
-        //TODO shuffle the letters on the display
+        puzzle.shuffle();
+        System.out.println("Shuffled outer letters. Display again to see.");
     }
 
     private void showFoundWords() {
