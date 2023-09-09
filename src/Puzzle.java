@@ -7,20 +7,22 @@ import java.util.Random;
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
     private final static int MINIMUM_WORD_LENGTH = 4;
-
     /** The number of bonus points recived for finding a pangram. */
     private final static int PANGRAM_BONUS = 7;
 
     /** The primary (required) letter of the puzzle. */
     private char primaryLetter;
-
     /** The secondary letters of the puzzle. */
     private char[] secondaryLetters;
-
+    /** The list of all valid words for the puzzle. */
     private ArrayList<String> validWords;
+    /** The list of all words currently found in the puzzle. */
     private ArrayList<String> foundWords;
+    /** The total number of points that can be earned in the puzzle. */
     private int totalPoints;
+    /** The number of points currently earned in the puzzle. */
     private int earnedPoints;
+    /** The number of points necessary for each rank. */
     private int[] rankPoints;
 
     /**
@@ -42,17 +44,33 @@ public class Puzzle {
         return Arrays.copyOf(secondaryLetters, secondaryLetters.length);
     }
 
+    /**
+     * Gets the list of found words.
+     * 
+     * @return An unmodifiable list of the currently found words in the puzzle
+     */
     public List<String> getFoundWords() {
         // returns a read-only view of foundWords
         return Collections.unmodifiableList(this.foundWords);
     }
 
-    public int getTotalPoints() {
-        return this.totalPoints;
-    }
-
+    /**
+     * Gets the number of points that have currently been earned on the puzzle.
+     * 
+     * @return The number of earned points
+     */
     public int getEarnedPoints() {
         return this.earnedPoints;
+    }
+
+    /**
+     * Gets the array defining how many points are needed to reach each rank in
+     * the puzzle.
+     * 
+     * @return The array of rank point minimums
+     */
+    public int[] getRankPoints() {
+        return Arrays.copyOf(rankPoints, rankPoints.length);
     }
     
     /**
@@ -80,6 +98,23 @@ public class Puzzle {
         }
         
         return points;
+    }
+
+    /**
+     * Shuffles the secondary letters for the next display
+     * 
+     * @implNote Used the Fisher–Yates shuffle algorithim to shuffle secondaryLetters.
+     * See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+     */
+    public void shuffle() {
+        int index;
+        Random random = new Random();
+        for (int i = secondaryLetters.length - 1; i > 0; --i) {
+            index = random.nextInt(i + 1);
+            char temp = secondaryLetters[index];
+            secondaryLetters[index] = secondaryLetters[i];
+            secondaryLetters[i] = temp;
+        }
     }
 
     /**
@@ -127,22 +162,5 @@ public class Puzzle {
         }
         
         return true;
-    }
-
-    /**
-     * Shuffles the secondary letters for the next display
-     * 
-     * @implNote Used the Fisher–Yates shuffle algorithim to shuffle secondaryLetters.
-     * See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-     */
-    public void shuffle() {
-        int index;
-        Random random = new Random();
-        for (int i = secondaryLetters.length - 1; i > 0; --i) {
-            index = random.nextInt(i + 1);
-            char temp = secondaryLetters[index];
-            secondaryLetters[index] = secondaryLetters[i];
-            secondaryLetters[i] = temp;
-        }
     }
 }
