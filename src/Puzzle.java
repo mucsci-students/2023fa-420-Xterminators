@@ -22,8 +22,6 @@ public class Puzzle {
     private int totalPoints;
     /** The number of points currently earned in the puzzle. */
     private int earnedPoints;
-    /** The number of points necessary for each rank. */
-    private int[] rankPoints;
 
     /**
      * Gets the primary (required) letter of the puzzle.
@@ -61,16 +59,6 @@ public class Puzzle {
      */
     public int getEarnedPoints() {
         return this.earnedPoints;
-    }
-
-    /**
-     * Gets the array defining how many points are needed to reach each rank in
-     * the puzzle.
-     * 
-     * @return The array of rank point minimums
-     */
-    public int[] getRankPoints() {
-        return Arrays.copyOf(rankPoints, rankPoints.length);
     }
     
     /**
