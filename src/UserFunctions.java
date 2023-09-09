@@ -111,7 +111,8 @@ public class UserFunctions {
     }
 
     private void shuffleLetters() {
-        //TODO shuffle the letters on the display (this doesn't actually change anything in puzzle, just the display)
+        puzzle.shuffle();
+        System.out.println("Shuffled outer letters. Display again to see.");
     }
 
     private void showFoundWords() {
