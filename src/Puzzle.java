@@ -10,17 +10,35 @@ public class Puzzle {
     /** The number of bonus points recived for finding a pangram. */
     private final static int PANGRAM_BONUS = 7;
 
-    private String seedWord;
-    private char[] letters;
+    /** The primary (required) letter of the puzzle. */
+    private char primaryLetter;
+
+    /** The secondary letters of the puzzle. */
+    private char[] secondaryLetters;
+
     private ArrayList<String> validWords;
     private ArrayList<String> foundWords;
     private int totalPoints;
     private int earnedPoints;
     private int[] rankPoints;
 
-    public char[] getLetters() {
-        // returns a copy so that letters can not be modified externaly
-        return Arrays.copyOf(this.letters, this.letters.length);
+    /**
+     * Gets the primary (required) letter of the puzzle.
+     * 
+     * @return The primary letter of the puzzle
+     */
+    public char getPrimaryLetter() {
+        return primaryLetter;
+    }
+
+    /**
+     * Gets the secondary letters of the puzzle.
+     * 
+     * @return A copy of the array of secondary letters
+     */
+    public char[] getSecondaryLetters() {
+        // returns a copy so that it won't modify the puzzle if modified
+        return Arrays.copyOf(secondaryLetters, secondaryLetters.length);
     }
 
     public List<String> getFoundWords() {
@@ -97,11 +115,16 @@ public class Puzzle {
      * @return true if the word is a pangram, false otherwise
      */
     private boolean isPangram(String word) {
-        for (char c : letters) {
+        for (char c : secondaryLetters) {
             if (word.indexOf(c) == -1) {
                 return false;
             }
         }
+
+        if (word.indexOf(primaryLetter) == -1) {
+            return false;
+        }
+        
         return true;
     }
 }
