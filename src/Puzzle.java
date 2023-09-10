@@ -113,6 +113,35 @@ public class Puzzle {
     }
 
     /**
+     * Creates a puzzle from a random word in the dictionary.
+     * 
+     * @param dictionaryFile The dictionary to pick a random word from, and to
+     *                       use to fill the validWords list
+     * @return A random puzzle
+     * @throws IOException if an I/O error occurs.
+     */
+    public static Puzzle randomPuzzle(FileReader dictionaryFile) throws IOException {
+        ArrayList<String> candidateWords = new ArrayList<>();
+        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
+        for (String word = bufferedReader.readLine(); word != null; 
+             word = bufferedReader.readLine()) {
+            if (word.length() < 7) {
+                candidateWords.add(word);
+            }
+        }
+
+        Random random = new Random();
+        while (true) {
+            int index = random.nextInt(candidateWords.size());
+            try {
+                return fromWord(candidateWords.get(index), dictionaryFile);
+            } catch (IllegalArgumentException e) {
+                candidateWords.remove(index);
+            }
+        }
+    }
+
+    /**
      * Gets the primary (required) letter of the puzzle.
      * 
      * @return The primary letter of the puzzle
