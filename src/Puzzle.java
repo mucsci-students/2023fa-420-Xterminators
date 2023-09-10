@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -5,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Puzzle {
+    /** The file path to the dictionary file */
+    private final static String DICTIONARY_PATH = "dictionary.txt";
     /** The minimum length for a word to be considered valid and earn points. */
     private final static int MINIMUM_WORD_LENGTH = 4;
     /** The number of bonus points recived for finding a pangram. */
@@ -22,6 +28,39 @@ public class Puzzle {
     private int totalPoints;
     /** The number of points currently earned in the puzzle. */
     private int earnedPoints;
+
+    /**
+     * Constructs a Puzzle object from the required letter, and the six other
+     * acceptable letters.
+     * 
+     * @param primaryLetter The required letter for the puzzle
+     * @param secondaryLetters The six other acceptable letters for the puzzle
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public Puzzle(char primaryLetter, char[] secondaryLetters) throws FileNotFoundException, IOException {
+        this.primaryLetter = primaryLetter;
+        this.secondaryLetters = Arrays.copyOf(secondaryLetters, secondaryLetters.length);
+        this.validWords = new ArrayList<String>();
+        this.foundWords = new ArrayList<String>();
+        this.totalPoints = 0;
+        this.earnedPoints = 0;
+
+        FileReader fileReader = new FileReader(DICTIONARY_PATH);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+        String word;
+        do {
+            word = bufferedReader.readLine();
+            int wordValue = this.wordValue(word);
+            if (wordValue > 0) {
+                this.totalPoints += wordValue;
+                this.validWords.add(word);
+            }
+        } while (word != null);
+
+        bufferedReader.close();
+    }
 
     /**
      * Gets the primary (required) letter of the puzzle.
