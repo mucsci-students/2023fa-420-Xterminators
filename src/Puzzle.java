@@ -29,13 +29,12 @@ public class Puzzle {
 
     /**
      * Constructs a Puzzle object from the required letter, and the six other
-     * acceptable letters.
+     * acceptable letters. Fills validWords by parcing through dictionaryFile.
      * 
      * @param primaryLetter The required letter for the puzzle
      * @param secondaryLetters The six other acceptable letters for the puzzle
-     * @throws FileNotFoundException if the dictionary file can not be found for
-     *                               initilizing the validWords list
-     * @throws IOException
+     * @param dictionaryFile The dictionary file to be used to generate validWords.
+     * @throws IOException if an I/O error occurs.
      */
     public Puzzle(char primaryLetter, char[] secondaryLetters,
                   FileReader dictionaryFile) throws IOException {
@@ -70,16 +69,17 @@ public class Puzzle {
         bufferedReader.close();
     }
 
-     /**
-      * Creates a puzzle from a given starting word.
-      * 
-      * @param word The starting word for the puzzle
-      * @return A puzzle based on the starting word
-      * @throws FileNotFoundException
-      * @throws IOException
-      * @throws IllegalArgumentException if the word is not usable as a starting
-      *                                  word
-      */
+    /**
+     * Create a puzzle from a given starting word. Fills validWords by parcing
+     * through dictionaryFile.
+     * 
+     * @param word The starting word for the puzzle
+     * @param dictionaryFile The dictionary file to be used to generate validWords.
+     * @return A puzzle based on the starting word
+     * @throws IllegalArgumentException if the word is not usable as a starting
+     *                                  word
+     * @throws IOException if an I/O error occurs.
+     */
     public static Puzzle fromWord(String word, FileReader dictionaryFile) 
             throws IllegalArgumentException, IOException {
         if (word.length() < 7) {
