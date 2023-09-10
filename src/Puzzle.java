@@ -39,9 +39,11 @@ public class Puzzle {
      *                               initilizing the validWords list
      * @throws IOException
      */
-    public Puzzle(char primaryLetter, char[] secondaryLetters) throws FileNotFoundException, IOException {
+    public Puzzle(char primaryLetter, char[] secondaryLetters)
+            throws FileNotFoundException, IOException {
         this.primaryLetter = primaryLetter;
-        this.secondaryLetters = Arrays.copyOf(secondaryLetters, secondaryLetters.length);
+        this.secondaryLetters = Arrays.copyOf(secondaryLetters,
+                                              secondaryLetters.length);
         this.validWords = new ArrayList<String>();
         this.foundWords = new ArrayList<String>();
         this.totalPoints = 0;
@@ -51,7 +53,8 @@ public class Puzzle {
         BufferedReader bufferedReader = new BufferedReader(fileReader);
 
         dictLoop:
-        for (String word = bufferedReader.readLine(); word != null; word = bufferedReader.readLine()) {
+        for (String word = bufferedReader.readLine(); word != null; 
+             word = bufferedReader.readLine()) {
             if (word.indexOf(primaryLetter) == -1) {
                 continue;
             }
