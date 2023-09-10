@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Random;
 
 public class Puzzle {
-    /** The file path to the dictionary file */
-    private final static String DICTIONARY_PATH = "dictionary.txt";
     /** The minimum length for a word to be considered valid and earn points. */
     private final static int MINIMUM_WORD_LENGTH = 4;
     /** The number of bonus points recived for finding a pangram. */
@@ -39,8 +37,8 @@ public class Puzzle {
      *                               initilizing the validWords list
      * @throws IOException
      */
-    public Puzzle(char primaryLetter, char[] secondaryLetters)
-            throws FileNotFoundException, IOException {
+    public Puzzle(char primaryLetter, char[] secondaryLetters,
+                  FileReader dictionaryFile) throws IOException {
         this.primaryLetter = primaryLetter;
         this.secondaryLetters = Arrays.copyOf(secondaryLetters,
                                               secondaryLetters.length);
@@ -49,8 +47,7 @@ public class Puzzle {
         this.totalPoints = 0;
         this.earnedPoints = 0;
 
-        FileReader fileReader = new FileReader(DICTIONARY_PATH);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
 
         dictLoop:
         for (String word = bufferedReader.readLine(); word != null; 
@@ -83,8 +80,8 @@ public class Puzzle {
       * @throws IllegalArgumentException if the word is not usable as a starting
       *                                  word
       */
-    public static Puzzle fromWord(String word) 
-            throws FileNotFoundException, IOException, IllegalArgumentException {
+    public static Puzzle fromWord(String word, FileReader dictionaryFile) 
+            throws IllegalArgumentException, IOException {
         if (word.length() < 7) {
             throw new IllegalArgumentException(
                 "Invalid argument: \"" + word + "\" is too short to be a" +
@@ -112,7 +109,7 @@ public class Puzzle {
             secondaryLetters[i] = chars.get(i);
         }
 
-        return new Puzzle(primaryLetter, secondaryLetters);
+        return new Puzzle(primaryLetter, secondaryLetters, dictionaryFile);
     }
 
     /**
