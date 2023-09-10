@@ -35,7 +35,8 @@ public class Puzzle {
      * 
      * @param primaryLetter The required letter for the puzzle
      * @param secondaryLetters The six other acceptable letters for the puzzle
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the dictionary file can not be found for
+     *                               initilizing the validWords list
      * @throws IOException
      */
     public Puzzle(char primaryLetter, char[] secondaryLetters) throws FileNotFoundException, IOException {
@@ -67,6 +68,48 @@ public class Puzzle {
         }
 
         bufferedReader.close();
+    }
+
+     /**
+      * Creates a puzzle from a given starting word.
+      * 
+      * @param word The starting word for the puzzle
+      * @return A puzzle based on the starting word
+      * @throws FileNotFoundException
+      * @throws IOException
+      * @throws IllegalArgumentException if the word is not usable as a starting
+      *                                  word
+      */
+    public static Puzzle fromWord(String word) 
+            throws FileNotFoundException, IOException, IllegalArgumentException {
+        if (word.length() < 7) {
+            throw new IllegalArgumentException(
+                "Invalid argument: \"" + word + "\" is too short to be a" +
+                "starting word"
+            );
+        }
+
+        ArrayList<Character> chars = new ArrayList<>();
+        for (char c : word.toCharArray()) {
+            if (!chars.contains(c)) {
+                chars.add(c);
+            }
+        }
+
+        if (chars.size() < 7) {
+            throw new IllegalArgumentException(
+                "Invalid Argument: \"" + word + "\" contains too few unique" +
+                "characters to be a starting word"
+            );
+        }
+
+        char primaryLetter = chars.remove((new Random()).nextInt(chars.size()));
+        char[] secondaryLetters = new char[6];
+        for (int i = 0; i < 6; ++i) {
+            secondaryLetters[i] = chars.get(i);
+        }
+
+        return new Puzzle(primaryLetter, secondaryLetters);
     }
 
     /**
