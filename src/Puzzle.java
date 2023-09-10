@@ -49,15 +49,22 @@ public class Puzzle {
         FileReader fileReader = new FileReader(DICTIONARY_PATH);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-        String word;
-        do {
-            word = bufferedReader.readLine();
-            int wordValue = this.wordValue(word);
-            if (wordValue > 0) {
-                this.totalPoints += wordValue;
-                this.validWords.add(word);
+        dictLoop:
+        for (String word = bufferedReader.readLine(); word != null; word = bufferedReader.readLine()) {
+            if (word.indexOf(primaryLetter) == -1) {
+                continue;
             }
-        } while (word != null);
+
+            for (char c : secondaryLetters) {
+                if (word.indexOf(c) == -1) {
+                    continue dictLoop;
+                }
+            }
+
+            // To get to this point, all letters of the puzzle are in the word
+            this.validWords.add(word);
+            this.totalPoints += this.wordValue(word);
+        }
 
         bufferedReader.close();
     }
