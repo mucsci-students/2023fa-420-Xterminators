@@ -1,26 +1,30 @@
+import java.util.List;
+
 public class UserFunctions {
 
     private Puzzle puzzle;
-
     private List<String> display;
 
-    // public UserFunctions(Puzzle p) {
-    //  puzzle = p;
-    //  display = new List<>();
-    //}
-
     public UserFunctions() {
-        puzzle = new Puzzle();
+        puzzle = null;
         display = new List<>();
     }
 
+    /** Command to exit the program. */
     private static final String EXIT_COMMAND = "exit";
+    /** Command to print found words. */
     private static final String FOUND_COMMAND = "found";
+    /** Command to print commands. */
     private static final String HELP_COMMAND = "help";
+    /** Command to load a saved puzzle. */
     private static final String LOAD_COMMAND = "load";
+    /** Command to create a new puzzle. */
     private static final String NEW_COMMAND = "new";
+    /** Command to save the current puzzle. */
     private static final String SAVE_COMMAND = "save";
+    /** Command to reprint the puzzle. */
     private static final String SHOW_COMMAND = "show";
+    /** Command to rearrange the puzzle letters on the display. */
     private static final String SHUFFLE_COMMAND = "shuffle";
 
     /** 
@@ -29,17 +33,18 @@ public class UserFunctions {
      * @param input The command being processed.
      * @return If the quit command was given, returns false; otherwise, returns true.
      */
-    public bool parseCommand(String input) {
-        if (input == null) 
+    public boolean parseCommand(String input) {
+        if (input == null) {
             return true;
-
+        }
         // This is in case we want to allow passing in the seed word for the new puzzle 
         // directly with the "new" command
         String command = input;
-        if (input.contains(" "))
-        {
+        String parameter = "";
+        if (input.contains(" ")) {
             String[] inputs = input.split(" ");
             command = inputs[0];
+            parameter = inputs[1];
         }
 
         switch (command.toLowerCase()) {
@@ -50,10 +55,11 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (inputs.length > 1)
-                    createNewPuzzle(inputs[1]);
-                else
+                if (parameter != null && !parameter.equals("")) {
+                    createNewPuzzle(parameter);
+                } else {
                     createNewPuzzle("");
+                }
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
@@ -69,17 +75,25 @@ public class UserFunctions {
                 break;
             default:
                 guessWord(command);
+                break;
         }
 
         return true;
     }
 
-    private void printCommands() {
+    private String getNewLineCharacter() {
         String newline = "\n";
         String osName = System.getProperty("os.name");
         // check the OS because Windows is stupid and uses two characters for a newline
-        if (osName.startsWith("Windows"))
+        if (osName.startsWith("Windows")) {
             newline = "\r\n";
+        }
+
+        return newline;
+    }
+
+    private void printCommands() {
+        String newline = getNewLineCharacter();
 
         String help = "Commands " + newline +
         "Exit the game       : " + EXIT_COMMAND + newline + 
@@ -95,8 +109,7 @@ public class UserFunctions {
     }
 
     private void createNewPuzzle(String seedWord) {
-        //TODO initialize global _puzzle variable
-        //puzzle = new Puzzle();
+        puzzle = new Puzzle(seedWord);
     }
 
     private void shuffleLetters() {
@@ -105,7 +118,17 @@ public class UserFunctions {
     }
 
     private void showFoundWords() {
-        //TODO show the found word list using Puzzle.getFoundWords()
+        if (puzzle == null) {
+            return;
+        }
+
+        String newline = getNewLineCharacter();
+        String output = "";
+        for (String word : puzzle.getFoundWords()) {
+            output += word + newline;
+        }
+        
+        System.out.println(output);
     }
 
     private void savePuzzle() {
@@ -117,12 +140,47 @@ public class UserFunctions {
     }
 
     private void guessWord(String word) {
-        //TODO check if the word is in puzzle.validWords
+        if (puzzle == null) {
+            return;
+        }
+
+        int wasValid = puzzle.guess(word);
+
+        if (wasValid < 0) {
+            System.out.println("You already found this word.");
+        } else if (wasValid == 0) {
+            System.out.println("Your guess was not a valid word. Try again!");
+        } else {
+            System.out.println("Good job! Your word was worth " + wasValid + " points.");
+        }
     }
 
     private void printDisplay() {
         //TODO print the display
         //  maybe store display as a List<String> with each string being a row of the display?
+        /* 
+         * Display options
+         *    A
+         *  A   A
+         *    A
+         *  A   A
+         *    A
+         *      +---+
+         *  +---| A |---+
+         *  | A +---+ A |
+         *  +---| A |---+
+         *  | A +---+ A |
+         *  +---| A |---+
+         *      +---+
+         *      ┌───┐     
+         *  ┌───┤ A ├───┐
+         *  │ A ├───┤ A │
+         *  ├───┤ A ├───┤
+         *  │ A ├───┤ A │ 
+         *  └───┤ A ├───┘
+         *      └───┘     
+         *              
+         */
     }
 
 }
