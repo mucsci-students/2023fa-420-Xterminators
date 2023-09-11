@@ -3,11 +3,9 @@ import java.util.List;
 public class UserFunctions {
 
     private Puzzle puzzle;
-    private List<String> display;
 
     public UserFunctions() {
         puzzle = null;
-        display = new List<>();
     }
 
     /** Command to exit the program. */
@@ -72,6 +70,9 @@ public class UserFunctions {
                 break;
             case LOAD_COMMAND:
                 loadPuzzle();
+                break;
+            case SHOW_COMMAND:
+                printPuzzle();
                 break;
             default:
                 guessWord(command);
@@ -139,6 +140,12 @@ public class UserFunctions {
         //TODO load the saved puzzle (assuming there's only one?)
     }
 
+    /*
+     * Takes a guess, checks if it's a valid word,
+     * and prints the appropriate output.
+     * 
+     * @param word The word that's being guessed.
+     */
     private void guessWord(String word) {
         if (puzzle == null) {
             return;
@@ -155,32 +162,35 @@ public class UserFunctions {
         }
     }
 
-    private void printDisplay() {
-        //TODO print the display
-        //  maybe store display as a List<String> with each string being a row of the display?
-        /* 
-         * Display options
-         *    A
-         *  A   A
-         *    A
-         *  A   A
-         *    A
-         *      +---+
-         *  +---| A |---+
-         *  | A +---+ A |
-         *  +---| A |---+
-         *  | A +---+ A |
-         *  +---| A |---+
-         *      +---+
-         *      ┌───┐     
-         *  ┌───┤ A ├───┐
-         *  │ A ├───┤ A │
-         *  ├───┤ A ├───┤
-         *  │ A ├───┤ A │ 
-         *  └───┤ A ├───┘
-         *      └───┘     
-         *              
-         */
+    /*
+     * Prints the puzzle in this format:
+     * 
+     *     ┌───┐    
+     * ┌───┤ 0 ├───┐
+     * │ 5 ├───┤ 1 │
+     * ├───┤ P ├───┤
+     * │ 4 ├───┤ 2 │
+     * └───┤ 3 ├───┘
+     *     └───┘    
+     * 0-5 are the indexes of the letters in puzzle.getSecondaryLetters(),
+     * and P is the primary letter which is required for every word.
+     */
+    private void printPuzzle() {
+        char[] letters = puzzle.getSecondaryLetters();
+        String newline = getNewLineCharacter();
+
+        String display = 
+        "     ┌───┐     " + newline +
+        " ┌───┤ " + letters[0] + " ├───┐ " + newline + 
+        " │ " + letters[5] + " ├───┤ " + letters[1] + " │ " + newline +
+        " ├───┤ " + puzzle.getPrimaryLetter() + " ├───┤ " + newline +
+        " │ " + letters[4] + " ├───┤ " + letters[2] + " │ " + newline +
+        " └───┤ " + letters[3] + " ├───┘ " + newline + 
+        "     └───┘     ";
+
+        System.out.println(display);
+        System.out.println();
+        System.out.println("Type a word to guess it, or \"" + HELP_COMMAND + "\" to see all commands.");
     }
 
 }
