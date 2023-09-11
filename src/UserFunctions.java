@@ -33,7 +33,7 @@ public class UserFunctions {
      * @param input The command being processed.
      * @return If the quit command was given, returns false; otherwise, returns true.
      */
-    public bool parseCommand(String input) {
+    public boolean parseCommand(String input) {
         if (input == null) {
             return true;
         }
