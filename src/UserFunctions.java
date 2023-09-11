@@ -53,11 +53,10 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (parameter != null && !parameter.equals("")) {
-                    createNewPuzzle(parameter);
-                } else {
-                    createNewPuzzle("");
+                if (parameter == null) {
+                    parameter = "";
                 }
+                createNewPuzzle(parameter);
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
