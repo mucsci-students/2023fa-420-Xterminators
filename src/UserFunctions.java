@@ -4,11 +4,8 @@ public class UserFunctions {
 
     private Puzzle puzzle;
 
-    private List<String> display;
-
     public UserFunctions() {
         puzzle = null;
-        display = new List<>();
     }
 
     /** Command to exit the program. */
