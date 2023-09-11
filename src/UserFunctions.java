@@ -56,10 +56,11 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (parameter != null && !parameter.equals(""))
+                if (parameter != null && !parameter.equals("")) {
                     createNewPuzzle(parameter);
-                else
+                } else {
                     createNewPuzzle("");
+                }
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
@@ -85,8 +86,9 @@ public class UserFunctions {
         String newline = "\n";
         String osName = System.getProperty("os.name");
         // check the OS because Windows is stupid and uses two characters for a newline
-        if (osName.startsWith("Windows"))
+        if (osName.startsWith("Windows")) {
             newline = "\r\n";
+        }
 
         return newline;
     }
@@ -117,13 +119,15 @@ public class UserFunctions {
     }
 
     private void showFoundWords() {
-        if (puzzle == null)
+        if (puzzle == null) {
             return;
+        }
 
         String newline = getNewLineCharacter();
         String output = "";
-        for (String word : puzzle.getFoundWords())
+        for (String word : puzzle.getFoundWords()) {
             output += word + newline;
+        }
         
         System.out.println(output);
     }
@@ -137,17 +141,16 @@ public class UserFunctions {
     }
 
     private void guessWord(String word) {
-        if (puzzle == null)
+        if (puzzle == null) {
             return;
+        }
 
         int wasValid = puzzle.guess(word);
 
         if (wasValid < 0) {
             System.out.println("You already found this word.");
-
         } else if (wasValid == 0) {
             System.out.println("Your guess was not a valid word. Try again!");
-            
         } else {
             System.out.println("Good job! Your word was worth " + wasValid + " points.");
         }
