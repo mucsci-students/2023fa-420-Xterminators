@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,21 +11,138 @@ import java.util.Random;
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
     private final static int MINIMUM_WORD_LENGTH = 4;
-
+    /** The number of letters for the puzzle. */
+    private final static int NUMBER_UNIQUE_LETTERS = 7;
     /** The number of bonus points recived for finding a pangram. */
     private final static int PANGRAM_BONUS = 7;
 
     /** The primary (required) letter of the puzzle. */
     private char primaryLetter;
-
     /** The secondary letters of the puzzle. */
     private char[] secondaryLetters;
-
+    /** The list of all valid words for the puzzle. */
     private ArrayList<String> validWords;
+    /** The list of all words currently found in the puzzle. */
     private ArrayList<String> foundWords;
+    /** The total number of points that can be earned in the puzzle. */
     private int totalPoints;
+    /** The number of points currently earned in the puzzle. */
     private int earnedPoints;
-    private int[] rankPoints;
+
+    /**
+     * Constructs a Puzzle object from the required letter, and the six other
+     * acceptable letters. Fills validWords by parcing through dictionaryFile.
+     * 
+     * @param primaryLetter The required letter for the puzzle
+     * @param secondaryLetters The six other acceptable letters for the puzzle
+     * @param dictionaryFile The dictionary file to be used to generate validWords.
+     * @throws IOException if an I/O error occurs.
+     */
+    public Puzzle(char primaryLetter, char[] secondaryLetters,
+                  FileReader dictionaryFile) throws IOException {
+        this.primaryLetter = primaryLetter;
+        this.secondaryLetters = Arrays.copyOf(secondaryLetters,
+                                              secondaryLetters.length);
+        this.validWords = new ArrayList<String>();
+        this.foundWords = new ArrayList<String>();
+        this.totalPoints = 0;
+        this.earnedPoints = 0;
+
+        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
+
+        dictLoop:
+        for (String word = bufferedReader.readLine(); word != null; 
+             word = bufferedReader.readLine()) {
+            if (word.indexOf(primaryLetter) == -1) {
+                continue;
+            }
+
+            for (char c : word.toCharArray()) {
+                if (c != primaryLetter
+                        && Arrays.binarySearch(secondaryLetters, c) == -1) {
+                    continue dictLoop;
+                }
+            }
+
+            // To get to this point, all letters of the puzzle are in the word
+            this.validWords.add(word);
+            this.totalPoints += this.wordValue(word);
+        }
+
+        bufferedReader.close();
+    }
+
+    /**
+     * Create a puzzle from a given starting word. Fills validWords by parsing
+     * through dictionaryFile.
+     * 
+     * @param word The starting word for the puzzle
+     * @param dictionaryFile The dictionary file to be used to generate validWords.
+     * @return A puzzle based on the starting word
+     * @throws IllegalArgumentException if the word is not usable as a starting
+     *                                  word
+     * @throws IOException if an I/O error occurs.
+     */
+    public static Puzzle fromWord(String word, FileReader dictionaryFile) 
+            throws IllegalArgumentException, IOException {
+        if (word.length() < NUMBER_UNIQUE_LETTERS) {
+            throw new IllegalArgumentException(
+                "Invalid argument: \"" + word + "\" is too short to be a" +
+                "starting word"
+            );
+        }
+
+        ArrayList<Character> chars = new ArrayList<>();
+        for (char c : word.toCharArray()) {
+            if (!chars.contains(c)) {
+                chars.add(c);
+            }
+        }
+
+        if (chars.size() < NUMBER_UNIQUE_LETTERS) {
+            throw new IllegalArgumentException(
+                "Invalid Argument: \"" + word + "\" contains too few unique" +
+                "characters to be a starting word"
+            );
+        }
+
+        char primaryLetter = chars.remove((new Random()).nextInt(chars.size()));
+        char[] secondaryLetters = new char[6];
+        for (int i = 0; i < 6; ++i) {
+            secondaryLetters[i] = chars.get(i);
+        }
+
+        return new Puzzle(primaryLetter, secondaryLetters, dictionaryFile);
+    }
+
+    /**
+     * Creates a puzzle from a random word in the dictionary.
+     * 
+     * @param dictionaryFile The dictionary to pick a random word from, and to
+     *                       use to fill the validWords list
+     * @return A random puzzle
+     * @throws IOException if an I/O error occurs.
+     */
+    public static Puzzle randomPuzzle(FileReader dictionaryFile) throws IOException {
+        ArrayList<String> candidateWords = new ArrayList<>();
+        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
+        for (String word = bufferedReader.readLine(); word != null; 
+             word = bufferedReader.readLine()) {
+            if (word.length() >= NUMBER_UNIQUE_LETTERS) {
+                candidateWords.add(word);
+            }
+        }
+
+        Random random = new Random();
+        while (true) {
+            int index = random.nextInt(candidateWords.size());
+            try {
+                return fromWord(candidateWords.get(index), dictionaryFile);
+            } catch (IllegalArgumentException e) {
+                candidateWords.remove(index);
+            }
+        }
+    }
 
     /**
      * Gets the primary (required) letter of the puzzle.
@@ -42,15 +163,21 @@ public class Puzzle {
         return Arrays.copyOf(secondaryLetters, secondaryLetters.length);
     }
 
+    /**
+     * Gets the list of found words.
+     * 
+     * @return An unmodifiable list of the currently found words in the puzzle
+     */
     public List<String> getFoundWords() {
         // returns a read-only view of foundWords
         return Collections.unmodifiableList(this.foundWords);
     }
 
-    public int getTotalPoints() {
-        return this.totalPoints;
-    }
-
+    /**
+     * Gets the number of points that have currently been earned on the puzzle.
+     * 
+     * @return The number of earned points
+     */
     public int getEarnedPoints() {
         return this.earnedPoints;
     }
@@ -80,6 +207,23 @@ public class Puzzle {
         }
         
         return points;
+    }
+
+    /**
+     * Shuffles the secondary letters for the next display
+     * 
+     * @implNote Used the Fisher–Yates shuffle algorithim to shuffle secondaryLetters.
+     * See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+     */
+    public void shuffle() {
+        int index;
+        Random random = new Random();
+        for (int i = secondaryLetters.length - 1; i > 0; --i) {
+            index = random.nextInt(i + 1);
+            char temp = secondaryLetters[index];
+            secondaryLetters[index] = secondaryLetters[i];
+            secondaryLetters[i] = temp;
+        }
     }
 
     /**
@@ -127,22 +271,5 @@ public class Puzzle {
         }
         
         return true;
-    }
-
-    /**
-     * Shuffles the secondary letters for the next display
-     * 
-     * @implNote Used the Fisher–Yates shuffle algorithim to shuffle secondaryLetters.
-     * See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-     */
-    public void shuffle() {
-        int index;
-        Random random = new Random();
-        for (int i = secondaryLetters.length - 1; i > 0; --i) {
-            index = random.nextInt(i + 1);
-            char temp = secondaryLetters[index];
-            secondaryLetters[index] = secondaryLetters[i];
-            secondaryLetters[i] = temp;
-        }
     }
 }

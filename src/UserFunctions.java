@@ -1,15 +1,18 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class UserFunctions {
 
     private Puzzle puzzle;
-    private List<String> display;
 
     public UserFunctions() {
         puzzle = null;
-        display = new List<>();
     }
 
+    /** The path to the dictionary file for the game. */
+    public static final String DICTIONARY_PATH = "dictionary.txt";
     /** Command to exit the program. */
     private static final String EXIT_COMMAND = "exit";
     /** Command to print found words. */
@@ -55,11 +58,10 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (parameter != null && !parameter.equals("")) {
-                    createNewPuzzle(parameter);
-                } else {
-                    createNewPuzzle("");
+                if (parameter == null) {
+                    parameter = "";
                 }
+                createNewPuzzle(parameter);
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
@@ -109,7 +111,25 @@ public class UserFunctions {
     }
 
     private void createNewPuzzle(String seedWord) {
-        puzzle = new Puzzle(seedWord);
+        System.out.println("Generating new puzzle ...");
+
+        String newLine = getNewLineCharacter();
+        try {
+            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
+            if (seedWord == "") {
+                puzzle = Puzzle.randomPuzzle(dictionaryFile);
+            } else {
+                puzzle = Puzzle.fromWord(seedWord, dictionaryFile);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage() + newLine + 
+                               "Puzzle not generated. Please try again.");
+        } catch (FileNotFoundException e) {
+            System.out.println("The dictionary file could not be found." + 
+                               "Puzzle not generated.");
+        } catch (IOException e) {
+            System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
+        }
     }
 
     private void shuffleLetters() {
