@@ -11,6 +11,8 @@ import java.util.Random;
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
     private final static int MINIMUM_WORD_LENGTH = 4;
+    /** The number of letters for the puzzle. */
+    private final static int NUMBER_UNIQUE_LETTERS = 7;
     /** The number of bonus points recived for finding a pangram. */
     private final static int PANGRAM_BONUS = 7;
 
@@ -83,7 +85,7 @@ public class Puzzle {
      */
     public static Puzzle fromWord(String word, FileReader dictionaryFile) 
             throws IllegalArgumentException, IOException {
-        if (word.length() < 7) {
+        if (word.length() < NUMBER_UNIQUE_LETTERS) {
             throw new IllegalArgumentException(
                 "Invalid argument: \"" + word + "\" is too short to be a" +
                 "starting word"
@@ -97,7 +99,7 @@ public class Puzzle {
             }
         }
 
-        if (chars.size() < 7) {
+        if (chars.size() < NUMBER_UNIQUE_LETTERS) {
             throw new IllegalArgumentException(
                 "Invalid Argument: \"" + word + "\" contains too few unique" +
                 "characters to be a starting word"
@@ -126,7 +128,7 @@ public class Puzzle {
         BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
         for (String word = bufferedReader.readLine(); word != null; 
              word = bufferedReader.readLine()) {
-            if (word.length() >= 7) {
+            if (word.length() >= NUMBER_UNIQUE_LETTERS) {
                 candidateWords.add(word);
             }
         }
