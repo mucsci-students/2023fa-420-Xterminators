@@ -126,7 +126,7 @@ public class Puzzle {
         BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
         for (String word = bufferedReader.readLine(); word != null; 
              word = bufferedReader.readLine()) {
-            if (word.length() < 7) {
+            if (word.length() >= 7) {
                 candidateWords.add(word);
             }
         }
