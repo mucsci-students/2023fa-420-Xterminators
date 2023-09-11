@@ -29,6 +29,8 @@ public class UserFunctions {
     private static final String SHOW_COMMAND = "show";
     /** Command to rearrange the puzzle letters on the display. */
     private static final String SHUFFLE_COMMAND = "shuffle";
+    /** Command to guess a word. Necessary in case one of the commands is a valid word. */
+    private static final String GUESS_COMMAND = "guess";
 
     /** 
      * Processes the given input and performs the appropriate function.
@@ -75,6 +77,14 @@ public class UserFunctions {
             case LOAD_COMMAND:
                 loadPuzzle();
                 break;
+            case SHOW_COMMAND:
+                printPuzzle();
+                break;
+            case GUESS_COMMAND:
+                if (parameter != null && !parameter.equals("")) {
+                    guessWord(parameter);
+                }
+                break;
             default:
                 guessWord(command);
                 break;
@@ -100,6 +110,7 @@ public class UserFunctions {
         String help = "Commands " + newline +
         "Exit the game       : " + EXIT_COMMAND + newline + 
         "See found words     : " + FOUND_COMMAND + newline + 
+        "Guess a word        : " + GUESS_COMMAND + newline +
         "Print this list     : " + HELP_COMMAND + newline +
         "Load saved puzzle   : " + LOAD_COMMAND + newline + 
         "Create new puzzle   : " + NEW_COMMAND + newline + 
@@ -159,6 +170,12 @@ public class UserFunctions {
         //TODO load the saved puzzle (assuming there's only one?)
     }
 
+    /*
+     * Takes a guess, checks if it's a valid word,
+     * and prints the appropriate output.
+     * 
+     * @param word The word that's being guessed.
+     */
     private void guessWord(String word) {
         if (puzzle == null) {
             return;
@@ -175,32 +192,35 @@ public class UserFunctions {
         }
     }
 
-    private void printDisplay() {
-        //TODO print the display
-        //  maybe store display as a List<String> with each string being a row of the display?
-        /* 
-         * Display options
-         *    A
-         *  A   A
-         *    A
-         *  A   A
-         *    A
-         *      +---+
-         *  +---| A |---+
-         *  | A +---+ A |
-         *  +---| A |---+
-         *  | A +---+ A |
-         *  +---| A |---+
-         *      +---+
-         *      ┌───┐     
-         *  ┌───┤ A ├───┐
-         *  │ A ├───┤ A │
-         *  ├───┤ A ├───┤
-         *  │ A ├───┤ A │ 
-         *  └───┤ A ├───┘
-         *      └───┘     
-         *              
-         */
+    /*
+     * Prints the puzzle in this format:
+     *     ┌───┐    
+     * ┌───┤ 0 ├───┐
+     * │ 5 ├───┤ 1 │
+     * ├───┤ P ├───┤
+     * │ 4 ├───┤ 2 │
+     * └───┤ 3 ├───┘
+     *     └───┘    
+     * 0-5 are the indexes of the letters in puzzle.getSecondaryLetters(),
+     * and P is the primary letter which is required for every word.
+     */
+    private void printPuzzle() {
+        char[] letters = puzzle.getSecondaryLetters();
+        String newline = getNewLineCharacter();
+
+        String display = 
+        "     ┌───┐     " + newline +
+        " ┌───┤ " + letters[0] + " ├───┐ " + newline + 
+        " │ " + letters[5] + " ├───┤ " + letters[1] + " │ " + newline +
+        " ├───┤ " + puzzle.getPrimaryLetter() + " ├───┤ " + newline +
+        " │ " + letters[4] + " ├───┤ " + letters[2] + " │ " + newline +
+        " └───┤ " + letters[3] + " ├───┘ " + newline + 
+        "     └───┘     ";
+
+        System.out.println(display);
+        System.out.println();
+        System.out.println("Type \"" + GUESS_COMMAND + "\" and a word to guess the word.");
+        System.out.println("Type \"" + HELP_COMMAND + "\" to see all commands.");
     }
 
 }
