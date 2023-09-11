@@ -24,6 +24,8 @@ public class UserFunctions {
     private static final String SHOW_COMMAND = "show";
     /** Command to rearrange the puzzle letters on the display. */
     private static final String SHUFFLE_COMMAND = "shuffle";
+    /** Command to guess a word. Necessary in case one of the commands is a valid word. */
+    private static final String GUESS_COMMAND = "guess";
 
     /** 
      * Processes the given input and performs the appropriate function.
@@ -74,6 +76,11 @@ public class UserFunctions {
             case SHOW_COMMAND:
                 printPuzzle();
                 break;
+            case GUESS_COMMAND:
+                if (parameter != null && !parameter.equals("")) {
+                    guessWord(parameter);
+                }
+                break;
             default:
                 guessWord(command);
                 break;
@@ -99,6 +106,7 @@ public class UserFunctions {
         String help = "Commands " + newline +
         "Exit the game       : " + EXIT_COMMAND + newline + 
         "See found words     : " + FOUND_COMMAND + newline + 
+        "Guess a word        : " + GUESS_COMMAND + newline +
         "Print this list     : " + HELP_COMMAND + newline +
         "Load saved puzzle   : " + LOAD_COMMAND + newline + 
         "Create new puzzle   : " + NEW_COMMAND + newline + 
@@ -164,7 +172,6 @@ public class UserFunctions {
 
     /*
      * Prints the puzzle in this format:
-     * 
      *     ┌───┐    
      * ┌───┤ 0 ├───┐
      * │ 5 ├───┤ 1 │
@@ -190,7 +197,8 @@ public class UserFunctions {
 
         System.out.println(display);
         System.out.println();
-        System.out.println("Type a word to guess it, or \"" + HELP_COMMAND + "\" to see all commands.");
+        System.out.println("Type \"" + GUESS_COMMAND + "\" and a word to guess the word.");
+        System.out.println("Type \"" + HELP_COMMAND + "\" to see all commands.");
     }
 
 }
