@@ -55,8 +55,9 @@ public class Puzzle {
                 continue;
             }
 
-            for (char c : secondaryLetters) {
-                if (word.indexOf(c) == -1) {
+            for (char c : word.toCharArray()) {
+                if (c != primaryLetter
+                        && Arrays.binarySearch(secondaryLetters, c) == -1) {
                     continue dictLoop;
                 }
             }
