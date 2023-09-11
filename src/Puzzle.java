@@ -71,7 +71,7 @@ public class Puzzle {
     }
 
     /**
-     * Create a puzzle from a given starting word. Fills validWords by parcing
+     * Create a puzzle from a given starting word. Fills validWords by parsing
      * through dictionaryFile.
      * 
      * @param word The starting word for the puzzle
