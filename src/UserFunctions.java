@@ -1,6 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserFunctions {
@@ -44,12 +45,14 @@ public class UserFunctions {
         }
         // This is in case we want to allow passing in the seed word for the new puzzle 
         // directly with the "new" command
-        String command = input;
-        String parameter = "";
+        String command;
+        String[] parameters;
         if (input.contains(" ")) {
             String[] inputs = input.split(" ");
             command = inputs[0];
-            parameter = inputs[1];
+            parameters = Arrays.copyOfRange(inputs, 1, inputs.length);
+        } else {
+            command = input;
         }
 
         switch (command.toLowerCase()) {
@@ -60,10 +63,17 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (parameter == null) {
-                    parameter = "";
+                if (parameters == null) {
+                    String[] newParams = {""};
+                    parameters = newParams;
+                } else if (parameters.length == 1) {
+                    System.out.println(
+                        "Not enough arguments for " + NEW_COMMAND + " both a " +
+                        "word and required letter are needed."
+                    );
+                    break;
                 }
-                createNewPuzzle(parameter);
+                createNewPuzzle(parameters);
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
@@ -81,10 +91,13 @@ public class UserFunctions {
                 printPuzzle();
                 break;
             case GUESS_COMMAND:
-                if (parameter != null && !parameter.equals("")) {
-                    guessWord(parameter);
+                // loops through all guesses, if no guess is provided, drop 
+                // through to guess GUESS_COMMAND
+                if (parameters.length > 0) {
+                    for (String word : parameters) {
+                        guessWord(word);
+                    }
                 }
-                break;
             default:
                 guessWord(command);
                 break;
