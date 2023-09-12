@@ -83,12 +83,21 @@ public class Puzzle {
      *                                  word
      * @throws IOException if an I/O error occurs.
      */
-    public static Puzzle fromWord(String word, FileReader dictionaryFile) 
-            throws IllegalArgumentException, IOException {
+    public static Puzzle fromWord(String word, char primaryLetter, 
+                                  FileReader dictionaryFile) 
+        throws IllegalArgumentException, IOException {
+
         if (word.length() < NUMBER_UNIQUE_LETTERS) {
             throw new IllegalArgumentException(
                 "Invalid argument: \"" + word + "\" is too short to be a" +
                 "starting word"
+            );
+        }
+        
+        if (word.indexOf(primaryLetter) == -1) {
+            throw new IllegalArgumentException(
+                "Invalid argument: \"" + word + "\" does not contain required" +
+                "letter \'" + primaryLetter + "\'"
             );
         }
 
@@ -106,9 +115,9 @@ public class Puzzle {
             );
         }
 
-        char primaryLetter = chars.remove((new Random()).nextInt(chars.size()));
-        char[] secondaryLetters = new char[6];
-        for (int i = 0; i < 6; ++i) {
+        chars.remove(primaryLetter);
+        char[] secondaryLetters = new char[NUMBER_UNIQUE_LETTERS - 1];
+        for (int i = 0; i < NUMBER_UNIQUE_LETTERS - 1; ++i) {
             secondaryLetters[i] = chars.get(i);
         }
 
