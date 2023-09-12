@@ -228,7 +228,7 @@ public class UserFunctions {
         if (wasValid < 0) {
             System.out.println("You already found this word.");
         } else if (wasValid == 0) {
-            System.out.println("Your guess was not a valid word. Try again!");
+            System.out.println("\"" + word + "\" was not a valid word. Try again!");
         } else {
             System.out.println("Good job! Your word was worth " + wasValid + " points.");
         }
