@@ -129,7 +129,11 @@ public class Puzzle {
     }
 
     /**
+     * Creates a puzzle from a random word in the root word dictionary.
      * 
+     * @param rootWordsFile The dictionary to pick a random word from
+     * @param dictionaryFile The dictionary to use to fill the validWords list
+     * @return A random puzzle
      * @throws IOException if an I/O error occurs
      */
     public static Puzzle randomPuzzle(FileReader rootWordsFile,
