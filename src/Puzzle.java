@@ -126,30 +126,34 @@ public class Puzzle {
     }
 
     /**
-     * Creates a puzzle from a random word in the dictionary.
+     * Creates a puzzle from a random word in the root word dictionary.
      * 
-     * @param dictionaryFile The dictionary to pick a random word from, and to
-     *                       use to fill the validWords list
+     * @param rootWordsFile The dictionary to pick a random word from
+     * @param dictionaryFile The dictionary to use to fill the validWords list
      * @return A random puzzle
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException if an I/O error occurs
      */
-    public static Puzzle randomPuzzle(FileReader dictionaryFile) throws IOException {
+    public static Puzzle randomPuzzle(FileReader rootWordsFile,
+                                      FileReader dictionaryFile)
+        throws IOException {
+
         ArrayList<String> candidateWords = new ArrayList<>();
-        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
+        BufferedReader bufferedReader = new BufferedReader(rootWordsFile);
         for (String word = bufferedReader.readLine(); word != null; 
              word = bufferedReader.readLine()) {
-            if (word.length() >= NUMBER_UNIQUE_LETTERS) {
-                candidateWords.add(word);
-            }
+            candidateWords.add(word);
         }
 
         Random random = new Random();
         while (true) {
-            int index = random.nextInt(candidateWords.size());
+            int wordIndex = random.nextInt(candidateWords.size());
+            String word = candidateWords.get(wordIndex);
+            int charIndex = random.nextInt(word.length());
+            char primaryLetter = word.charAt(charIndex);
             try {
-                return fromWord(candidateWords.get(index), dictionaryFile);
+                return fromWord(word, primaryLetter, dictionaryFile);
             } catch (IllegalArgumentException e) {
-                candidateWords.remove(index);
+                candidateWords.remove(wordIndex);
             }
         }
     }
