@@ -72,17 +72,18 @@ public class Puzzle {
         bufferedReader.close();
     }
 
-    /**
-     * Create a puzzle from a given starting word. Fills validWords by parsing
-     * through dictionaryFile.
-     * 
-     * @param word The starting word for the puzzle
-     * @param dictionaryFile The dictionary file to be used to generate validWords.
-     * @return A puzzle based on the starting word
-     * @throws IllegalArgumentException if the word is not usable as a starting
-     *                                  word
-     * @throws IOException if an I/O error occurs.
-     */
+     /**
+      * Create a puzzle from a given starting word with given required letter.
+      * Fills validWords by parsing through dictionaryFile.
+      *
+      * @param word The starting word for the puzzle
+      * @param primaryLetter The required letter of the word for the puzzle
+      * @param dictionaryFile The dictionary file to be used to generate validWords
+      * @return A puzzle based on the starting word and required letter
+      * @throws IllegalArgumentException if the word is not usable as a starting
+      *                                  word given the required letter
+      * @throws IOException if an I/O error occurs
+      */
     public static Puzzle fromWord(String word, char primaryLetter, 
                                   FileReader dictionaryFile) 
         throws IllegalArgumentException, IOException {
