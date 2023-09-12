@@ -64,16 +64,26 @@ public class UserFunctions {
                 break;
             case NEW_COMMAND:
                 if (parameters == null) {
-                    String[] newParams = {""};
-                    parameters = newParams;
+                    createNewPuzzle();
                 } else if (parameters.length == 1) {
                     System.out.println(
-                        "Not enough arguments for " + NEW_COMMAND + " both a " +
-                        "word and required letter are needed."
+                        "Not enough arguments for " + NEW_COMMAND + ", the word " +
+                        "must be followed by the required letter."
                     );
-                    break;
+                } else if (parameters[1].length() != 1) {
+                    System.out.println(
+                        "The arguments for " + NEW_COMMAND + " must be the word" +
+                        "followed by the required letter."
+                    );
+                } else if (parameters.length > 2) {
+                    System.out.println(
+                        "Too many arguments for " + NEW_COMMAND + ", the " +
+                        "arguments must be the word followed by the required " +
+                        "letter."
+                    );
+                } else {
+                    createNewPuzzle(parameters[0], parameters[1].charAt(0));
                 }
-                createNewPuzzle(parameters);
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
