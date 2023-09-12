@@ -13,7 +13,9 @@ public class UserFunctions {
     }
 
     /** The path to the dictionary file for the game. */
-    public static final String DICTIONARY_PATH = "dictionary.txt";
+    public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
+    /** The path to the dictionary of valid starting words. */
+    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_optimized.txt";
     /** Command to exit the program. */
     private static final String EXIT_COMMAND = "exit";
     /** Command to print found words. */
@@ -46,7 +48,7 @@ public class UserFunctions {
         // This is in case we want to allow passing in the seed word for the new puzzle 
         // directly with the "new" command
         String command;
-        String[] parameters;
+        String[] parameters = null;
         if (input.contains(" ")) {
             String[] inputs = input.split(" ");
             command = inputs[0];
@@ -144,22 +146,37 @@ public class UserFunctions {
         System.out.println(help); 
     }
 
-    private void createNewPuzzle(String seedWord) {
+    private void createNewPuzzle(String seedWord, char requiredLetter) {
         System.out.println("Generating new puzzle ...");
 
         String newLine = getNewLineCharacter();
         try {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
-            if (seedWord == "") {
-                puzzle = Puzzle.randomPuzzle(dictionaryFile);
-            } else {
-                puzzle = Puzzle.fromWord(seedWord, dictionaryFile);
-            }
+            puzzle = Puzzle.fromWord(seedWord, requiredLetter, dictionaryFile);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
                                "Puzzle not generated. Please try again.");
         } catch (FileNotFoundException e) {
-            System.out.println("The dictionary file could not be found." + 
+            System.out.println("A dictionary file could not be found." + 
+                               "Puzzle not generated.");
+        } catch (IOException e) {
+            System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
+        }
+    }
+
+    private void createNewPuzzle() {
+        System.out.println("Generating new puzzle ...");
+
+        String newLine = getNewLineCharacter();
+        try {
+            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
+            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
+            puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage() + newLine + 
+                               "Puzzle not generated. Please try again.");
+        } catch (FileNotFoundException e) {
+            System.out.println("A dictionary file could not be found." + 
                                "Puzzle not generated.");
         } catch (IOException e) {
             System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
