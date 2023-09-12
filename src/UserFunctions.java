@@ -15,7 +15,7 @@ public class UserFunctions {
     /** The path to the dictionary file for the game. */
     public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
     /** The path to the dictionary of valid starting words. */
-    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_roots.txt";
+    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_optimized.txt";
     /** Command to exit the program. */
     private static final String EXIT_COMMAND = "exit";
     /** Command to print found words. */
@@ -172,6 +172,9 @@ public class UserFunctions {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
             FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
             puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage() + newLine + 
+                               "Puzzle not generated. Please try again.");
         } catch (FileNotFoundException e) {
             System.out.println("A dictionary file could not be found." + 
                                "Puzzle not generated.");
