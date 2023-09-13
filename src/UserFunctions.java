@@ -153,6 +153,7 @@ public class UserFunctions {
         try {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
             puzzle = Puzzle.fromWord(seedWord, requiredLetter, dictionaryFile);
+            printPuzzle();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
                                "Puzzle not generated. Please try again.");
@@ -162,8 +163,6 @@ public class UserFunctions {
         } catch (IOException e) {
             System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
         }
-
-        printPuzzle();
     }
 
     private void createNewPuzzle() {
@@ -174,6 +173,7 @@ public class UserFunctions {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
             FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
             puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+            printPuzzle();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
                                "Puzzle not generated. Please try again.");
@@ -183,8 +183,6 @@ public class UserFunctions {
         } catch (IOException e) {
             System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
         }
-
-        printPuzzle();
     }
 
     private void shuffleLetters() {
