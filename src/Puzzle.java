@@ -198,6 +198,21 @@ public class Puzzle {
     public int getEarnedPoints() {
         return this.earnedPoints;
     }
+
+    /**
+     * Gets the current rank achived for the puzzle.
+     * 
+     * @return the current rank achived for the puzzle
+     */
+    public Rank getRank() {
+        Rank currentRank = null;
+        for (Rank rank : Rank.values()) {
+            if (earnedPoints > rank.getRequiredPoints(totalPoints)) {
+                currentRank = rank;
+            }
+        }
+        return currentRank;
+    }
     
     /**
      * Processes a guess of word for the puzzle. If the word is a valid guess,
