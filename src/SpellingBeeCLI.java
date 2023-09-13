@@ -6,7 +6,7 @@ public class SpellingBeeCLI {
         String input = "";
         Scanner scanner = new Scanner(System.in);
         UserFunctions functions = new UserFunctions();
-        bool continueGame = true;
+        boolean continueGame = true;
 
         while (continueGame) {
             input = scanner.nextLine();
