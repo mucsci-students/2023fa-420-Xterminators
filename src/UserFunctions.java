@@ -153,6 +153,7 @@ public class UserFunctions {
         try {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
             puzzle = Puzzle.fromWord(seedWord, requiredLetter, dictionaryFile);
+            printPuzzle();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
                                "Puzzle not generated. Please try again.");
@@ -172,6 +173,7 @@ public class UserFunctions {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
             FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
             puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+            printPuzzle();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
                                "Puzzle not generated. Please try again.");
@@ -243,29 +245,52 @@ public class UserFunctions {
     }
 
     /*
-     * Prints the puzzle in this format:
-     *     ┌───┐    
-     * ┌───┤ 0 ├───┐
-     * │ 5 ├───┤ 1 │
-     * ├───┤ P ├───┤
-     * │ 4 ├───┤ 2 │
-     * └───┤ 3 ├───┘
-     *     └───┘    
+     * Prints the puzzle in this format with box characters:
+     *     +---+    
+     * +---| 0 |---+
+     * | 5 +---+ 1 |
+     * +---| P |---+
+     * | 4 +---+ 2 |
+     * +---| 3 |---+
+     *     +---+    
      * 0-5 are the indexes of the letters in puzzle.getSecondaryLetters(),
      * and P is the primary letter which is required for every word.
      */
     private void printPuzzle() {
+        if (puzzle == null) {
+            return; 
+        }
         char[] letters = puzzle.getSecondaryLetters();
         String newline = getNewLineCharacter();
+        String horizontalLine = "\u2500";
+        String verticalLine = "\u2502";
+        String topLeftCorner = "\u250C";
+        String topRightCorner = "\u2510";
+        String bottomLeftCorner = "\u2514";
+        String bottomRightCorner = "\u2518";
+        String leftTJunction = " \u251C";
+        String rightTJunction = "\u2524 ";
+
+        String tripleHorizontal = horizontalLine + horizontalLine + horizontalLine;
+        String verticalWithSpaces = " " + verticalLine + " ";
 
         String display = 
-        "     ┌───┐     " + newline +
-        " ┌───┤ " + letters[0] + " ├───┐ " + newline + 
-        " │ " + letters[5] + " ├───┤ " + letters[1] + " │ " + newline +
-        " ├───┤ " + puzzle.getPrimaryLetter() + " ├───┤ " + newline +
-        " │ " + letters[4] + " ├───┤ " + letters[2] + " │ " + newline +
-        " └───┤ " + letters[3] + " ├───┘ " + newline + 
-        "     └───┘     ";
+        "     " + topLeftCorner + tripleHorizontal + topRightCorner + "     " +
+        newline +
+        " " + topLeftCorner + tripleHorizontal + rightTJunction + letters[0] + 
+        leftTJunction + tripleHorizontal + topRightCorner + " " + newline + 
+        verticalWithSpaces + letters[5] + leftTJunction + tripleHorizontal + 
+        rightTJunction + letters[1] + verticalWithSpaces + newline +
+        leftTJunction + tripleHorizontal + rightTJunction + 
+        puzzle.getPrimaryLetter() + leftTJunction + tripleHorizontal + 
+        rightTJunction + newline +
+        verticalWithSpaces + letters[4] + leftTJunction + tripleHorizontal + 
+        rightTJunction + letters[2] + verticalWithSpaces + newline +
+        " " + bottomLeftCorner + tripleHorizontal + rightTJunction + 
+        letters[3] + leftTJunction + tripleHorizontal + bottomRightCorner + 
+        " " + newline + 
+        "     " + bottomLeftCorner + tripleHorizontal + bottomRightCorner + 
+        "     ";
 
         System.out.println(display);
         System.out.println(
