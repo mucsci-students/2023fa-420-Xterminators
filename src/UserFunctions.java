@@ -105,10 +105,11 @@ public class UserFunctions {
             case GUESS_COMMAND:
                 // loops through all guesses, if no guess is provided, drop 
                 // through to guess GUESS_COMMAND
-                if (parameters.length > 0) {
+                if (parameters != null && parameters.length > 0) {
                     for (String word : parameters) {
                         guessWord(word);
                     }
+                    break;
                 }
             default:
                 guessWord(command);
