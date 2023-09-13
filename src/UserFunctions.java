@@ -72,7 +72,7 @@ public class UserFunctions {
                         "Not enough arguments for " + NEW_COMMAND + ", the word " +
                         "must be followed by the required letter."
                     );
-                } else if (parameters[1].length() != 1) {
+                } else if (parameters[0].length() != 1) {
                     System.out.println(
                         "The arguments for " + NEW_COMMAND + " must be the word" +
                         "followed by the required letter."
