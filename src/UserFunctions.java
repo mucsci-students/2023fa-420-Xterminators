@@ -172,9 +172,6 @@ public class UserFunctions {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
             FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
             puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage() + newLine + 
-                               "Puzzle not generated. Please try again.");
         } catch (FileNotFoundException e) {
             System.out.println("A dictionary file could not be found." + 
                                "Puzzle not generated.");
