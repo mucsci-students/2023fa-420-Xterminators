@@ -116,7 +116,7 @@ public class Puzzle {
             );
         }
 
-        chars.remove(chars.indexOf(primaryLetter));
+        chars.remove(primaryLetter);
         char[] secondaryLetters = new char[NUMBER_UNIQUE_LETTERS - 1];
         for (int i = 0; i < NUMBER_UNIQUE_LETTERS - 1; ++i) {
             secondaryLetters[i] = chars.get(i);
