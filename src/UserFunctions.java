@@ -109,6 +109,7 @@ public class UserFunctions {
                     for (String word : parameters) {
                         guessWord(word);
                     }
+                    break;
                 }
             default:
                 guessWord(command);
