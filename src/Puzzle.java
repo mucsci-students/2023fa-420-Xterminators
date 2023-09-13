@@ -59,7 +59,7 @@ public class Puzzle {
 
             for (char c : word.toCharArray()) {
                 if (c != primaryLetter
-                        && Arrays.binarySearch(secondaryLetters, c) == -1) {
+                        && Arrays.binarySearch(secondaryLetters, c) < 0) {
                     continue dictLoop;
                 }
             }
