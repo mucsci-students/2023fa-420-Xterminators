@@ -221,6 +221,8 @@ public class UserFunctions {
             return;
         }
 
+        Rank prevRank = puzzle.getRank();
+
         int wasValid = puzzle.guess(word);
 
         if (wasValid < 0) {
@@ -229,6 +231,14 @@ public class UserFunctions {
             System.out.println("\"" + word + "\" was not a valid word. Try again!");
         } else {
             System.out.println("Good job! Your word was worth " + wasValid + " points.");
+        }
+
+        Rank curRank = puzzle.getRank();
+        if (!curRank.equals(prevRank)) {
+            System.out.println(
+                "You reached a new rank! Your rank is now " +
+                curRank.getRankName() + "."
+            );
         }
     }
 
@@ -258,7 +268,10 @@ public class UserFunctions {
         "     └───┘     ";
 
         System.out.println(display);
-        System.out.println();
+        System.out.println(
+            newline + "Current Rank: " +
+            puzzle.getRank().getRankName() + newline
+        );
         System.out.println("Type \"" + GUESS_COMMAND + "\" and a word to guess the word.");
         System.out.println("Type \"" + HELP_COMMAND + "\" to see all commands.");
     }
