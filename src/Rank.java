@@ -33,10 +33,7 @@ public enum Rank {
      * @return The number of points needed to achive the rank
      */
     public int getRequiredPoints(int totalPoints) {
-        return (int) Math.max(
-            Math.round(totalPoints * requiredPercent),
-            totalPoints
-        );
+        return (int) Math.round(totalPoints * requiredPercent);
     }
 
     Rank(String rankName, double requiredPercent) {
