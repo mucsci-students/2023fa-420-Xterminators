@@ -72,23 +72,33 @@ public class Puzzle {
         bufferedReader.close();
     }
 
-    /**
-     * Create a puzzle from a given starting word. Fills validWords by parsing
-     * through dictionaryFile.
-     * 
-     * @param word The starting word for the puzzle
-     * @param dictionaryFile The dictionary file to be used to generate validWords.
-     * @return A puzzle based on the starting word
-     * @throws IllegalArgumentException if the word is not usable as a starting
-     *                                  word
-     * @throws IOException if an I/O error occurs.
-     */
-    public static Puzzle fromWord(String word, FileReader dictionaryFile) 
-            throws IllegalArgumentException, IOException {
+     /**
+      * Create a puzzle from a given starting word with given required letter.
+      * Fills validWords by parsing through dictionaryFile.
+      *
+      * @param word The starting word for the puzzle
+      * @param primaryLetter The required letter of the word for the puzzle
+      * @param dictionaryFile The dictionary file to be used to generate validWords
+      * @return A puzzle based on the starting word and required letter
+      * @throws IllegalArgumentException if the word is not usable as a starting
+      *                                  word given the required letter
+      * @throws IOException if an I/O error occurs
+      */
+    public static Puzzle fromWord(String word, char primaryLetter, 
+                                  FileReader dictionaryFile) 
+        throws IllegalArgumentException, IOException {
+
         if (word.length() < NUMBER_UNIQUE_LETTERS) {
             throw new IllegalArgumentException(
                 "Invalid argument: \"" + word + "\" is too short to be a" +
                 "starting word"
+            );
+        }
+        
+        if (word.indexOf(primaryLetter) == -1) {
+            throw new IllegalArgumentException(
+                "Invalid argument: \"" + word + "\" does not contain required" +
+                "letter \'" + primaryLetter + "\'"
             );
         }
 
@@ -106,9 +116,9 @@ public class Puzzle {
             );
         }
 
-        char primaryLetter = chars.remove((new Random()).nextInt(chars.size()));
-        char[] secondaryLetters = new char[6];
-        for (int i = 0; i < 6; ++i) {
+        chars.remove(primaryLetter);
+        char[] secondaryLetters = new char[NUMBER_UNIQUE_LETTERS - 1];
+        for (int i = 0; i < NUMBER_UNIQUE_LETTERS - 1; ++i) {
             secondaryLetters[i] = chars.get(i);
         }
 
@@ -116,30 +126,34 @@ public class Puzzle {
     }
 
     /**
-     * Creates a puzzle from a random word in the dictionary.
+     * Creates a puzzle from a random word in the root word dictionary.
      * 
-     * @param dictionaryFile The dictionary to pick a random word from, and to
-     *                       use to fill the validWords list
+     * @param rootWordsFile The dictionary to pick a random word from
+     * @param dictionaryFile The dictionary to use to fill the validWords list
      * @return A random puzzle
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException if an I/O error occurs
      */
-    public static Puzzle randomPuzzle(FileReader dictionaryFile) throws IOException {
+    public static Puzzle randomPuzzle(FileReader rootWordsFile,
+                                      FileReader dictionaryFile)
+        throws IOException {
+
         ArrayList<String> candidateWords = new ArrayList<>();
-        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
+        BufferedReader bufferedReader = new BufferedReader(rootWordsFile);
         for (String word = bufferedReader.readLine(); word != null; 
              word = bufferedReader.readLine()) {
-            if (word.length() >= NUMBER_UNIQUE_LETTERS) {
-                candidateWords.add(word);
-            }
+            candidateWords.add(word);
         }
 
         Random random = new Random();
         while (true) {
-            int index = random.nextInt(candidateWords.size());
+            int wordIndex = random.nextInt(candidateWords.size());
+            String word = candidateWords.get(wordIndex);
+            int charIndex = random.nextInt(word.length());
+            char primaryLetter = word.charAt(charIndex);
             try {
-                return fromWord(candidateWords.get(index), dictionaryFile);
+                return fromWord(word, primaryLetter, dictionaryFile);
             } catch (IllegalArgumentException e) {
-                candidateWords.remove(index);
+                candidateWords.remove(wordIndex);
             }
         }
     }

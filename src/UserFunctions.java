@@ -1,6 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserFunctions {
@@ -12,7 +13,9 @@ public class UserFunctions {
     }
 
     /** The path to the dictionary file for the game. */
-    public static final String DICTIONARY_PATH = "dictionary.txt";
+    public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
+    /** The path to the dictionary of valid starting words. */
+    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_roots.txt";
     /** Command to exit the program. */
     private static final String EXIT_COMMAND = "exit";
     /** Command to print found words. */
@@ -44,12 +47,14 @@ public class UserFunctions {
         }
         // This is in case we want to allow passing in the seed word for the new puzzle 
         // directly with the "new" command
-        String command = input;
-        String parameter = "";
+        String command;
+        String[] parameters = null;
         if (input.contains(" ")) {
             String[] inputs = input.split(" ");
             command = inputs[0];
-            parameter = inputs[1];
+            parameters = Arrays.copyOfRange(inputs, 1, inputs.length);
+        } else {
+            command = input;
         }
 
         switch (command.toLowerCase()) {
@@ -60,10 +65,27 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
-                if (parameter == null) {
-                    parameter = "";
+                if (parameters == null) {
+                    createNewPuzzle();
+                } else if (parameters.length == 1) {
+                    System.out.println(
+                        "Not enough arguments for " + NEW_COMMAND + ", the word " +
+                        "must be followed by the required letter."
+                    );
+                } else if (parameters[1].length() != 1) {
+                    System.out.println(
+                        "The arguments for " + NEW_COMMAND + " must be the word" +
+                        "followed by the required letter."
+                    );
+                } else if (parameters.length > 2) {
+                    System.out.println(
+                        "Too many arguments for " + NEW_COMMAND + ", the " +
+                        "arguments must be the word followed by the required " +
+                        "letter."
+                    );
+                } else {
+                    createNewPuzzle(parameters[0], parameters[1].charAt(0));
                 }
-                createNewPuzzle(parameter);
                 break;
             case SHUFFLE_COMMAND:
                 shuffleLetters();
@@ -81,10 +103,13 @@ public class UserFunctions {
                 printPuzzle();
                 break;
             case GUESS_COMMAND:
-                if (parameter != null && !parameter.equals("")) {
-                    guessWord(parameter);
+                // loops through all guesses, if no guess is provided, drop 
+                // through to guess GUESS_COMMAND
+                if (parameters.length > 0) {
+                    for (String word : parameters) {
+                        guessWord(word);
+                    }
                 }
-                break;
             default:
                 guessWord(command);
                 break;
@@ -121,22 +146,37 @@ public class UserFunctions {
         System.out.println(help); 
     }
 
-    private void createNewPuzzle(String seedWord) {
+    private void createNewPuzzle(String seedWord, char requiredLetter) {
         System.out.println("Generating new puzzle ...");
 
         String newLine = getNewLineCharacter();
         try {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
-            if (seedWord == "") {
-                puzzle = Puzzle.randomPuzzle(dictionaryFile);
-            } else {
-                puzzle = Puzzle.fromWord(seedWord, dictionaryFile);
-            }
+            puzzle = Puzzle.fromWord(seedWord, requiredLetter, dictionaryFile);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
                                "Puzzle not generated. Please try again.");
         } catch (FileNotFoundException e) {
-            System.out.println("The dictionary file could not be found." + 
+            System.out.println("The full dictionary file could not be found." + 
+                               "Puzzle not generated.");
+        } catch (IOException e) {
+            System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
+        }
+    }
+
+    private void createNewPuzzle() {
+        System.out.println("Generating new puzzle ...");
+
+        String newLine = getNewLineCharacter();
+        try {
+            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
+            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
+            puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage() + newLine + 
+                               "Puzzle not generated. Please try again.");
+        } catch (FileNotFoundException e) {
+            System.out.println("A dictionary file could not be found." + 
                                "Puzzle not generated.");
         } catch (IOException e) {
             System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
