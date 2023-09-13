@@ -233,7 +233,7 @@ public class UserFunctions {
             System.out.println("Good job! Your word was worth " + wasValid + " points.");
         }
 
-        Rank curRank = puzzle.getRank()
+        Rank curRank = puzzle.getRank();
         if (!curRank.equals(prevRank)) {
             System.out.println(
                 "You reached a new rank! Your rank is now " +
