@@ -268,7 +268,10 @@ public class UserFunctions {
         "     └───┘     ";
 
         System.out.println(display);
-        System.out.println();
+        System.out.println(
+            newline + "Current Rank: " +
+            puzzle.getRank().getRankName() + newline
+        );
         System.out.println("Type \"" + GUESS_COMMAND + "\" and a word to guess the word.");
         System.out.println("Type \"" + HELP_COMMAND + "\" to see all commands.");
     }
