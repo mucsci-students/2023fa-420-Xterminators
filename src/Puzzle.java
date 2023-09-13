@@ -204,7 +204,7 @@ public class Puzzle {
     public Rank getRank() {
         Rank currentRank = null;
         for (Rank rank : Rank.values()) {
-            if (earnedPoints > rank.getRequiredPoints(totalPoints)) {
+            if (earnedPoints >= rank.getRequiredPoints(totalPoints)) {
                 currentRank = rank;
             }
         }
