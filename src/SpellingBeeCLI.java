@@ -6,7 +6,7 @@ public class SpellingBeeCLI {
         String input = "";
         Scanner scanner = new Scanner(System.in);
         UserFunctions functions = new UserFunctions();
-        Boolean continueGame = true;
+        boolean continueGame = true;
 
         System.out.println ("Welcome to the Spelling Bee!");
         //TODO get the new and help command constants from userfunctions here
