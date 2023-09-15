@@ -50,6 +50,9 @@ public class Puzzle {
 
         BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
 
+        char[] sortedLetters = Arrays.copyOf(secondaryLetters, secondaryLetters.length);
+        Arrays.sort(sortedLetters, 0, sortedLetters.length);
+
         dictLoop:
         for (String word = bufferedReader.readLine(); word != null; 
              word = bufferedReader.readLine()) {
@@ -57,9 +60,9 @@ public class Puzzle {
                 continue;
             }
 
-            for (char c : word.toCharArray()) {
+            for (char c : word.toLowerCase().toCharArray()) {
                 if (c != primaryLetter
-                        && Arrays.binarySearch(secondaryLetters, c) == -1) {
+                        && Arrays.binarySearch(sortedLetters, c) < 0) {
                     continue dictLoop;
                 }
             }
@@ -116,7 +119,7 @@ public class Puzzle {
             );
         }
 
-        chars.remove(primaryLetter);
+        chars.remove(Character.valueOf(primaryLetter));
         char[] secondaryLetters = new char[NUMBER_UNIQUE_LETTERS - 1];
         for (int i = 0; i < NUMBER_UNIQUE_LETTERS - 1; ++i) {
             secondaryLetters[i] = chars.get(i);

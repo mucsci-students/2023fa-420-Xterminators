@@ -1,4 +1,4 @@
-x = open ('C:\\dev\\2023fa-420-Xterminators\\src\\dictionary.txt', 'r')
+x = open ('src\\dictionary.txt', 'r')
 
 all_words = x.read()
 arr = all_words.split() 
@@ -16,4 +16,4 @@ for i in arr:
 y = open ('result.txt', 'w')
 
 for i in allowed:
-    y.write(i + '\r\n')
+    y.write(i + '\n')
