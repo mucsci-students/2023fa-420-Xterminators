@@ -108,6 +108,7 @@ public class UserFunctions {
                 if (parameters != null && parameters.length > 0) {
                     for (String word : parameters) {
                         guessWord(word);
+                        break;
                     }
                     break;
                 }
