@@ -155,10 +155,10 @@ public class UserFunctions {
         "Print this list     : " + HELP_COMMAND + newline +
         "Load saved puzzle   : " + LOAD_COMMAND + newline + 
         "Create new puzzle   : " + NEW_COMMAND + newline + 
+        "Print current rank  : " + RANK_COMMAND + newline +
         "Save current puzzle : " + SAVE_COMMAND + newline + 
         "Reprint the puzzle  : " + SHOW_COMMAND + newline +
-        "Shuffle letters     : " + SHUFFLE_COMMAND + newline +
-        "Print current rank  : " + RANK_COMMAND + newline;
+        "Shuffle letters     : " + SHUFFLE_COMMAND + newline;
 
         System.out.println(help); 
     }
