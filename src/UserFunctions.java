@@ -52,12 +52,13 @@ public class UserFunctions {
         // directly with the "new" command
         String command;
         String[] parameters = null;
-        if (input.contains(" ")) {
+        // Do input.trim() in case user put a space at the end like a noob
+        if (input.trim().contains(" ")) {
             String[] inputs = input.split(" ");
             command = inputs[0];
             parameters = Arrays.copyOfRange(inputs, 1, inputs.length);
         } else {
-            command = input;
+            command = input.trim();
         }
 
         switch (command.toLowerCase()) {
@@ -82,7 +83,7 @@ public class UserFunctions {
                     );
                 } else if (parameters.length > 2) {
                     System.out.println(
-                        "Too many arguments for " + NEW_COMMAND + ", the " +
+                        "Too many arguments for " + NEW_COMMAND + ". The " +
                         "arguments must be the word followed by the required " +
                         "letter."
                     );
@@ -114,7 +115,6 @@ public class UserFunctions {
                 if (parameters != null && parameters.length > 0) {
                     for (String word : parameters) {
                         guessWord(word);
-                        break;
                     }
                     break;
                 }
@@ -126,6 +126,11 @@ public class UserFunctions {
         return true;
     }
 
+    /**
+     * Gets the appropriate newline character for the current OS.
+     * 
+     * @return The newline character for the current OS.
+     */
     private String getNewLineCharacter() {
         String newline = "\n";
         String osName = System.getProperty("os.name");
@@ -137,6 +142,9 @@ public class UserFunctions {
         return newline;
     }
 
+    /**
+     * Prints all commands in alphabetical order.
+     */
     private void printCommands() {
         String newline = getNewLineCharacter();
 
@@ -149,18 +157,35 @@ public class UserFunctions {
         "Create new puzzle   : " + NEW_COMMAND + newline + 
         "Save current puzzle : " + SAVE_COMMAND + newline + 
         "Reprint the puzzle  : " + SHOW_COMMAND + newline +
-        "Shuffle letters     : " + SHUFFLE_COMMAND + newline;
+        "Shuffle letters     : " + SHUFFLE_COMMAND + newline +
+        "Print current rank  : " + RANK_COMMAND + newline;
 
         System.out.println(help); 
     }
 
+    /**
+     * Creates a new puzzle using the given word and required letter,
+     * and then prints it. If no seed word is given, a random puzzle
+     * will be generated instead.
+     * 
+     * @param seedWord The pangram to use for the letters in the puzzle.
+     *  If seedWord is empty, a random puzzle will be generated instead.
+     * @param requiredLetter The letter that should be required.
+     */
     private void createNewPuzzle(String seedWord, char requiredLetter) {
         System.out.println("Generating new puzzle ...");
 
         String newLine = getNewLineCharacter();
         try {
             FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
-            puzzle = Puzzle.fromWord(seedWord, requiredLetter, dictionaryFile);
+            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
+            if (seedWord != null && !seedWord.equals("")) {
+                puzzle = Puzzle.fromWord(seedWord, requiredLetter, 
+                    rootWordsFile, dictionaryFile, false);
+            } else {
+                // no seedWord provided, assume random puzzle
+                puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+            }
             printPuzzle();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + newLine + 
@@ -173,54 +198,57 @@ public class UserFunctions {
         }
     }
 
+    /**
+     * Creates a new puzzle using a random word from the dictionary.
+     * The random word will have exactly 7 unique letters but may be 
+     * longer than 7 characters.
+     */
     private void createNewPuzzle() {
-        System.out.println("Generating new puzzle ...");
-
-        String newLine = getNewLineCharacter();
-        try {
-            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
-            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
-            puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
-            printPuzzle();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage() + newLine + 
-                               "Puzzle not generated. Please try again.");
-        } catch (FileNotFoundException e) {
-            System.out.println("A dictionary file could not be found." + 
-                               "Puzzle not generated.");
-        } catch (IOException e) {
-            System.out.println(e.getMessage() + newLine + "Puzzle not generated.");
-        }
+        // Send empty word to create a random puzzle
+        // If seedWord is empty requiredLetter is irrelevant
+        createNewPuzzle("", 'a');
     }
 
+    /**
+     * Shuffles the letters in the display.
+     */
     private void shuffleLetters() {
         puzzle.shuffle();
-        System.out.println("Shuffled outer letters. Display again to see.");
+        printPuzzle();
     }
 
+    /**
+     * Prints the list of found words.
+     */
     private void showFoundWords() {
         if (puzzle == null) {
             return;
         }
 
         String newline = getNewLineCharacter();
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for (String word : puzzle.getFoundWords()) {
-            output += word + newline;
+            output.append(word + newline);
         }
-        
-        System.out.println(output);
+        System.out.println("Found Words:");
+        System.out.println(output.toString());
     }
 
+    /**
+     * Saves the puzzle to a JSON format.
+     */
     private void savePuzzle() {
         //TODO save the current state of the puzzle
     }
 
+    /**
+     * Loads a saved puzzle from a JSON format.
+     */
     private void loadPuzzle() {
         //TODO load the saved puzzle (assuming there's only one?)
     }
 
-    /*
+    /**
      * Takes a guess, checks if it's a valid word,
      * and prints the appropriate output.
      * 
@@ -240,7 +268,12 @@ public class UserFunctions {
         } else if (wasValid == 0) {
             System.out.println("\"" + word + "\" was not a valid word. Try again!");
         } else {
-            System.out.println("Good job! Your word was worth " + wasValid + " points.");
+            String plural = "s";
+            if (wasValid == 1) {
+                plural = "";
+            }
+            System.out.println("Good job! Your word was worth " + wasValid + 
+            " point" + plural + ".");
         }
 
         Rank curRank = puzzle.getRank();
@@ -252,7 +285,7 @@ public class UserFunctions {
         }
     }
 
-    /*
+    /**
      * Prints the puzzle in this format with box characters:
      *     +---+    
      * +---| 0 |---+
@@ -271,44 +304,49 @@ public class UserFunctions {
         char[] letters = puzzle.getSecondaryLetters();
         String newline = getNewLineCharacter();
         String horizontalLine = "\u2500";
-        String verticalLine = "\u2502";
-        String topLeftCorner = "\u250C";
-        String topRightCorner = "\u2510";
-        String bottomLeftCorner = "\u2514";
-        String bottomRightCorner = "\u2518";
-        String leftTJunction = " \u251C";
-        String rightTJunction = "\u2524 ";
+        String vertLine = " \u2502 ";
+        String leftT = " \u251C";
+        String rightT = "\u2524 ";
 
-        String tripleHorizontal = horizontalLine + horizontalLine + horizontalLine;
-        String verticalWithSpaces = " " + verticalLine + " ";
+        String mainLine = horizontalLine + horizontalLine + horizontalLine;
 
+        // This is still super messy, I'm not quite sure how to fix it
+        // It works though
         String display = 
-        "     " + topLeftCorner + tripleHorizontal + topRightCorner + "     " +
-        newline +
-        " " + topLeftCorner + tripleHorizontal + rightTJunction + letters[0] + 
-        leftTJunction + tripleHorizontal + topRightCorner + " " + newline + 
-        verticalWithSpaces + letters[5] + leftTJunction + tripleHorizontal + 
-        rightTJunction + letters[1] + verticalWithSpaces + newline +
-        leftTJunction + tripleHorizontal + rightTJunction + 
-        puzzle.getPrimaryLetter() + leftTJunction + tripleHorizontal + 
-        rightTJunction + newline +
-        verticalWithSpaces + letters[4] + leftTJunction + tripleHorizontal + 
-        rightTJunction + letters[2] + verticalWithSpaces + newline +
-        " " + bottomLeftCorner + tripleHorizontal + rightTJunction + 
-        letters[3] + leftTJunction + tripleHorizontal + bottomRightCorner + 
-        " " + newline + 
-        "     " + bottomLeftCorner + tripleHorizontal + bottomRightCorner + 
-        "     ";
+        //Line 1
+        "     \u250C" + mainLine + "\u2510     " + newline +
+        //Line 2
+        " \u250C" + mainLine + rightT + letters[0] + leftT + mainLine +
+        "\u2510 " + newline + 
+        //Line 3
+        vertLine + letters[5] + leftT + mainLine + rightT + letters[1] + 
+        vertLine + newline +
+        //Line 4
+        leftT + mainLine + rightT + puzzle.getPrimaryLetter() + leftT + 
+        mainLine + rightT + newline +
+        //Line 5
+        vertLine + letters[4] + leftT + mainLine + rightT + letters[2] + 
+        vertLine + newline +
+        //Line 6
+        " \u2514" + mainLine + rightT + letters[3] + leftT + mainLine + 
+        "\u2518 " + newline + 
+        //Line 7
+        "     \u2514" + mainLine + "\u2518     ";
 
         System.out.println(display);
         System.out.println(
-            newline + "Current Rank: " +
-            puzzle.getRank().getRankName() + newline
+            newline + "Current Rank  : " +
+            puzzle.getRank().getRankName()
         );
+        System.out.println("Current Points: " + 
+            puzzle.getEarnedPoints() + newline);
         System.out.println("Type \"" + GUESS_COMMAND + "\" and a word to guess the word.");
         System.out.println("Type \"" + HELP_COMMAND + "\" to see all commands.");
     }
 
+    /**
+     * Prints all available ranks, along with the current rank.
+     */
     private void showRanks() {
         if (puzzle == null) {
             return;
@@ -330,35 +368,63 @@ public class UserFunctions {
             );
         }
 
+        int namePadWidth = 0;
+        int pointPadWidth = 0;
         for (Rank rank : Rank.values()) {
             int reqPoints = rank.getRequiredPoints(totalPoints);
+            if (String.valueOf(reqPoints).length() > pointPadWidth) {
+                pointPadWidth = String.valueOf(reqPoints).length();
+            }
+            if (rank.getRankName().length() > namePadWidth) {
+                namePadWidth = rank.getRankName().length();
+            }
+            
+        }
+
+        for (Rank rank : Rank.values()) {
+            int reqPoints = rank.getRequiredPoints(totalPoints);
+            String reqPointsStr = String.valueOf(reqPoints);
 
             if (reqPoints == 1) {
                 if (rank.equals(curRank)) {
                     System.out.println(
-                        "*" + rank.getRankName() + " - " +
-                        reqPoints + " point minimum"
+                        "*" + padLeft(rank.getRankName(), namePadWidth) + " - " +
+                        padLeft(reqPointsStr, pointPadWidth) + " point minimum"
                     );
                 } else {
                     System.out.println(
-                        " " + rank.getRankName() + " - " +
-                        reqPoints + " point minimum"
+                        " " + padLeft(rank.getRankName(), namePadWidth) + " - " +
+                        padLeft(reqPointsStr, pointPadWidth) + " point minimum"
                     );
                 }
             } else {
                 if (rank.equals(curRank)) {
                     System.out.println(
-                        "*" + rank.getRankName() + " - " +
-                        reqPoints + " points minimum"
+                        "*" + padLeft(rank.getRankName(), namePadWidth) + " - " +
+                        padLeft(reqPointsStr, pointPadWidth) + " points minimum"
                     );
                 } else {
                     System.out.println(
-                        " " + rank.getRankName() + " - " +
-                        reqPoints + " points minimum"
+                        " " + padLeft(rank.getRankName(), namePadWidth) + " - " +
+                        padLeft(reqPointsStr, pointPadWidth) + " points minimum"
                     );
                 }
             }
         }
+    }
+
+    /**
+     * Pads the given string on the right with spaces and returns the result.
+     * If the given string is null, it will be returned unchanged.
+     * @param str The string to pad.
+     * @param totalLength The total length that the resulting string should be.
+     * @return The padded string.
+     */
+    private String padLeft(String str, int totalLength) {
+        if (str == null) {
+            return str;
+        }
+        return String.format("%1$-" + totalLength + "s", str);
     }
 
 }

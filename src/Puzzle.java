@@ -88,20 +88,22 @@ public class Puzzle {
       * @throws IOException if an I/O error occurs
       */
     public static Puzzle fromWord(String word, char primaryLetter, 
-                                  FileReader dictionaryFile) 
+                                  FileReader rootWordsFile, 
+                                  FileReader dictionaryFile,
+                                  boolean isKnownRootWord) 
         throws IllegalArgumentException, IOException {
 
         if (word.length() < NUMBER_UNIQUE_LETTERS) {
             throw new IllegalArgumentException(
                 "Invalid argument: \"" + word + "\" is too short to be a" +
-                "starting word"
+                "starting word."
             );
         }
         
         if (word.indexOf(primaryLetter) == -1) {
             throw new IllegalArgumentException(
                 "Invalid argument: \"" + word + "\" does not contain required" +
-                "letter \'" + primaryLetter + "\'"
+                "letter \'" + primaryLetter + "\'."
             );
         }
 
@@ -114,9 +116,30 @@ public class Puzzle {
 
         if (chars.size() < NUMBER_UNIQUE_LETTERS) {
             throw new IllegalArgumentException(
-                "Invalid Argument: \"" + word + "\" contains too few unique" +
-                "characters to be a starting word"
+                "Invalid argument: \"" + word + "\" contains too few unique " +
+                "characters to be a starting word."
             );
+        }
+
+        // This only runs if the root word is a user input.
+        if (!isKnownRootWord) {
+            // Check if it's in the root word dictionary last because this is
+            // the most expensive check. If one of the cheap word checks throws
+            // an exception, we don't have to bother doing this.
+            boolean isRootWord = false;
+            BufferedReader bufferedReader = new BufferedReader(rootWordsFile);
+            for (String rootWord = bufferedReader.readLine(); rootWord != null; 
+                rootWord = bufferedReader.readLine()) {
+                if (!rootWord.equals("") && word.equalsIgnoreCase(rootWord)) {
+                    isRootWord = true;
+                    break;
+                }
+            }
+
+            if (!isRootWord) {
+                throw new IllegalArgumentException(
+                    "Invalid argument: \"" + word + "\" is not in the dictionary.");
+            }
         }
 
         chars.remove(Character.valueOf(primaryLetter));
@@ -146,7 +169,7 @@ public class Puzzle {
              word = bufferedReader.readLine()) {
             candidateWords.add(word);
         }
-
+        
         Random random = new Random();
         while (true) {
             int wordIndex = random.nextInt(candidateWords.size());
@@ -154,7 +177,7 @@ public class Puzzle {
             int charIndex = random.nextInt(word.length());
             char primaryLetter = word.charAt(charIndex);
             try {
-                return fromWord(word, primaryLetter, dictionaryFile);
+                return fromWord(word, primaryLetter, rootWordsFile, dictionaryFile, true);
             } catch (IllegalArgumentException e) {
                 candidateWords.remove(wordIndex);
             }
