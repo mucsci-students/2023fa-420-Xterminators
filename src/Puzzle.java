@@ -191,6 +191,15 @@ public class Puzzle {
     }
 
     /**
+     * Gets the total number of possible points in the puzzle.
+     * 
+     * @return the total number of possible points in the puzzle
+     */
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    /**
      * Gets the number of points that have currently been earned on the puzzle.
      * 
      * @return The number of earned points
