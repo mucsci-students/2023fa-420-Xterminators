@@ -326,12 +326,12 @@ public class UserFunctions {
             if (rank.equals(curRank)) {
                 System.out.println(
                     "*" + rank.getRankName() + " - " +
-                    rank.getRequiredPoints(totalPoints) + " points"
+                    rank.getRequiredPoints(totalPoints) + " points minimum"
                 );
             } else {
                 System.out.println(
                     " " + rank.getRankName() + " - " +
-                    rank.getRequiredPoints(totalPoints) + " points"
+                    rank.getRequiredPoints(totalPoints) + " points minimum"
                 );
             }
         }
