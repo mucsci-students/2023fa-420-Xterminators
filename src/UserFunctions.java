@@ -35,6 +35,8 @@ public class UserFunctions {
     public static final String SHUFFLE_COMMAND = "shuffle";
     /** Command to guess a word. Necessary in case one of the commands is a valid word. */
     public static final String GUESS_COMMAND = "guess";
+    /** Command to show the ranks of the puzzle and current rank. */
+    public static final String RANK_COMMAND = "rank";
 
     /** 
      * Processes the given input and performs the appropriate function.
@@ -102,6 +104,9 @@ public class UserFunctions {
                 break;
             case SHOW_COMMAND:
                 printPuzzle();
+                break;
+            case RANK_COMMAND:
+                showRanks();
                 break;
             case GUESS_COMMAND:
                 // loops through all guesses, if no guess is provided, drop 
@@ -302,6 +307,34 @@ public class UserFunctions {
         );
         System.out.println("Type \"" + GUESS_COMMAND + "\" and a word to guess the word.");
         System.out.println("Type \"" + HELP_COMMAND + "\" to see all commands.");
+    }
+
+    private void showRanks() {
+        if (puzzle == null) {
+            return;
+        }
+
+        int totalPoints = puzzle.getTotalPoints();
+        Rank curRank = puzzle.getRank();
+
+        System.out.println(
+            "Current Rank: " + curRank.getRankName() + " - " +
+            puzzle.getEarnedPoints() + " points\n"
+        );
+
+        for (Rank rank : Rank.values()) {
+            if (rank.equals(curRank)) {
+                System.out.println(
+                    "*" + rank.getRankName() + " - " +
+                    rank.getRequiredPoints(totalPoints) + " points"
+                );
+            } else {
+                System.out.println(
+                    " " + rank.getRankName() + " - " +
+                    rank.getRequiredPoints(totalPoints) + " points"
+                );
+            }
+        }
     }
 
 }
