@@ -16,24 +16,25 @@ public class UserFunctions {
     public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
     /** The path to the dictionary of valid starting words. */
     public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_roots.txt";
+
     /** Command to exit the program. */
-    private static final String EXIT_COMMAND = "exit";
+    public static final String EXIT_COMMAND = "exit";
     /** Command to print found words. */
-    private static final String FOUND_COMMAND = "found";
+    public static final String FOUND_COMMAND = "found";
     /** Command to print commands. */
-    private static final String HELP_COMMAND = "help";
+    public static final String HELP_COMMAND = "help";
     /** Command to load a saved puzzle. */
-    private static final String LOAD_COMMAND = "load";
+    public static final String LOAD_COMMAND = "load";
     /** Command to create a new puzzle. */
-    private static final String NEW_COMMAND = "new";
+    public static final String NEW_COMMAND = "new";
     /** Command to save the current puzzle. */
-    private static final String SAVE_COMMAND = "save";
+    public static final String SAVE_COMMAND = "save";
     /** Command to reprint the puzzle. */
-    private static final String SHOW_COMMAND = "show";
+    public static final String SHOW_COMMAND = "show";
     /** Command to rearrange the puzzle letters on the display. */
-    private static final String SHUFFLE_COMMAND = "shuffle";
+    public static final String SHUFFLE_COMMAND = "shuffle";
     /** Command to guess a word. Necessary in case one of the commands is a valid word. */
-    private static final String GUESS_COMMAND = "guess";
+    public static final String GUESS_COMMAND = "guess";
 
     /** 
      * Processes the given input and performs the appropriate function.
