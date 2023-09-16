@@ -315,24 +315,48 @@ public class UserFunctions {
         }
 
         int totalPoints = puzzle.getTotalPoints();
+        int earnedPoints = puzzle.getEarnedPoints();
         Rank curRank = puzzle.getRank();
 
-        System.out.println(
-            "Current Rank: " + curRank.getRankName() + " - " +
-            puzzle.getEarnedPoints() + " points\n"
-        );
+        if (earnedPoints == 1) {
+            System.out.println(
+                "Current Rank: " + curRank.getRankName() + " - " +
+                earnedPoints + " point\n"
+            );
+        } else {
+            System.out.println(
+                "Current Rank: " + curRank.getRankName() + " - " +
+                earnedPoints + " points\n"
+            );
+        }
 
         for (Rank rank : Rank.values()) {
-            if (rank.equals(curRank)) {
-                System.out.println(
-                    "*" + rank.getRankName() + " - " +
-                    rank.getRequiredPoints(totalPoints) + " points minimum"
-                );
+            int reqPoints = rank.getRequiredPoints(totalPoints);
+
+            if (reqPoints == 1) {
+                if (rank.equals(curRank)) {
+                    System.out.println(
+                        "*" + rank.getRankName() + " - " +
+                        reqPoints + " point minimum"
+                    );
+                } else {
+                    System.out.println(
+                        " " + rank.getRankName() + " - " +
+                        reqPoints + " point minimum"
+                    );
+                }
             } else {
-                System.out.println(
-                    " " + rank.getRankName() + " - " +
-                    rank.getRequiredPoints(totalPoints) + " points minimum"
-                );
+                if (rank.equals(curRank)) {
+                    System.out.println(
+                        "*" + rank.getRankName() + " - " +
+                        reqPoints + " points minimum"
+                    );
+                } else {
+                    System.out.println(
+                        " " + rank.getRankName() + " - " +
+                        reqPoints + " points minimum"
+                    );
+                }
             }
         }
     }
