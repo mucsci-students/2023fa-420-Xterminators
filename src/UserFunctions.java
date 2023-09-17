@@ -275,8 +275,7 @@ public class UserFunctions {
                 writing.close ();
                 //Notify the user
                 System.out.println("File created: " + filename + ".json");
-            }
-            else{
+            } else {
                 System.out.println("A file by that name already exists." + getNewLineCharacter() + "Overwriting the file");
 
                 //Open a writer to replace the information in the file.
