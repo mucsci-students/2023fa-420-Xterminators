@@ -313,9 +313,8 @@ public class UserFunctions {
             //Construct a new puzzle based on the loaded file
             this.puzzle = load.fromJson (jsonPuzzle, Puzzle.class);
             printPuzzle();
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("An error has occured");
+        } catch (FileNotFoundException e) {
+            System.out.println("The puzzle file could not be found.");
         }
 
     }
