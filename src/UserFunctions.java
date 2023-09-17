@@ -243,7 +243,11 @@ public class UserFunctions {
         System.out.println(output.toString());
     }
 
-    //Save the puzzle currently being worked on in Json file format
+
+
+    /**
+     * Saves the puzzle to a JSON format.
+     */
     private void savePuzzle() {
         //Create an object of the Gson class
         Gson saved = new Gson();
@@ -293,6 +297,7 @@ public class UserFunctions {
     /**
      * Loads a saved puzzle from a JSON format.
      */
+
     private void loadPuzzle(String loadFile) {
         
         Gson load = new Gson();
@@ -315,7 +320,6 @@ public class UserFunctions {
         } catch (FileNotFoundException e) {
             System.out.println("The puzzle file could not be found.");
         }
-
     }
 
     /**
