@@ -1,8 +1,13 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+import com.google.gson.Gson;
 
 public class UserFunctions {
 
@@ -101,7 +106,11 @@ public class UserFunctions {
                 savePuzzle();
                 break;
             case LOAD_COMMAND:
-                loadPuzzle();
+                if (parameters.length != 1){
+                    System.out.println("In order to load, a file must be specified.");
+                } else {
+                    loadPuzzle(parameters[0]);
+                }
                 break;
             case SHOW_COMMAND:
                 printPuzzle();
@@ -234,18 +243,83 @@ public class UserFunctions {
         System.out.println(output.toString());
     }
 
+
+
     /**
      * Saves the puzzle to a JSON format.
      */
     private void savePuzzle() {
-        //TODO save the current state of the puzzle
+        //Create an object of the Gson class
+        Gson saved = new Gson();
+
+        String filename = "";
+
+        //This will mcreate a title for the Json file consisting
+        // of the primary letter followed by the secondary letters.
+        filename = filename + puzzle.getPrimaryLetter();
+        for (char c : puzzle.getSecondaryLetters()){
+            filename = filename + c;
+        }
+
+        //Converts the current puzzle object to Json
+        String savedJson = saved.toJson (puzzle);
+
+        //Create the file and populate it with the saved Json
+        try{
+            File savedFile = new File(filename + ".json");
+
+            //Returns true if a new file is created.
+            if(savedFile.createNewFile ()){
+
+                //Create a file writer to populate the created File
+                FileWriter writing = new FileWriter(savedFile);
+                //Insert input
+                writing.write (savedJson);
+                //Close the writer
+                writing.close ();
+                //Notify the user
+                System.out.println("File created: " + filename + ".json");
+            } else {
+                System.out.println("A file by that name already exists." + getNewLineCharacter() + "Overwriting the file");
+
+                //Open a writer to replace the information in the file.
+                PrintWriter writer = new PrintWriter(savedFile);
+                writer.print(savedJson);
+                writer.close();
+            }
+        }
+        catch (IOException e) {
+            System.out.println("An error occurred");
+        }
+        
     }
 
     /**
      * Loads a saved puzzle from a JSON format.
      */
-    private void loadPuzzle() {
-        //TODO load the saved puzzle (assuming there's only one?)
+
+    private void loadPuzzle(String loadFile) {
+        
+        Gson load = new Gson();
+        String jsonPuzzle = "";
+
+        try{
+            //Create a file object to read the contents of loadFile
+            File myObj = new File (loadFile);
+            Scanner fileReader = new Scanner (myObj);
+            
+            //Construct a string by reading the file line by line
+            while (fileReader.hasNextLine()){
+                jsonPuzzle = jsonPuzzle + fileReader.nextLine();
+                
+            }
+            fileReader.close();
+            //Construct a new puzzle based on the loaded file
+            this.puzzle = load.fromJson (jsonPuzzle, Puzzle.class);
+            printPuzzle();
+        } catch (FileNotFoundException e) {
+            System.out.println("The puzzle file could not be found.");
+        }
     }
 
     /**
@@ -426,5 +500,4 @@ public class UserFunctions {
         }
         return String.format("%1$-" + totalLength + "s", str);
     }
-
 }
