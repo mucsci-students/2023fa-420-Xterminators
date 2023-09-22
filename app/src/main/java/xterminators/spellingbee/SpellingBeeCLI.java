@@ -1,3 +1,5 @@
+package xterminators.spellingbee;
+
 import java.util.Scanner;
 
 public class SpellingBeeCLI {
