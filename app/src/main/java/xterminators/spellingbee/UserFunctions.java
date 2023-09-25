@@ -20,9 +20,13 @@ public class UserFunctions {
     }
 
     /** The path to the dictionary file for the game. */
-    public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
+    public static final String DICTIONARY_PATH
+        = "src" + File.separator + "main" + File.separator + "resources" +
+          File.separator + "dictionary_optimized.txt";
     /** The path to the dictionary of valid starting words. */
-    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_roots.txt";
+    public static final String ROOT_DICTIONARY_PATH
+        = "src" + File.separator + "main" + File.separator + "resources" +
+          File.separator + "dictionary_roots.txt";
 
     /** Command to exit the program. */
     public static final String EXIT_COMMAND = "exit";
