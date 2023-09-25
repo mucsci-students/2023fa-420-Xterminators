@@ -6,3 +6,6 @@ build
 
 # Ignore binary files
 app/bin
+
+# Ignore VS Code configuration files
+.vscode
