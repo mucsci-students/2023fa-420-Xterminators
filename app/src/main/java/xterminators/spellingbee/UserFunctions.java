@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -21,12 +22,10 @@ public class UserFunctions {
 
     /** The path to the dictionary file for the game. */
     public static final String DICTIONARY_PATH
-        = "app" + File.separator + "src" + File.separator + "main" + 
-          File.separator + "resources" + File.separator + "dictionary_optimized.txt";
+        = Paths.get("app", "src", "main", "resources", "dictionary_optimized.txt").toString();
     /** The path to the dictionary of valid starting words. */
     public static final String ROOT_DICTIONARY_PATH
-        = "app" + File.separator + "src" + File.separator + "main" + File.separator + "resources"
-          + File.separator + "dictionary_roots.txt";
+        = Paths.get("app", "src", "main", "resources", "dictionary_roots.txt").toString();
 
     /** Command to exit the program. */
     public static final String EXIT_COMMAND = "exit";
