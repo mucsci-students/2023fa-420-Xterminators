@@ -1,4 +1,4 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.cli;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import com.google.gson.Gson;
+
+import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.Rank;
 
 public class UserFunctions {
 

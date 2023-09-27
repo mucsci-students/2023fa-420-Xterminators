@@ -1,4 +1,4 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.model;
 
 public enum Rank {
     BEGINNER("Beginner", 0.00),

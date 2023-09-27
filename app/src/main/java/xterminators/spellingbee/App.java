@@ -5,6 +5,8 @@ package xterminators.spellingbee;
 
 import java.util.Arrays;
 
+import xterminators.spellingbee.cli.SpellingBeeCLI;
+
 public class App {
     public static void main(String[] args) {
         // Case Insensitive check for --cli in args
