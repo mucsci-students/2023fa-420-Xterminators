@@ -1,9 +1,12 @@
+package xterminators.spellingbee;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -18,9 +21,11 @@ public class UserFunctions {
     }
 
     /** The path to the dictionary file for the game. */
-    public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
+    public static final String DICTIONARY_PATH
+        = Paths.get("app", "src", "main", "resources", "dictionary_optimized.txt").toString();
     /** The path to the dictionary of valid starting words. */
-    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_roots.txt";
+    public static final String ROOT_DICTIONARY_PATH
+        = Paths.get("app", "src", "main", "resources", "dictionary_roots.txt").toString();
 
     /** Command to exit the program. */
     public static final String EXIT_COMMAND = "exit";
