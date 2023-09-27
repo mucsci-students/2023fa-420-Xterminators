@@ -36,7 +36,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("xterminators.spellingbee.SpellingBeeCLI")
+    mainClass.set("xterminators.spellingbee.App")
 }
 
 tasks.named<Test>("test") {

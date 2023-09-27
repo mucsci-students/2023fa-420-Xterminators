@@ -3,12 +3,16 @@
  */
 package xterminators.spellingbee;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import java.util.Arrays;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        // Case Insensitive check for --cli in args
+        if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
+            // This is probably bad practice but is the least bad way of
+            // leveraging current code.
+            // Calls the CLI with no args
+            SpellingBeeCLI.main(null);
+        }
     }
 }
