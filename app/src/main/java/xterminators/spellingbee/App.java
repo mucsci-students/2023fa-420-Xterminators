@@ -14,7 +14,12 @@ public class App {
             // This is probably bad practice but is the least bad way of
             // leveraging current code.
             // Calls the CLI with no args
-            SpellingBeeCLI.main(null);
+            SpellingBeeCLI ui = new SpellingBeeCLI();
+            ui.InitUI();
+        }
+        else {
+            GuiController ui = new GuiController();
+            ui.InitUI();
         }
     }
 }
