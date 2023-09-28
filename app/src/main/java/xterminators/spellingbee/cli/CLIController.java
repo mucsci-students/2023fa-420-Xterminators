@@ -75,6 +75,15 @@ public class CLIController {
     }
 
     /**
+     * Loads the file at the given file path into a puzzle and resumes the puzzle.
+     * 
+     * @param filePath The path of the save file
+     */
+    private void load(String filePath) {
+        // TODO: Implement load function
+    }
+
+    /**
      * Creates a new random puzzle with a base word form the dictionary of base
      * words. Sends command to view to display the new puzzle.
      */
