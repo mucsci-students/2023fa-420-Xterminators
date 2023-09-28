@@ -19,6 +19,8 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
 
+    testImplementation("org.mockito:mockito-core:3.+")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
