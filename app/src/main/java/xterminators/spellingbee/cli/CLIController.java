@@ -11,27 +11,6 @@ import xterminators.spellingbee.model.Puzzle;
  * user.
  */
 public class CLIController {
-    /** The command to exit the CLI. */
-    public static final String EXIT_COMMAND = "exit";
-    /** The command to display all found words. */
-    public static final String FOUND_WORDS_COMMAND = "found";
-    /** The command to guess a word. */
-    public static final String GUESS_COMMAND = "guess";
-    /** The command to display command help. */
-    public static final String HELP_COMMAND = "help";
-    /** The command to load a puzzle from a file. */
-    public static final String LOAD_COMMAND = "load";
-    /** The command to create a new puzle. */
-    public static final String NEW_COMMAND = "new";
-    /** The command to display ranks and current rank. */
-    public static final String RANK_COMMAND = "rank";
-    /** The command to save the puzzle. */
-    public static final String SAVE_COMMAND = "save";
-    /** The command to display the puzzle. */
-    public static final String SHOW_COMMAND = "show";
-    /** The command to shuffle the puzzle display. */
-    public static final String SHUFFLE_COMMAND = "shuffle";
-
     /** The full dictionary of valid guess words to be used. */
     private File dictionaryFile;
     /** The full dictionary of valid root words to be used. */
