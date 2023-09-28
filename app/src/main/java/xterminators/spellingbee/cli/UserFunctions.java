@@ -24,10 +24,10 @@ public class UserFunctions {
 
     /** The path to the dictionary file for the game. */
     public static final String DICTIONARY_PATH
-        = Paths.get("app", "src", "main", "resources", "dictionary_optimized.txt").toString();
+        = Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString();
     /** The path to the dictionary of valid starting words. */
     public static final String ROOT_DICTIONARY_PATH
-        = Paths.get("app", "src", "main", "resources", "dictionary_roots.txt").toString();
+        = Paths.get("src", "main", "resources", "dictionary_roots.txt").toString();
 
     /** Command to exit the program. */
     public static final String EXIT_COMMAND = "exit";
@@ -81,6 +81,7 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
+                System.out.println(System.getProperty("user.dir"));
                 if (parameters == null) {
                     createNewPuzzle();
                 } else if (parameters.length == 1) {
