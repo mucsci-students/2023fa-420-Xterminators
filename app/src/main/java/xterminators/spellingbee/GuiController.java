@@ -28,7 +28,7 @@ public class GuiController {
         standardFont = new Font("Helvetica", Font.BOLD, 16);
 
         try {
-            String imagePath = Paths.get("app", "src", "main", "resources", "bee_icon.png").toString();
+            String imagePath = Paths.get("src", "main", "resources", "bee_icon.png").toString();
             Image iconImage = javax.imageio.ImageIO.read(new File(imagePath));
             m_frame.setIconImage(iconImage);
         } catch (IOException ex) {
