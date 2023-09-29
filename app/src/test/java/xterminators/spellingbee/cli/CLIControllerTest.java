@@ -19,6 +19,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
 
@@ -62,6 +64,29 @@ public class CLIControllerTest {
         controller.run();
 
         verifyNoInteractions(view);
+    }
+
+    @Test
+    public void testHelp_General() {
+        queueCommand("help");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showHelp();
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    public void testHelp(Command command) {
+        queueCommand("help " + command.getCommand());
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showHelp(command);
     }
 
     @RepeatedTest(5)
