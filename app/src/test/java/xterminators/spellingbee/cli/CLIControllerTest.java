@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -68,6 +69,73 @@ public class CLIControllerTest {
         controller.run();
 
         verify(view).showPuzzle(anyChar(), any(char[].class), eq(Rank.BEGINNER), eq(0));
+    }
+
+    @Test
+    public void testNew_TooFewArgs() {
+        queueCommand("new offhanded");
+        queueCommand("new o");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view, times(2)).showErrorMessage(
+            "Too Few Arguments for New. Please try again."
+        );
+    }
+
+    @Test
+    public void testNew_BadOrder() {
+        queueCommand("new offhanded o");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showErrorMessage(
+            "New Arguments are in the wrong order. Please try again."
+        );
+    }
+
+    @Test
+    public void testNew_NotWord() {
+        queueCommand("new ofhande o");
+        queueCommand("exit");
+
+        controller.run();
+
+        verify(view).showErrorMessage(
+            "The word for a new puzzle must be a real word. Please try again."
+        );
+    }
+
+    @Test
+    public void testNew_NotPangram() {
+        queueCommand("new open o");
+        queueCommand("new guardians n");
+        queueCommand("exit");
+
+        controller.run();
+
+        verify(view, times(2)).showErrorMessage(
+            "The word for the puzzle must be a pangram. Please try again."
+        );
+    }
+
+    @Test
+    public void testNew_ValidWord() {
+        queueCommand("new offhanded o");
+        queueCommand("exit");
+
+        controller.run();
+
+        verify(view).showPuzzle(
+            'o',
+            new char[] {'f', 'h', 'a', 'n', 'd', 'e'},
+            Rank.BEGINNER,
+            0
+        );
     }
 
     /**
