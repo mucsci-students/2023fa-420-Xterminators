@@ -1,6 +1,10 @@
 package xterminators.spellingbee.cli;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyChar;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.io.ByteArrayInputStream;
@@ -12,6 +16,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+
+import xterminators.spellingbee.model.Rank;
 
 public class CLIControllerTest {
     CLIView view;
@@ -51,6 +57,17 @@ public class CLIControllerTest {
         controller.run();
 
         verifyNoInteractions(view);
+    }
+
+    @RepeatedTest(5)
+    public void testNewRandom() {
+        queueCommand("new");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showPuzzle(anyChar(), any(char[].class), eq(Rank.BEGINNER), eq(0));
     }
 
     /**
