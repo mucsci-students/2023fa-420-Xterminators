@@ -44,4 +44,14 @@ public class CharArrayOrderlessMatcher implements ArgumentMatcher<char[]> {
 
         return true;
     }
+
+    /**
+     * Returns a string representation of the expected char array.
+     *
+     * @return A string representation of the expected char array
+     */
+    @Override
+    public String toString() {
+        return Arrays.toString(expectedArr);
+    }
 }
