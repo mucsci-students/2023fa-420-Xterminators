@@ -2,6 +2,7 @@ package xterminators.spellingbee.cli;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -12,11 +13,14 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+
+import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
 
 import xterminators.spellingbee.model.Rank;
 
@@ -68,7 +72,12 @@ public class CLIControllerTest {
 
         controller.run();
 
-        verify(view).showPuzzle(anyChar(), any(char[].class), eq(Rank.BEGINNER), eq(0));
+        verify(view).showPuzzle(
+            anyChar(),
+            any(char[].class),
+            eq(Rank.BEGINNER),
+            eq(0)
+        );
     }
 
     @Test
@@ -131,10 +140,10 @@ public class CLIControllerTest {
         controller.run();
 
         verify(view).showPuzzle(
-            'o',
-            new char[] {'f', 'h', 'a', 'n', 'd', 'e'},
-            Rank.BEGINNER,
-            0
+            eq('o'),
+            argThat(new CharArrayOrderlessMatcher(new char[] {'f', 'h', 'a', 'n', 'd', 'e'})),
+            eq(Rank.BEGINNER),
+            eq(0)
         );
     }
 
