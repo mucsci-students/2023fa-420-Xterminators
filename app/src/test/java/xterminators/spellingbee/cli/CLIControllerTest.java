@@ -142,6 +142,7 @@ public class CLIControllerTest {
     public void testNew_NotWord() {
         queueCommand("new ofhande o");
         queueCommand("exit");
+        loadCommands();
 
         controller.run();
 
@@ -156,6 +157,7 @@ public class CLIControllerTest {
         queueCommand("new open o");
         queueCommand("new guardians n");
         queueCommand("exit");
+        loadCommands();
 
         controller.run();
 
@@ -169,6 +171,7 @@ public class CLIControllerTest {
     public void testNew_ValidWord() {
         queueCommand("new offhanded o");
         queueCommand("exit");
+        loadCommands();
 
         controller.run();
 
@@ -186,6 +189,7 @@ public class CLIControllerTest {
         queueCommand("new offhanded o");
         queueCommand("show");
         queueCommand("exit");
+        loadCommands();
 
         controller.run();
 
@@ -202,6 +206,7 @@ public class CLIControllerTest {
     public void testShow_NoPuzzle() {
         queueCommand("show");
         queueCommand("exit");
+        loadCommands();
 
         controller.run();
 
