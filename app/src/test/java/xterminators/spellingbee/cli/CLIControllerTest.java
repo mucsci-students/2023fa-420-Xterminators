@@ -2,6 +2,7 @@ package xterminators.spellingbee.cli;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -215,6 +216,44 @@ public class CLIControllerTest {
         );
         verifyNoMoreInteractions(view);
     }
+
+    @Test
+    public void testRank_NoPuzzle() {
+        queueCommand("rank");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showErrorMessage(
+            "There is no puzzle to show ranks for. Please make or load a puzzle and try again."
+        );
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testRank_NewPuzzle() {
+        queueCommand("new offhanded o");
+        queueCommand("rank");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showPuzzle(
+            eq('o'), 
+            argThat(new CharArrayOrderlessMatcher(new char[] {'f', 'h', 'a', 'n', 'd', 'e'})),
+            eq(Rank.BEGINNER),
+            eq(0)
+        );
+
+        // TODO: Update expected totalPoints with accurate value
+        verify(view).showRanks(eq(Rank.BEGINNER), anyInt());
+
+        verifyNoMoreInteractions(view);
+    }
+
+    // TODO: Add tests for rank command for higher ranks
 
     /**
      * Adds a command string to be queued and executed by the controller. Has no
