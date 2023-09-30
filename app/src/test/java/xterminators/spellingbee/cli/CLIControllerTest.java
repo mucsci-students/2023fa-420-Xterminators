@@ -287,6 +287,47 @@ public class CLIControllerTest {
         verifyNoMoreInteractions(view);
     }
 
+    @Test
+    public void testGuess_NoPuzzle() {
+        queueCommand("guess");
+        queueCommand("guess gradle");
+        queueCommand("guess bad");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view, times(3)).showErrorMessage(
+            "There is no puzzle in progress. Please make or load a puzzle and try again."
+        );
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testGuess_PuzzleExists() {
+        queueCommand("new offhanded o");
+        queueCommand("guess offhanded");
+        queueCommand("guess off");
+        queueCommand("guess hand");
+        queueCommand("guess offhanded");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showPuzzle(
+            eq('o'), 
+            argThat(new CharArrayOrderlessMatcher(new char[] {'f', 'h', 'a', 'n', 'd', 'e'})),
+            eq(Rank.BEGINNER),
+            eq(0)
+        );
+        verify(view).showGuess(eq("offhanded"), eq(16));
+        verify(view).showGuess(eq("off"), eq(0));
+        verify(view).showGuess(eq("hand"), eq(0));
+        verify(view).showGuess(eq("offhanded"), eq(-1));
+        verifyNoMoreInteractions(view);
+    }
+
     /**
      * Adds a command string to be queued and executed by the controller. Has no
      * effect if loadCommands is never called.
