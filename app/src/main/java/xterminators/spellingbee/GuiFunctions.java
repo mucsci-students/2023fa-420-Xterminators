@@ -183,9 +183,11 @@ public class GuiFunctions {
      * 
      * @param word The word that's being guessed.
      */
-    private void guessWord(String word) {
+    public String guessWord(String word) {
+        String result = "";
+
         if (puzzle == null) {
-            return;
+            result = "No puzzle is loaded.";
         }
 
         Rank prevRank = puzzle.getRank();
@@ -193,25 +195,25 @@ public class GuiFunctions {
         int wasValid = puzzle.guess(word);
 
         if (wasValid < 0) {
-            System.out.println("You already found this word.");
+            result = "You already found this word.";
         } else if (wasValid == 0) {
-            System.out.println("\"" + word + "\" was not a valid word. Try again!");
+            result = "\"" + word + "\" was not a valid word. Try again!";
         } else {
             String plural = "s";
             if (wasValid == 1) {
                 plural = "";
             }
-            System.out.println("Good job! Your word was worth " + wasValid + 
-            " point" + plural + ".");
+            result = "Good job! Your word was worth " + wasValid + 
+            " point" + plural + ".";
         }
 
         Rank curRank = puzzle.getRank();
         if (!curRank.equals(prevRank)) {
-            System.out.println(
+            result +=
                 "You reached a new rank! Your rank is now " +
-                curRank.getRankName() + "."
-            );
+                curRank.getRankName() + ".";
         }
+        return result;
     }
 
     /**
