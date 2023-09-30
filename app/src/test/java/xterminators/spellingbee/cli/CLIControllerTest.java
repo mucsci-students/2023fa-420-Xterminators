@@ -255,6 +255,38 @@ public class CLIControllerTest {
 
     // TODO: Add tests for rank command for higher ranks
 
+    @Test
+    public void testShuffle_NoPuzzle() {
+        queueCommand("shuffle");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showErrorMessage(
+            "There is no puzzle to be shuffled. Please make or load a puzzle and try again."
+        );
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testShuffle_PuzzleExists() {
+        queueCommand("new offhanded o");
+        queueCommand("shuffle");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view, times(2)).showPuzzle(
+            eq('o'), 
+            argThat(new CharArrayOrderlessMatcher(new char[] {'f', 'h', 'a', 'n', 'd', 'e'})),
+            eq(Rank.BEGINNER),
+            eq(0)
+        );
+        verifyNoMoreInteractions(view);
+    }
+
     /**
      * Adds a command string to be queued and executed by the controller. Has no
      * effect if loadCommands is never called.
