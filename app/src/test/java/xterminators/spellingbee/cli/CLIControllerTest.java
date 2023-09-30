@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -325,6 +326,46 @@ public class CLIControllerTest {
         verify(view).showGuess(eq("off"), eq(0));
         verify(view).showGuess(eq("hand"), eq(0));
         verify(view).showGuess(eq("offhanded"), eq(-1));
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testFound_NoPuzzle() {
+        queueCommand("found");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showErrorMessage(
+            "There is no puzzle in progress. Please make or load a puzzle and try again."
+        );
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testFound_PuzzleExists() {
+        queueCommand("new offhanded o");
+        queueCommand("found");
+        queueCommand("guess offhanded");
+        queueCommand("found");
+        queueCommand("guess offhand");
+        queueCommand("exit");
+        loadCommands();
+
+        controller.run();
+
+        verify(view).showPuzzle(
+            eq('o'), 
+            argThat(new CharArrayOrderlessMatcher(new char[] {'f', 'h', 'a', 'n', 'd', 'e'})),
+            eq(Rank.BEGINNER),
+            eq(0)
+        );
+        verify(view).showFoundWords(eq(List.of()));
+        verify(view).showGuess(eq("offhanded"), eq(16));
+        verify(view).showFoundWords(eq(List.of("offhanded")));
+        verify(view).showGuess(eq("offhand"), eq(7));
+        verify(view).showFoundWords(eq(List.of("offhanded", "offhand")));
         verifyNoMoreInteractions(view);
     }
 
