@@ -13,11 +13,13 @@ class CustomInputDialog extends JDialog {
 
     private String baseWord;
     private String requiredLetter;
+    private Boolean isCanceled;
 
     public CustomInputDialog(Frame parent) {
-        super(parent, "Custom Input Dialog", true);
+        super(parent, "Get Starting Word", true);
         setLayout(new GridLayout(3, 2));
 
+        isCanceled = true;
         tbWord = new JTextField();
         tbRequiredLetter = new JTextField();
         okButton = new JButton("OK");
@@ -28,9 +30,7 @@ class CustomInputDialog extends JDialog {
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                baseWord = tbWord.getText();
-                requiredLetter = tbRequiredLetter.getText();
-                dispose();
+                setPropertiesAndClose();
             }
         });
 
@@ -43,6 +43,16 @@ class CustomInputDialog extends JDialog {
             }
         });
 
+        tbRequiredLetter.addActionListener(new ActionListener() {
+            @Override 
+            public void actionPerformed(ActionEvent e) {
+                String text = tbRequiredLetter.getText();
+                if (text != null && !text.isEmpty()) {
+                    setPropertiesAndClose();
+                }
+            }
+        });
+
         add(new JLabel("Base Word:"));
         add(tbWord);
         add(new JLabel("Required Letter:"));
@@ -52,6 +62,17 @@ class CustomInputDialog extends JDialog {
 
         pack();
         setLocationRelativeTo(parent);
+    }
+
+    private void setPropertiesAndClose() {
+        isCanceled = false;
+        baseWord = tbWord.getText();
+        requiredLetter = tbRequiredLetter.getText();
+        dispose();
+    }
+
+    public Boolean isCanceled() {
+        return isCanceled;
     }
 
     public String getBaseWord() {

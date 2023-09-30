@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GuiController {
 
@@ -61,12 +62,23 @@ public class GuiController {
         tbGuess = new JTextField();
         tbGuess.setFont(standardFont);
         tbGuess.addKeyListener(guessKeyListener);
+        tbGuess.addActionListener(new ActionListener() {
+            @Override 
+            public void actionPerformed(ActionEvent e) {
+                String text = tbGuess.getText();
+                if (text != null && !text.isEmpty()) {
+                    guessWordButtonClick(null);
+                }
+            }
+        });
+
         // The puzzle is three buttons wide with 10 units of space between each
         tbGuess.setBounds(PUZZLE_LEFT_X, PUZZLE_TOP_Y - 60, puzzleWidth - 75, 30);
         mainPanel.add(tbGuess);
 
         JButton btnGuess = createButton("Guess", PUZZLE_LEFT_X + puzzleWidth - 70, PUZZLE_TOP_Y - 60, 75, 30, mainPanel);
         btnGuess.setFont(smallFont);
+        btnGuess.addActionListener(this::guessWordButtonClick);
 
         // When the puzzle gets loaded, all of these buttons need to get 
         // the appropriate letters assigned to their text fields.
@@ -184,23 +196,38 @@ public class GuiController {
         CustomInputDialog inputDialog = new CustomInputDialog(mainFrame);
         inputDialog.setVisible(true);
 
-        String puzzleWord = inputDialog.getBaseWord();
-        String requiredLetterStr = inputDialog.getRequiredLetter();
-        char[] requiredLetterArray = (
-            requiredLetterStr == null 
-            ? new char[0] 
-            : requiredLetterStr.toCharArray()
-        );
-        char requiredLetter = '1';
-        if (requiredLetterArray.length > 0) {
-            requiredLetter = requiredLetterArray[0];
+        if (!inputDialog.isCanceled()) {
+            String puzzleWord = inputDialog.getBaseWord();
+            String requiredLetterStr = inputDialog.getRequiredLetter();
+            char[] requiredLetterArray = (
+                requiredLetterStr == null 
+                ? new char[0] 
+                : requiredLetterStr.toCharArray()
+            );
+            char requiredLetter = '1';
+            if (requiredLetterArray.length > 0) {
+                requiredLetter = requiredLetterArray[0];
+            }
+
+            if (puzzleWord != null && !puzzleWord.isEmpty()) {
+                createPuzzle(puzzleWord.toLowerCase(), requiredLetter);
+            } else {
+                createPuzzle("", 'a');
+            }
+        }
+    }
+
+    private void guessWordButtonClick(ActionEvent e) {
+        if (tbGuess.getText() == null || tbGuess.getText().isEmpty()) {
+            showErrorDialog("You need to type a guess first!");
+            return;
         }
 
-        if (puzzleWord != null && !puzzleWord.isEmpty()) {
-            createPuzzle(puzzleWord.toLowerCase(), requiredLetter);
-        } else {
-            createPuzzle("", 'a');
+        String result = guiFunctions.guessWord(tbGuess.getText());
+        if (!result.isEmpty()) {
+            showMessage(result);
         }
+        tbGuess.setText("");
     }
 
     /**
@@ -236,10 +263,18 @@ public class GuiController {
         }
     }
 
-    private void showErrorDialog(String errorMessage) {
-        JFrame frame = new JFrame("Error");
+    private void showMessage(String message) {
         JOptionPane.showMessageDialog(
-            frame, 
+            mainFrame, 
+            message,
+            "",
+            JOptionPane.INFORMATION_MESSAGE
+        );        
+    }
+
+    private void showErrorDialog(String errorMessage) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
             errorMessage,
             "Error",
             JOptionPane.ERROR_MESSAGE
