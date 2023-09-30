@@ -303,7 +303,6 @@ public class UserFunctions {
     /**
      * Loads a saved puzzle from a JSON format.
      */
-
     private void loadPuzzle(String loadFile) {
         
         Gson load = new Gson();
