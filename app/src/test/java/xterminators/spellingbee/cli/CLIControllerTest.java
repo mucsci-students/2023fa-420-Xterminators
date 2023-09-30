@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -75,6 +76,7 @@ public class CLIControllerTest {
         controller.run();
 
         verify(view).showHelp();
+        verifyNoMoreInteractions(view);
     }
 
     @ParameterizedTest
@@ -87,6 +89,7 @@ public class CLIControllerTest {
         controller.run();
 
         verify(view).showHelp(command);
+        verifyNoMoreInteractions(view);
     }
 
     @RepeatedTest(5)
@@ -103,6 +106,7 @@ public class CLIControllerTest {
             eq(Rank.BEGINNER),
             eq(0)
         );
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -117,6 +121,7 @@ public class CLIControllerTest {
         verify(view, times(2)).showErrorMessage(
             "Too Few Arguments for New. Please try again."
         );
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -130,6 +135,7 @@ public class CLIControllerTest {
         verify(view).showErrorMessage(
             "New Arguments are in the wrong order. Please try again."
         );
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -142,6 +148,7 @@ public class CLIControllerTest {
         verify(view).showErrorMessage(
             "The word for a new puzzle must be a real word. Please try again."
         );
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -155,6 +162,7 @@ public class CLIControllerTest {
         verify(view, times(2)).showErrorMessage(
             "The word for the puzzle must be a pangram. Please try again."
         );
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -170,6 +178,7 @@ public class CLIControllerTest {
             eq(Rank.BEGINNER),
             eq(0)
         );
+        verifyNoMoreInteractions(view);
     }
 
     /**
