@@ -181,6 +181,36 @@ public class CLIControllerTest {
         verifyNoMoreInteractions(view);
     }
 
+    @Test
+    public void testShow_PuzzleExists() {
+        queueCommand("new offhanded o");
+        queueCommand("show");
+        queueCommand("exit");
+
+        controller.run();
+
+        verify(view, times(2)).showPuzzle(
+            eq('o'), 
+            argThat(new CharArrayOrderlessMatcher(new char[] {'f', 'h', 'a', 'n', 'd', 'e'})),
+            eq(Rank.BEGINNER),
+            eq(0)
+        );
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testShow_NoPuzzle() {
+        queueCommand("show");
+        queueCommand("exit");
+
+        controller.run();
+
+        verify(view).showErrorMessage(
+            "There is no puzzle to show. Please make or load a puzzle and try again."
+        );
+        verifyNoMoreInteractions(view);
+    }
+
     /**
      * Adds a command string to be queued and executed by the controller. Has no
      * effect if loadCommands is never called.
