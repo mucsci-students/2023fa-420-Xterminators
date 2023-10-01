@@ -99,7 +99,7 @@ public class CLIController {
      * 
      * @param word The base word for the new puzzle
      */
-    private void newPuzzle(String word) {
+    private void newPuzzle(String word, char requiredLetter) {
         // TODO: Implement New Puzzle from root
     }
 
