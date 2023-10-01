@@ -84,9 +84,9 @@ public class CLIController {
                         view.showErrorMessage(
                             "You must enter a word to guess. Please try again."
                         );
-                        continue;
+                    } else {
+                        arguments.forEach(this::guess);
                     }
-                    arguments.forEach(this::guess);
                 }
                 case HELP -> {
                     if (arguments.isEmpty()) {
