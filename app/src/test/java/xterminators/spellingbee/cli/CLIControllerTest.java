@@ -128,7 +128,7 @@ public class CLIControllerTest {
 
     @Test
     public void testNew_BadOrder() {
-        queueCommand("new offhanded o");
+        queueCommand("new o offhanded");
         queueCommand("exit");
         loadCommands();
 
