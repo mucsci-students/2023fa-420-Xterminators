@@ -130,8 +130,26 @@ public class CLIController {
                         newPuzzle(arguments.get(0), arguments.get(1).charAt(0));
                     }
                 }
-
-                // TODO: Make Command Switch Exaustive
+                case RANK -> {
+                    ranks();
+                }
+                case SAVE -> {
+                    if (arguments.isEmpty()) {
+                        save();
+                    } else if (arguments.size() > 1) {
+                        view.showErrorMessage(
+                            "Too many arguments for save. Please try again."
+                        );
+                    } else {
+                        save(arguments.get(0));
+                    }
+                }
+                case SHOW -> {
+                    show();
+                }
+                case SHUFFLE -> {
+                    shuffle();
+                }
             }
         }
 
