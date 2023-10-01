@@ -1,6 +1,11 @@
 package xterminators.spellingbee.cli;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 import xterminators.spellingbee.model.Puzzle;
 
@@ -40,7 +45,76 @@ public class CLIController {
      * output to the view to be displayed.
      */
     public void run() {
-        // TODO: Implement Command Read-Execute Loop
+        Scanner scanner = new Scanner(System.in);
+
+        boolean exitFlag = false;
+
+        while (scanner.hasNextLine() && !exit) {
+            String input = scanner.nextLine();
+
+            String[] tokens = input.split(" ");
+
+            Optional<Command> optCommand = Command.fromString(tokens[0]);
+
+            if (optCommand.isEmpty()) {
+                view.showErrorMessage(
+                    "The command entered is invalid. Please consult \'" +
+                    Command.HELP.getCommand() + "\' for valid commands."
+                );
+                continue;
+            }
+
+            Command curCommand = optCommand.orElseThrow();
+
+            List<String> arguments = new ArrayList<>();
+
+            if (tokens.length > 1) {
+                arguments.addAll(1, Arrays.asList(tokens));
+            }
+
+            switch (curCommand) {
+                case EXIT -> {
+                    exitFlag = true;
+                }
+                case FOUND_WORDS -> {
+                    foundWords();
+                }
+                case GUESS -> {
+                    if (arguments.isEmpty()) {
+                        view.showErrorMessage(
+                            "You must enter a word to guess. Please try again."
+                        );
+                        continue;
+                    }
+                    arguments.forEach(this::guess);
+                }
+                case HELP -> {
+                    if (arguments.isEmpty()) {
+                        help();
+                    } else {
+                        help(arguments.get(0));
+                    }
+                }
+                case LOAD -> {
+                    if (arguments.isEmpty()) {
+                        view.showErrorMessage(
+                            "You must include a file to load the save from. " +
+                            "Please try again."
+                        );
+                    } else if (arguments.size() > 1) {
+                        view.showErrorMessage(
+                            "Too many arguments for load. Please try again."
+                        );
+                    } else {
+                        load(arguments.get(0));
+                    }
+                }
+
+                // TODO: Make Command Switch Exaustive
+            }
+        }
+
+        scanner.close();
     }
 
     /**
