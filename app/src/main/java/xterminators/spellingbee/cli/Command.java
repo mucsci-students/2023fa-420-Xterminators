@@ -1,5 +1,7 @@
 package xterminators.spellingbee.cli;
 
+import java.util.Optional;
+
 /**
  * Enum representing commands for the Spelling Bee CLI. Each command has a 
  * keyword, a short help description, and a long help description.
@@ -73,5 +75,15 @@ public enum Command {
      */
     public String getLongHelp() {
         return longHelp;
+    }
+
+    public static Optional<Command> fromString(String string) {
+        for (Command command : values()) {
+            if (command.getCommand().equals(string)) {
+                return Optional.of(command);
+            }
+        }
+
+        return Optional.empty();
     }
 }
