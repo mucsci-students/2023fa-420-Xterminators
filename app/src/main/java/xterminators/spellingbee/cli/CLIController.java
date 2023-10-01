@@ -49,7 +49,7 @@ public class CLIController {
 
         boolean exitFlag = false;
 
-        while (scanner.hasNextLine() && !exit) {
+        while (scanner.hasNextLine() && !exitFlag) {
             String input = scanner.nextLine();
 
             String[] tokens = input.split(" ");
