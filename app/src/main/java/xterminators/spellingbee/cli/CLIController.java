@@ -114,23 +114,17 @@ public class CLIController {
                         newPuzzle();
                     } else if (arguments.size() == 1) {
                         view.showErrorMessage(
-                            "Not enough arguments for new puzzle. Please " +
-                            "consult \'" + Command.HELP.getCommand() + " " +
-                            Command.NEW.getCommand() + "\' for needed arguments."
+                            "Too Few Arguments for New. Please try again."
                         );
                     } else if (arguments.size() > 2) {
                         view.showErrorMessage(
-                            "Too many arguments for new puzzle. Please " +
-                            "consult \'" + Command.HELP.getCommand() + " " +
-                            Command.NEW.getCommand() + "\' for needed arguments."
+                            "Too many arguments for new puzzle. Please try again."
                         );
                     } else if (arguments.get(0).length() == 1
                                || arguments.get(1).length() != 1)
                     {
                         view.showErrorMessage(
-                            "Wrong argument order for new puzzle. Please " +
-                            "consult \'" + Command.HELP.getCommand() + " " +
-                            Command.NEW.getCommand() + "\' for needed arguments."
+                            "New Arguments are in the wrong order. Please try again."
                         );
                     } else {
                         newPuzzle(arguments.get(0), arguments.get(1).charAt(0));
