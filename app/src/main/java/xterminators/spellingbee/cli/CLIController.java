@@ -29,7 +29,9 @@ public class CLIController {
      * @param rootsDictionaryFile The full dictionary of valid root words
      */
     public CLIController(CLIView view, File dictionaryFile, File rootsDictionaryFile) {
-        // TODO: Implement View and Dictionaries Constructor
+        this.view = view;
+        this.dictionaryFile = dictionaryFile;
+        this.rootsDictionaryFile = rootsDictionaryFile;
     }
 
     /**
