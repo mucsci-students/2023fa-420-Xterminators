@@ -3,6 +3,7 @@ package xterminators.spellingbee.cli;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -66,10 +67,12 @@ public class CLIController {
 
             Command curCommand = optCommand.orElseThrow();
 
-            List<String> arguments = new ArrayList<>();
+            List<String> arguments;
 
             if (tokens.length > 1) {
-                arguments.addAll(1, Arrays.asList(tokens));
+                arguments = List.of(Arrays.copyOfRange(tokens, 1, tokens.length));
+            } else {
+                arguments = Collections.emptyList();
             }
 
             switch (curCommand) {
