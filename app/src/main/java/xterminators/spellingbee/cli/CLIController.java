@@ -178,7 +178,7 @@ public class CLIController {
      * Sends command to view to display general command help info.
      */
     private void help() {
-        // TODO: Implement general help function
+        view.showHelp();
     }
 
     /**
@@ -186,7 +186,16 @@ public class CLIController {
      * @param command The command to display help for
      */
     private void help(String command) {
-        // TODO: Implement help function for specific command
+        Optional<Command> optCommand = Command.fromString(command);
+
+        if (optCommand.isEmpty()) {
+            view.showErrorMessage(
+                "The command \'" + command + "\' is not a valid command. " +
+                "Please try again."
+            );
+        } else {
+            view.showHelp(optCommand.orElseThrow());
+        }
     }
 
     /**
