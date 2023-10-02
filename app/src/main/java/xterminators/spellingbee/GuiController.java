@@ -11,16 +11,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GuiController {
-
-    private JFrame mainFrame;
-    private JPanel mainPanel;
-    private JTextField tbGuess;
-    private UserFunctions m_functions;
-    private Font standardFont;
-    private Font smallFont;
     private GuessKeyListener guessKeyListener;
     private GuiFunctions guiFunctions;
     private ArrayList<JButton> letterButtons;
+
+    // Standard Fonts for GUI
+    private Font standardFont;
+    private Font smallFont;
+
+    // Global GUI Components
+    private JFrame mainFrame;
+    private JPanel mainPanel;
+    private JTextField tbGuess;
     private JButton primaryLetterButton;
     
     /**
@@ -32,7 +34,7 @@ public class GuiController {
      * try to avoid them as much as possible.
      */
     public void InitUI() {
-        final int FRAME_WIDTH = 700;
+        final int FRAME_WIDTH = 770;
         final int FRAME_HEIGHT = 480;
         final int PUZZLE_LEFT_X = 50;
         final int PUZZLE_TOP_Y = 100;
@@ -41,7 +43,6 @@ public class GuiController {
 
         mainFrame = new JFrame("Spelling Bee");
         mainPanel = new JPanel();
-        m_functions = new UserFunctions();
         standardFont = new Font("Helvetica", Font.BOLD, 16);
         smallFont = new Font("Helvetica", Font.BOLD, 13);
         guessKeyListener = new GuessKeyListener();
@@ -123,6 +124,7 @@ public class GuiController {
         rankPanel.setBackground(Color.black);
 
         JLabel tempLabel = new JLabel("This a good spot for rank?");
+        tempLabel.setForeground(Color.white);
         rankPanel.add(tempLabel);
         mainPanel.add(rankPanel);
 
@@ -138,9 +140,17 @@ public class GuiController {
         newPuzzleButton.addActionListener(this::newPuzzleButtonClick);
         actionPanel.add(newPuzzleButton);
 
+        //
         // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
+        //
 
+        // Found Words
+        JPanel foundWordsPanel = new JPanel();
+        foundWordsPanel.setBounds(PUZZLE_LEFT_X + (puzzleWidth * 2) + 20, PUZZLE_TOP_Y - 65, puzzleWidth, FRAME_HEIGHT - 105);
+        foundWordsPanel.setBackground(Color.red);
+        mainPanel.add(foundWordsPanel);
 
+        
         
         mainPanel.setBackground(Color.gray);
         mainFrame.setContentPane(mainPanel);
@@ -223,6 +233,12 @@ public class GuiController {
             return;
         }
 
+        if (guiFunctions.getPuzzle() == null) {
+            showErrorDialog("No puzzle has been loaded." + 
+                " Please click \"New Puzzle\" to start a new puzzle. ");
+                return;
+        }
+
         String result = guiFunctions.guessWord(tbGuess.getText());
         if (!result.isEmpty()) {
             showMessage(result);
@@ -280,4 +296,6 @@ public class GuiController {
             JOptionPane.ERROR_MESSAGE
         );
     }
+
+    //private void showFoundWords()
 }
