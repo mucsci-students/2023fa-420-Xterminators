@@ -1,6 +1,9 @@
 package xterminators.spellingbee.cli;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -215,7 +218,44 @@ public class CLIController {
      * words. Sends command to view to display the new puzzle.
      */
     private void newPuzzle() {
-        // TODO: Implement New Random Puzzle
+        try {
+            FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
+            FileReader dictionaryReader = new FileReader(dictionaryFile);
+
+            puzzle = Puzzle.randomPuzzle(rootWordsReader, dictionaryReader);
+            
+            rootWordsReader.close();
+            dictionaryReader.close();
+        } catch (FileNotFoundException e) {
+            if (e.getMessage().contains(rootsDictionaryFile.getName())) {
+                view.showErrorMessage(
+                    "Could not find dictionary of root words. No puzzle created."
+                );
+            } else if (e.getMessage().contains(dictionaryFile.getName())) {
+                view.showErrorMessage(
+                    "Could not find dictionary of valid words. No puzzle created."
+                );
+            } else {
+                view.showErrorMessage(
+                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
+                    e.getLocalizedMessage()
+                );
+            }
+
+            return;
+        } catch (IOException e) {
+            view.showErrorMessage(
+                "IO error while creating new puzzle. No puzzle created."
+            );
+            return;
+        }
+
+        view.showPuzzle(
+            puzzle.getPrimaryLetter(),
+            puzzle.getSecondaryLetters(),
+            puzzle.getRank(),
+            puzzle.getEarnedPoints()
+        );
     }
 
     /**
