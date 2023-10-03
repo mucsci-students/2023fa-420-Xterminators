@@ -389,6 +389,20 @@ public class CLIController {
      * redisplay the puzzle.
      */
     private void shuffle() {
-        // TODO: Implement shuffle function
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle to be shuffled. Please make or load a puzzle and try again."
+            );
+            return;
+        }
+
+        puzzle.shuffle();
+
+        char primaryLetter = puzzle.getPrimaryLetter();
+        char[] secondaryLetters = puzzle.getSecondaryLetters();
+        Rank curRank = puzzle.getRank();
+        int earnedPoints = puzzle.getEarnedPoints();
+
+        view.showPuzzle(primaryLetter, secondaryLetters, curRank, earnedPoints);
     }
 }
