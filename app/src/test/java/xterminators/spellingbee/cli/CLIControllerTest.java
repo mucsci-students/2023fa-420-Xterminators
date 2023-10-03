@@ -149,7 +149,7 @@ public class CLIControllerTest {
         controller.run();
 
         verify(view).showErrorMessage(
-            "The word for a new puzzle must be a real word. Please try again."
+            "Invalid starting word. Please try again."
         );
         verifyNoMoreInteractions(view);
     }
@@ -164,7 +164,7 @@ public class CLIControllerTest {
         controller.run();
 
         verify(view, times(2)).showErrorMessage(
-            "The word for the puzzle must be a pangram. Please try again."
+            "Invalid starting word. Please try again."
         );
         verifyNoMoreInteractions(view);
     }
