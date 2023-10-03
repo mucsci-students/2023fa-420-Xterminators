@@ -6,6 +6,7 @@ package xterminators.spellingbee;
 import java.util.Arrays;
 
 import xterminators.spellingbee.cli.SpellingBeeCLI;
+import xterminators.spellingbee.gui.GuiController;
 
 public class App {
     public static void main(String[] args) {
