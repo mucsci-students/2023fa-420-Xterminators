@@ -1,5 +1,6 @@
 package xterminators.spellingbee.cli;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 
 import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
 
@@ -350,10 +352,16 @@ public class CLIControllerTest {
         queueCommand("guess offhanded");
         queueCommand("found");
         queueCommand("guess offhand");
+        queueCommand("found");
         queueCommand("exit");
         loadCommands();
 
         controller.run();
+
+        ArgumentCaptor<List<String>> foundWordsArgs = ArgumentCaptor.forClass((Class) List.class);
+
+        ArgumentCaptor<String> guessWords = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Integer> guessPoints = ArgumentCaptor.forClass(Integer.class);
 
         verify(view).showPuzzle(
             eq('o'), 
@@ -361,11 +369,29 @@ public class CLIControllerTest {
             eq(Rank.BEGINNER),
             eq(0)
         );
-        verify(view).showFoundWords(eq(List.of()));
-        verify(view).showGuess(eq("offhanded"), eq(16));
-        verify(view).showFoundWords(eq(List.of("offhanded")));
-        verify(view).showGuess(eq("offhand"), eq(7));
-        verify(view).showFoundWords(eq(List.of("offhanded", "offhand")));
+
+        verify(view, times(3)).showFoundWords(foundWordsArgs.capture());
+        verify(view, times(2)).showGuess(
+            guessWords.capture(),
+            guessPoints.capture()
+        );
+
+        assertEquals(
+            List.of(List.of(), List.of("offhanded"), List.of("offhanded", "offhand")),
+            foundWordsArgs.getAllValues(),
+            "showFoundWords was not called on the view with the expected arguments."
+        );
+        assertEquals(
+            List.of("offhanded", "offhand"),
+            guessWords.getAllValues(),
+            "showGuess was not called on the view with the expected words."
+        );
+        assertEquals(
+            List.of(16, 7),
+            guessPoints.getAllValues(),
+            "showGuess was not called on the view with the expected points."
+        );
+
         verifyNoMoreInteractions(view);
     }
 
