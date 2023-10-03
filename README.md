@@ -23,12 +23,7 @@ git clone https://github.com/mucsci-students/2023fa-420-Xterminators.git
 cd 2023fa-420-Xterminators
 ```
 
-3. Build the application using Gradle:
-```
-./gradlew build
-```
-
-4. Run the application with the GUI (default):
+3. Run the application with the GUI (default):
 ```
 ./gradlew run
 ```
