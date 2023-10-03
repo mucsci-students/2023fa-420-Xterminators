@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.Rank;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
@@ -283,7 +284,6 @@ public class CLIController {
      * @param word The base word for the new puzzle
      */
     private void newPuzzle(String word, char requiredLetter) {
-        // TODO: Implement New Puzzle from root
         try {
             FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
             FileReader dictionaryReader = new FileReader(dictionaryFile);
@@ -336,7 +336,17 @@ public class CLIController {
      * Gets the current rank from the puzzle and sends it to view to be displayed.
      */
     private void ranks() {
-        // TODO: Implement Ranks Function
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle to show ranks for. Please make or load a puzzle and try again."
+            );
+            return;
+        }
+
+        Rank curRank = puzzle.getRank();
+        int totalPoints = puzzle.getTotalPoints();
+
+        view.showRanks(curRank, totalPoints);
     }
 
     /**
