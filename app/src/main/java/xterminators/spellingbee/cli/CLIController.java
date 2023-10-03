@@ -266,6 +266,52 @@ public class CLIController {
      */
     private void newPuzzle(String word, char requiredLetter) {
         // TODO: Implement New Puzzle from root
+        try {
+            FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
+            FileReader dictionaryReader = new FileReader(dictionaryFile);
+
+            puzzle = Puzzle.fromWord(
+                word,
+                requiredLetter,
+                rootWordsReader,
+                dictionaryReader,
+                false
+            );
+        } catch (FileNotFoundException e) {
+            if (e.getMessage().contains(rootsDictionaryFile.getName())) {
+                view.showErrorMessage(
+                    "Could not find dictionary of root words. No puzzle created."
+                );
+            } else if (e.getMessage().contains(dictionaryFile.getName())) {
+                view.showErrorMessage(
+                    "Could not find dictionary of valid words. No puzzle created."
+                );
+            } else {
+                view.showErrorMessage(
+                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
+                    e.getLocalizedMessage()
+                );
+            }
+
+            return;
+        } catch (IllegalArgumentException e) {
+            view.showErrorMessage(
+                "Invalid starting word. Please try again."
+            );
+            return;
+        } catch (IOException e) {
+            view.showErrorMessage(
+                "IO error while creating new puzzle. No puzzle created."
+            );
+            return;
+        }
+
+        view.showPuzzle(
+            puzzle.getPrimaryLetter(),
+            puzzle.getSecondaryLetters(),
+            puzzle.getRank(),
+            puzzle.getEarnedPoints()
+        );
     }
 
     /**
