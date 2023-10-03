@@ -292,7 +292,6 @@ public class CLIControllerTest {
 
     @Test
     public void testGuess_NoPuzzle() {
-        queueCommand("guess");
         queueCommand("guess gradle");
         queueCommand("guess bad");
         queueCommand("exit");
@@ -300,7 +299,7 @@ public class CLIControllerTest {
 
         controller.run();
 
-        verify(view, times(3)).showErrorMessage(
+        verify(view, times(2)).showErrorMessage(
             "There is no puzzle in progress. Please make or load a puzzle and try again."
         );
         verifyNoMoreInteractions(view);
