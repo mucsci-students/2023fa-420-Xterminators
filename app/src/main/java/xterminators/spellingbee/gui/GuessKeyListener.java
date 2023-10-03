@@ -1,4 +1,4 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.gui;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

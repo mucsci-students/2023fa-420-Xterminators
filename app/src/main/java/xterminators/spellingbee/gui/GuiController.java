@@ -1,8 +1,11 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.gui;
 
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
+
+import xterminators.spellingbee.model.Puzzle;
+
 import java.util.ArrayList;
 import java.nio.file.Paths;
 import java.awt.event.KeyEvent;

@@ -1,11 +1,11 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class CustomInputDialog extends JDialog {
+public class CustomInputDialog extends JDialog {
     private JTextField tbWord;
     private JTextField tbRequiredLetter;
     private JButton okButton;
