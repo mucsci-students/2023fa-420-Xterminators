@@ -167,7 +167,15 @@ public class CLIController {
      * be displayed.
      */
     private void foundWords() {
-        // TODO: Implement display found words function
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle in progress. Please make or load a puzzle and try again."
+            );
+            return;
+        }
+
+        List<String> foundWords = puzzle.getFoundWords();
+        view.showFoundWords(foundWords);
     }
 
     /**
