@@ -369,7 +369,19 @@ public class CLIController {
      * Sends a command to view to display the puzzle.
      */
     private void show() {
-        // TODO: Implement show puzzle function
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle to show. Please make or load a puzzle and try again."
+            );
+            return;
+        }
+
+        char primaryLetter = puzzle.getPrimaryLetter();
+        char[] secondaryLetters = puzzle.getSecondaryLetters();
+        Rank curRank = puzzle.getRank();
+        int earnedPoints = puzzle.getEarnedPoints();
+
+        view.showPuzzle(primaryLetter, secondaryLetters, curRank, earnedPoints);
     }
 
     /**
