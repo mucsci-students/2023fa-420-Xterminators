@@ -1,4 +1,4 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.cli;
 
 import java.util.Scanner;
 
