@@ -174,7 +174,9 @@ public class CLIController {
             return;
         }
 
-        List<String> foundWords = puzzle.getFoundWords();
+        // The new List is needed for testing, as getFoundWords returns a view
+        // of the foundWords list, and not an independent list.
+        List<String> foundWords = new ArrayList<>(puzzle.getFoundWords());
         view.showFoundWords(foundWords);
     }
 
