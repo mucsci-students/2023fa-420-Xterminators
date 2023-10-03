@@ -187,7 +187,15 @@ public class CLIController {
      * @param word The word to be guessed
      */
     private void guess(String word) {
-        // TODO: Implement guess word function
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle in progress. Please make or load a puzzle and try again."
+            );
+            return;
+        }
+
+        int points = puzzle.guess(word);
+        view.showGuess(word, points);
     }
 
     /**
