@@ -5,6 +5,9 @@ package xterminators.spellingbee;
 
 import java.util.Arrays;
 
+import xterminators.spellingbee.cli.SpellingBeeCLI;
+import xterminators.spellingbee.gui.GuiController;
+
 public class App {
     public static void main(String[] args) {
         // Case Insensitive check for --cli in args
@@ -12,7 +15,12 @@ public class App {
             // This is probably bad practice but is the least bad way of
             // leveraging current code.
             // Calls the CLI with no args
-            SpellingBeeCLI.main(null);
+            SpellingBeeCLI ui = new SpellingBeeCLI();
+            ui.InitUI();
+        }
+        else {
+            GuiController ui = new GuiController();
+            ui.InitUI();
         }
     }
 }

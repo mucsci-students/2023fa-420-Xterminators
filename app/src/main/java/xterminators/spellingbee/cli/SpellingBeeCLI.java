@@ -1,10 +1,10 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.cli;
 
 import java.util.Scanner;
 
 public class SpellingBeeCLI {
 
-    public static void main(String[] args) {
+    public void InitUI() {
         String input = "";
         Scanner scanner = new Scanner(System.in);
         UserFunctions functions = new UserFunctions();
@@ -17,8 +17,6 @@ public class SpellingBeeCLI {
             input = scanner.nextLine();
             continueGame = functions.parseCommand(input);
         }
-
         scanner.close();
     }
-
 }

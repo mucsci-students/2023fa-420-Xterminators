@@ -1,4 +1,4 @@
-package xterminators.spellingbee;
+package xterminators.spellingbee.cli;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Scanner;
 import com.google.gson.Gson;
 
+import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.Rank;
+
 public class UserFunctions {
 
     private Puzzle puzzle;
@@ -22,10 +25,10 @@ public class UserFunctions {
 
     /** The path to the dictionary file for the game. */
     public static final String DICTIONARY_PATH
-        = Paths.get("app", "src", "main", "resources", "dictionary_optimized.txt").toString();
+        = Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString();
     /** The path to the dictionary of valid starting words. */
     public static final String ROOT_DICTIONARY_PATH
-        = Paths.get("app", "src", "main", "resources", "dictionary_roots.txt").toString();
+        = Paths.get("src", "main", "resources", "dictionary_roots.txt").toString();
 
     /** Command to exit the program. */
     public static final String EXIT_COMMAND = "exit";
@@ -79,6 +82,7 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
+                System.out.println(System.getProperty("user.dir"));
                 if (parameters == null) {
                     createNewPuzzle();
                 } else if (parameters.length == 1) {
@@ -302,7 +306,6 @@ public class UserFunctions {
     /**
      * Loads a saved puzzle from a JSON format.
      */
-
     private void loadPuzzle(String loadFile) {
         
         Gson load = new Gson();
