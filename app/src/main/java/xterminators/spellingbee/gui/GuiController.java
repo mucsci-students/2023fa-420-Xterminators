@@ -175,6 +175,21 @@ public class GuiController {
         newPuzzleButton.addActionListener(this::newPuzzleButtonClick);
         actionPanel.add(newPuzzleButton);
 
+        //Random Puzzle
+        //JButton randomPuzzleButton = createButton("Random Puzzle", 0, 0, 50, 12, actionPanel);
+        //randomPuzzleButton.addActionListener(this::randomPuzzleButtonClick);
+        //actionPanel.add(randomPuzzleButton);
+
+        // Save Puzzle
+        JButton savePuzzleButton = createButton("Save Puzzle", 0, 0, 50, 12, actionPanel);
+        //savePuzzletButton.addActionListener(this::savePuzzleButtonClick);
+        actionPanel.add(savePuzzleButton);
+
+        // Load Puzzle
+        JButton loadPuzzleButton = createButton("Load Puzzle", 0, 0, 50, 12, actionPanel);
+        //loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
+        actionPanel.add(loadPuzzleButton);
+
         //
         // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
         //
@@ -285,6 +300,10 @@ public class GuiController {
             showMessage(result);
         }
         tbGuess.setText("");
+    }
+
+    private void randomPuzzleButtonClick(ActionEvent e) {
+        
     }
 
     /**

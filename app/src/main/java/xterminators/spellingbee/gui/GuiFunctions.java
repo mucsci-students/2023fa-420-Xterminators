@@ -115,7 +115,7 @@ public class GuiFunctions {
 
         String filename = "";
 
-        //This will mcreate a title for the Json file consisting
+        //This will create a title for the Json file consisting
         // of the primary letter followed by the secondary letters.
         filename = filename + puzzle.getPrimaryLetter();
         for (char c : puzzle.getSecondaryLetters()){
@@ -134,8 +134,10 @@ public class GuiFunctions {
 
                 //Create a file writer to populate the created File
                 FileWriter writing = new FileWriter(savedFile);
+
                 //Insert input
                 writing.write (savedJson);
+                
                 //Close the writer
                 writing.close ();
                 //Notify the user

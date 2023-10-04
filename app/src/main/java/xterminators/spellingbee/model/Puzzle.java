@@ -77,6 +77,54 @@ public class Puzzle {
         bufferedReader.close();
     }
 
+    /**
+     * Constructs a puzzle object that takes the attributes from a PuzzleSave 
+     * object, so saved files can be loaded.
+     *  
+     * @param primaryLetter the required letter for the puzzle
+     * @param secondaryLetters the non-required letters for the puzzle
+     * @param dictionaryFile the dictionary file to be used to generate valid words
+     * @param earnedPoints the number of points that were earned when the puzzle was saved
+     * @param totalPoints the maximum number of points possible in the puzzle
+     * @param foundWords the list of words that had been found at time of save
+     * @throws IOException if an I/O error occurs
+     */
+    public Puzzle(char primaryLetter, char[] secondaryLetters,
+                  FileReader dictionaryFile, int earnedPoints, int totalPoints, ArrayList<String> foundWords) throws IOException {
+
+        this.validWords = new ArrayList<String>();
+        this.foundWords = foundWords;
+        this.primaryLetter = primaryLetter;
+        this.secondaryLetters = secondaryLetters;
+        this.earnedPoints = earnedPoints;
+        this.totalPoints = totalPoints;
+
+        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
+
+        char[] sortedLetters = Arrays.copyOf(secondaryLetters, secondaryLetters.length);
+        Arrays.sort(sortedLetters, 0, sortedLetters.length);
+
+        dictLoop:
+        // reconstruct the valid words list
+        for (String word = bufferedReader.readLine(); word != null; 
+             word = bufferedReader.readLine()) {
+            if (word.indexOf(primaryLetter) == -1) {
+                continue;
+            }
+
+            for (char c : word.toLowerCase().toCharArray()) {
+                if (c != primaryLetter
+                        && Arrays.binarySearch(sortedLetters, c) < 0) {
+                    continue dictLoop;
+                }
+            }
+
+            this.validWords.add(word);
+        }
+
+        bufferedReader.close();
+    }
+
      /**
       * Create a puzzle from a given starting word with given required letter.
       * Fills validWords by parsing through dictionaryFile.
