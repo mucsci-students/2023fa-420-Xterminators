@@ -2,7 +2,7 @@
 
 ## 📝 Description
 This project is an implementation of the Spelling Bee game in Java 20, created
-as a requirements of the CSCI 420 course. It allows players to play this word
+as a requirement of the CSCI 420 course. It allows players to play this word
 puzzle through a graphical user interface (GUI) or a command-line interface (CLI).
 
 ## 📋 Prerequisites
