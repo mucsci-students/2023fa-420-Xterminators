@@ -19,7 +19,7 @@ public class CLIViewTest {
     @BeforeEach
     public void setup() {
         view = new CLIView();
-        System.setOut(new PrintStream(originalOut));
+        System.setOut(new PrintStream(outContent));
     }
 
     @AfterEach
