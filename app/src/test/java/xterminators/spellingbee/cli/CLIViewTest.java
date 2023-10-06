@@ -63,4 +63,34 @@ public class CLIViewTest {
             outContent.toString()
         );
     }
+
+    @Test
+    public void testShowGuess_PreFoundWord() {
+        view.showGuess("offhanded", -1);
+
+        assertEquals(
+            "You already found the word \"offhanded\". Try again.\n",
+            outContent.toString()
+        );
+    }
+
+    @Test
+    public void testShowGuess_InvalidWord() {
+        view.showGuess("bad", 0);
+
+        assertEquals(
+            "The word \"bad\" is not a word in the puzzle. Try again.\n",
+            outContent.toString()
+        );
+    }
+
+    @Test
+    public void testShowGuess_ValidWord() {
+        view.showGuess("offhand", 7);
+
+        assertEquals(
+            "You found \"offhand\". You earned 7 points.\n",
+            outContent.toString()
+        );
+    }
 }
