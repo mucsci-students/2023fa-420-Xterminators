@@ -15,7 +15,15 @@ public class CLIView {
      * @param foundWords The list of found words
      */
     public void showFoundWords(List<String> foundWords) {
-        // TODO: Implement show found words
+        if (foundWords.isEmpty()) {
+            System.out.println("You have not found any words yet.");
+        } else if (foundWords.size() == 1) {
+            System.out.println("You have found 1 word:");
+        } else {
+            System.out.println("You have found " + foundWords.size() + " words:");
+        }
+
+        foundWords.forEach(System.out::println);
     }
 
     /**
