@@ -124,4 +124,27 @@ public class CLIViewTest {
             outContent.toString()
         );
     }
+
+    @Test
+    public void testShowMessage() {
+        view.showMessage("Message to be displayed to user.");
+
+        assertEquals(
+            "Message to be displayed to user.\n",
+            outContent.toString()
+        );
+    }
+
+    @Test
+    public void testShowErrorMessage() {
+        view.showErrorMessage("A bad error that the user needs to see.");
+
+        // Check that the output is the same string but with bold red ansi
+        // control chars. The ansi reset char is needed at the end of the string
+        // so that the rest of the game is not red and bold.
+        assertEquals(
+            "\u001B[1m\u001B[31mA bad error that the user needs to see.\u001B[0m\n",
+            outContent.toString()
+        );
+    }
 }
