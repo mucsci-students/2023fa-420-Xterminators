@@ -1,6 +1,5 @@
 package xterminators.spellingbee.cli;
 
-import java.util.Arrays;
 import java.util.List;
 
 import xterminators.spellingbee.model.Rank;
@@ -10,6 +9,10 @@ import xterminators.spellingbee.model.Rank;
  * instructions and data from the controller and displays output accordingly.
  */
 public class CLIView {
+    public static final String ANSI_BOLD = "\u001B[1m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
     /**
      * Displays the given list of found words for the puzzle.
      * 
@@ -73,7 +76,7 @@ public class CLIView {
      * @param message The status message to be displayed
      */
     public void showMessage(String message) {
-        // TODO: Implement show message
+        System.out.println(message);
     }
 
     /**
@@ -82,7 +85,7 @@ public class CLIView {
      * @param message The error message to be displayed
      */
     public void showErrorMessage(String message) {
-        // TODO: Implement show error message
+        System.out.println(ANSI_BOLD + ANSI_RED + message + ANSI_RESET);
     }
 
     /**
