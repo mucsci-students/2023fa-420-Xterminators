@@ -9,6 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class CLIViewTest {
     private CLIView view;
@@ -90,6 +92,35 @@ public class CLIViewTest {
 
         assertEquals(
             "You found \"offhand\". You earned 7 points.\n",
+            outContent.toString()
+        );
+    }
+
+    @Test
+    public void testShowHelp_General() {
+        view.showHelp();
+
+        StringBuilder expectedOut = new StringBuilder();
+        for (Command command : Command.values()) {
+            expectedOut.append(command.getCommand());
+            expectedOut.append(": ");
+            expectedOut.append(command.getShortHelp());
+            expectedOut.append('\n');
+        }
+
+        assertEquals(
+            expectedOut.toString(),
+            outContent.toString()
+        );
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    public void testShowHelp(Command command) {
+        view.showHelp(command);
+
+        assertEquals(
+            command.getLongHelp() + '\n',
             outContent.toString()
         );
     }
