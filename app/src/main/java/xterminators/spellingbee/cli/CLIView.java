@@ -64,7 +64,7 @@ public class CLIView {
      * @param command The command to display help for
      */
     public void showHelp(Command command) {
-        // TODO: Implement show help for specific command
+        System.out.println(command.getLongHelp());
     }
 
     /**
