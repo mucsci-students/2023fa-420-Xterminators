@@ -1,5 +1,6 @@
 package xterminators.spellingbee.cli;
 
+import java.util.Arrays;
 import java.util.List;
 
 import xterminators.spellingbee.model.Rank;
@@ -52,7 +53,9 @@ public class CLIView {
      * Displays the general help for all commands.
      */
     public void showHelp() {
-        // TODO: Implement show general help
+        for (Command c : Command.values()) {
+            System.out.println(c.getCommand() + ": " + c.getShortHelp());
+        }
     }
 
     /**
