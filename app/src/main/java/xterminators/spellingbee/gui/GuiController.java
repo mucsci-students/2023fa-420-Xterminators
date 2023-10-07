@@ -4,6 +4,7 @@ import java.io.*;
 import java.awt.*;
 import javax.swing.*;
 
+import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.Puzzle;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.nio.file.Paths;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.awt.event.ActionListener;
 
 public class GuiController {
@@ -28,6 +30,15 @@ public class GuiController {
     private JTextField tbGuess;
     private JButton primaryLetterButton;
     private JTextArea foundWordsArea;
+    private JPanel rankImagePanel;
+    private JLabel currentPointsLabel;
+    private JLabel currentRankLabel;
+
+    // File paths
+    private static final String BEE_PATH = Paths.get("src", "main", "resources", "bee_icon.png").toString();
+    private static final String EMPTY_RANK_START = Paths.get("src", "main", "resources", "hex_empty_start.png").toString();
+    private static final String EMPTY_RANK_END = Paths.get("src", "main", "resources", "hex_empty_end.png").toString();
+    private static final String EMPTY_RANK_MID = Paths.get("src", "main", "resources", "hex_empty.png").toString();
 
     // Constants for component coordinates and sizes
     private static final int FRAME_WIDTH = 770;
@@ -56,8 +67,7 @@ public class GuiController {
         guiFunctions = new GuiFunctions(this);
 
         try {
-            String imagePath = Paths.get("src", "main", "resources", "bee_icon.png").toString();
-            Image iconImage = javax.imageio.ImageIO.read(new File(imagePath));
+            Image iconImage = javax.imageio.ImageIO.read(new File(BEE_PATH));
             mainFrame.setIconImage(iconImage);
         } catch (IOException ex) {
             //ignore, icon just won't get set
@@ -151,14 +161,22 @@ public class GuiController {
      * Initializes all components in the rank panel.
      */
     private void initRankComponents() {
-        JPanel rankPanel = new JPanel();
-        rankPanel.setBounds(PUZZLE_LEFT_X, FRAME_HEIGHT - 140, PUZZLE_WIDTH, 60);
-        rankPanel.setBackground(Color.black);
+        currentPointsLabel = new JLabel();
+        currentPointsLabel.setFont(standardFont);
+        currentPointsLabel.setBounds(PUZZLE_LEFT_X + 5, FRAME_HEIGHT - 158, PUZZLE_WIDTH * 2, 40);
+        mainPanel.add(currentPointsLabel);
 
-        JLabel tempLabel = new JLabel("Pretend there's a rank here.");
-        tempLabel.setForeground(Color.white);
-        rankPanel.add(tempLabel);
-        mainPanel.add(rankPanel);
+        currentRankLabel = new JLabel();
+        currentRankLabel.setFont(standardFont);
+        currentRankLabel.setBounds(PUZZLE_LEFT_X + 5, FRAME_HEIGHT - 134, PUZZLE_WIDTH * 2, 40);
+        mainPanel.add(currentRankLabel);
+        
+        rankImagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        rankImagePanel.setBounds(PUZZLE_LEFT_X, FRAME_HEIGHT - 94, PUZZLE_WIDTH * 2, 16);
+        rankImagePanel.setBackground(Color.gray);
+        mainPanel.add(rankImagePanel);
+
+        redrawRank();
     }
 
     /**
@@ -263,6 +281,8 @@ public class GuiController {
             } else {
                 createPuzzle("", 'a');
             }
+            redrawRank();
+            drawFoundWords();
             tbGuess.requestFocus();
         }
     }
@@ -282,6 +302,7 @@ public class GuiController {
         String result = guiFunctions.guessWord(tbGuess.getText());
         if (!result.isEmpty()) {
             drawFoundWords();
+            redrawRank();
             showMessage(result);
         }
         tbGuess.setText("");
@@ -318,6 +339,60 @@ public class GuiController {
             allLetters[allLetters.length - 1] = p.getPrimaryLetter();
             guessKeyListener.setAllowedLetters(allLetters);
         }
+    }
+
+    private void redrawRank() {
+        final String FULL_RANK_START = Paths.get("src", "main", "resources", "hex_full_start.png").toString();
+        final String FULL_RANK_END = Paths.get("src", "main", "resources", "hex_full_end.png").toString();
+        final String FULL_RANK_MID = Paths.get("src", "main", "resources", "hex_full.png").toString();
+
+        int earnedPoints = 0;
+        String currentRankName = "None";
+        int totalPoints = 100;
+
+        Puzzle p = guiFunctions.getPuzzle();
+        if (p != null) {
+            earnedPoints = p.getEarnedPoints();
+            currentRankName = p.getRank().getRankName();
+            totalPoints = p.getTotalPoints();
+        }
+
+        currentPointsLabel.setText("Current Points: " + earnedPoints);
+        currentRankLabel.setText("Current Rank: " + currentRankName);
+
+        Rank[] allRanks = Rank.values();
+
+        rankImagePanel.removeAll();
+
+        int x = 0;
+        for (int i = 0; i < allRanks.length; ++i) {
+            // Do this comparison up here so the code is easier to read
+            boolean sufficientPoints = allRanks[i].getRequiredPoints(totalPoints) <= earnedPoints;
+
+            ImageIcon icon = new ImageIcon(EMPTY_RANK_MID);                
+            if (sufficientPoints) {
+                    icon = new ImageIcon(FULL_RANK_MID);
+            }
+
+            if (i == 0) {
+                icon = new ImageIcon(EMPTY_RANK_START);
+                if (sufficientPoints) {
+                    icon = new ImageIcon(FULL_RANK_START);
+                }
+            } else if (i == allRanks.length - 1) {
+                icon = new ImageIcon(EMPTY_RANK_END);
+                if (sufficientPoints) {
+                    icon = new ImageIcon(FULL_RANK_END);
+                }
+            }
+            JLabel imageLabel = new JLabel();
+            imageLabel.setIcon(icon);
+            imageLabel.setBounds(x, 0, icon.getIconWidth(), icon.getIconHeight());
+            rankImagePanel.add(imageLabel);
+            x += icon.getIconWidth();
+        }
+        rankImagePanel.revalidate();
+        rankImagePanel.repaint();
     }
 
     private void showMessage(String message) {
