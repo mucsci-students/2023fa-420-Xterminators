@@ -108,9 +108,10 @@ public class CLIView {
      * each rank. Also highlights the current ranks of the puzzle.
      * 
      * @param rank The current rank of the puzzle
+     * @param earnedPoints The current number of earned points
      * @param totalPoints The number of total possible points in the puzzle
      */
-    public void showRanks(Rank rank, int totalPoints) {
+    public void showRanks(Rank rank, int earnedPoints, int totalPoints) {
         // TODO: Implement show ranks
     }
 }
