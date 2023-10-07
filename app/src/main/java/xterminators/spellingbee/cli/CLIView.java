@@ -33,7 +33,19 @@ public class CLIView {
      * @param points The points earned from the word
      */
     public void showGuess(String word, int points) {
-        // TODO: Implement show guess function
+        if (points == -1) {
+            System.out.println(
+                "You already found the word \"" + word + "\". Try again."
+            );
+        } else if (points == 0) {
+            System.out.println(
+                "The word \"" + word + "\" is not a word in the puzzle. Try again."
+            );
+        } else {
+            System.out.println(
+                "You found \"" + word + "\". You earned " + points +" points."
+            );
+        }
     }
 
     /**
