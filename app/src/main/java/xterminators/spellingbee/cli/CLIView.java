@@ -1,5 +1,6 @@
 package xterminators.spellingbee.cli;
 
+import java.util.Arrays;
 import java.util.List;
 
 import xterminators.spellingbee.model.Rank;
@@ -112,6 +113,54 @@ public class CLIView {
      * @param totalPoints The number of total possible points in the puzzle
      */
     public void showRanks(Rank rank, int earnedPoints, int totalPoints) {
-        // TODO: Implement show ranks
+        if (earnedPoints == 1) {
+            System.out.println(
+                "Current Rank: " + rank.getRankName() + " - " +
+                earnedPoints + " point\n"
+            );
+        } else {
+            System.out.println(
+                "Current Rank: " + rank.getRankName() + " - " +
+                earnedPoints + " points\n"
+            );
+        }
+
+        int maxNameLength = Arrays.stream(Rank.values())
+                                  .map(Rank::getRankName)
+                                  .mapToInt(String::length)
+                                  .max().orElseThrow();
+
+        int maxPointsLength = Arrays.stream(Rank.values())
+                                    .map(r -> r.getRequiredPoints(totalPoints))
+                                    .map(String::valueOf)
+                                    .mapToInt(String::length)
+                                    .max().orElseThrow();
+
+        for (Rank r : Rank.values()) {
+            int reqPoints = r.getRequiredPoints(totalPoints);
+            String reqPointsStr = String.valueOf(reqPoints);
+            String asterisk = r.equals(rank) ? "*" : " ";
+        
+            System.out.println(
+                asterisk + padLeft(r.getRankName(), maxNameLength) + " - " +
+                padLeft(reqPointsStr, maxPointsLength) + " point" +
+                (reqPoints == 1 ? "" : "s") + " minimum"
+            );
+        }               
+    }
+
+    /**
+     * Pads the given string on the right with spaces and returns the result.
+     * If the given string is null, it will be returned unchanged.
+     * 
+     * @param str The string to pad.
+     * @param totalLength The total length that the resulting string should be.
+     * @return The padded string.
+     */
+    private String padLeft(String str, int totalLength) {
+        if (str == null) {
+            return str;
+        }
+        return String.format("%1$-" + totalLength + "s", str);
     }
 }
