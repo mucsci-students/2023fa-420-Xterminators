@@ -101,7 +101,21 @@ public class CLIView {
     public void showPuzzle(char primaryLetter, char[] secondaryLetters,
                            Rank rank, int points)
     {
-        // TODO: Implement show puzzle
+        String puzzleHex = """
+            +---+
+        +---+ %c +---+
+        | %c +---+ %c |
+        +---+ %c +---+
+        | %c +---+ %c |
+        +---+ %c +---+
+            +---+
+        """.formatted(secondaryLetters[0], secondaryLetters[5], secondaryLetters[1],
+                      primaryLetter,
+                      secondaryLetters[4], secondaryLetters[2], secondaryLetters[3]);
+        
+        System.out.println(puzzleHex);
+        System.out.println("Current Rank  : " + rank.getRankName());
+        System.out.println("Current Points: " + points);
     }
 
     /**
