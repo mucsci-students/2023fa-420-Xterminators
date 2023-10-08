@@ -251,7 +251,7 @@ public class CLIControllerTest {
         );
 
         // TODO: Update expected totalPoints with accurate value
-        verify(view).showRanks(eq(Rank.BEGINNER), anyInt());
+        verify(view).showRanks(eq(Rank.BEGINNER), eq(0), anyInt());
 
         verifyNoMoreInteractions(view);
     }

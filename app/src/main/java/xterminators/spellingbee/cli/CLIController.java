@@ -344,9 +344,10 @@ public class CLIController {
         }
 
         Rank curRank = puzzle.getRank();
+        int earnedPoints = puzzle.getEarnedPoints();
         int totalPoints = puzzle.getTotalPoints();
 
-        view.showRanks(curRank, totalPoints);
+        view.showRanks(curRank, earnedPoints, totalPoints);
     }
 
     /**
