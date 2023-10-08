@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import xterminators.spellingbee.model.Rank;
+
 public class CLIViewTest {
     private CLIView view;
 
@@ -144,6 +146,31 @@ public class CLIViewTest {
         // so that the rest of the game is not red and bold.
         assertEquals(
             "\u001B[1m\u001B[31mA bad error that the user needs to see.\u001B[0m\n",
+            outContent.toString()
+        );
+    }
+
+    // TODO: Add test for showPuzzle
+
+    @Test
+    public void testShowRanks() {
+        view.showRanks(Rank.GOOD, 85, 1000);
+
+        assertEquals(
+            """
+            Current Rank: Good - 85 points
+            
+             Beginner   - 0    points minimum
+             Good Start - 20   points minimum
+             Moving Up  - 50   points minimum
+            *Good       - 80   points minimum
+             Solid      - 150  points minimum
+             Nice       - 250  points minimum
+             Great      - 400  points minimum
+             Amazing    - 500  points minimum
+             Genius     - 700  points minimum
+             Queen Bee  - 1000 points minimum
+            """,
             outContent.toString()
         );
     }
