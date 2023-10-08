@@ -50,6 +50,13 @@ public class CLIController {
      * output to the view to be displayed.
      */
     public void run() {
+        System.out.println("Welcome to the Spelling Bee!");
+        System.out.printf(
+            "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands.\n",
+            Command.NEW.getCommand(),
+            Command.HELP.getCommand()
+        );
+
         Scanner scanner = new Scanner(System.in);
 
         boolean exitFlag = false;
