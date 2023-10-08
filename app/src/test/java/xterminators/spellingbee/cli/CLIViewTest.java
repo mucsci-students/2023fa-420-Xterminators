@@ -150,7 +150,31 @@ public class CLIViewTest {
         );
     }
 
-    // TODO: Add test for showPuzzle
+    @Test
+    public void testShowPuzzle() {
+        view.showPuzzle(
+            'o',
+            new char[] {'f', 'h', 'a', 'n', 'd', 'e'},
+            Rank.BEGINNER,
+            0
+        );
+
+        assertEquals(
+            """
+                +---+
+            +---+ f +---+
+            | e +---+ h |
+            +---+ o +---+
+            | d +---+ a |
+            +---+ n +---+
+                +---+
+            
+            Current Rank  : Beginner
+            Current Points: 0
+            """,
+            outContent.toString()
+        );
+    }
 
     @Test
     public void testShowRanks() {
