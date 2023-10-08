@@ -191,12 +191,10 @@ public class GuiController {
         // New Puzzle
         JButton newPuzzleButton = createButton("New Puzzle", 0, 0, 50, 12, actionPanel);
         newPuzzleButton.addActionListener(this::newPuzzleButtonClick);
-        //actionPanel.add(newPuzzleButton);
 
         // Shuffle Letters
         JButton shufflePuzzleButton = createButton("Shuffle", 0, 16, 50, 12, actionPanel);
         shufflePuzzleButton.addActionListener(this::shufflePuzzleButtonClick);
-        //actionPanel.add(shufflePuzzleButton);
 
         //
         // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
