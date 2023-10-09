@@ -3,22 +3,31 @@
  */
 package xterminators.spellingbee;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
-import xterminators.spellingbee.cli.SpellingBeeCLI;
+import xterminators.spellingbee.cli.CLIController;
+import xterminators.spellingbee.cli.CLIView;
 import xterminators.spellingbee.gui.GuiController;
 
 public class App {
     public static void main(String[] args) {
         // Case Insensitive check for --cli in args
         if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
-            // This is probably bad practice but is the least bad way of
-            // leveraging current code.
-            // Calls the CLI with no args
-            SpellingBeeCLI ui = new SpellingBeeCLI();
-            ui.InitUI();
-        }
-        else {
+            File dictionaryFile = new File(
+                Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString()
+            );
+
+            File rootsDictionaryFile = new File(
+                Paths.get("src", "main", "resources", "dictionary_roots.txt").toString()
+            );
+
+            CLIView cliView = new CLIView();
+            CLIController cliController = new CLIController(cliView, dictionaryFile, rootsDictionaryFile);
+
+            cliController.run();
+        } else {
             GuiController ui = new GuiController();
             ui.InitUI();
         }

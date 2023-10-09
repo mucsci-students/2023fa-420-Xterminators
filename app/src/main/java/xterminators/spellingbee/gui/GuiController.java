@@ -192,7 +192,10 @@ public class GuiController {
         // New Puzzle
         JButton newPuzzleButton = createButton("New Puzzle", 0, 0, 50, 12, actionPanel);
         newPuzzleButton.addActionListener(this::newPuzzleButtonClick);
-        actionPanel.add(newPuzzleButton);
+
+        // Shuffle Letters
+        JButton shufflePuzzleButton = createButton("Shuffle", 0, 16, 50, 12, actionPanel);
+        shufflePuzzleButton.addActionListener(this::shufflePuzzleButtonClick);
 
         //Random Puzzle
         //JButton randomPuzzleButton = createButton("Random Puzzle", 0, 0, 50, 12, actionPanel);
@@ -245,13 +248,14 @@ public class GuiController {
     }
 
     /**
-     * Creates a new button and adds it to mainPanel.
+     * Creates a new button and adds it to the given panel.
      * 
      * @param text The text that should be on the button.
      * @param x The X coordinate of the button.
      * @param y The Y coordinate of the button.
      * @param buttonWidth How wide the button should be.
      * @param buttonHeight How tall the button should be.
+     * @param panel The panel to add the button to.
      * 
      * @return The newly created button.
      */
@@ -281,6 +285,14 @@ public class GuiController {
         tbGuess.setText(currentText);
     }
 
+    /**
+     * The handler for the new puzzle button click.
+     * Opens a dialog asking the user for a base word
+     * and required letter, and then generates the 
+     * puzzle based on the user's input.
+     * 
+     * @param e The ActionEvent from the button click.
+     */
     private void newPuzzleButtonClick(ActionEvent e) {
         CustomInputDialog inputDialog = new CustomInputDialog(mainFrame);
         inputDialog.setVisible(true);
@@ -309,6 +321,25 @@ public class GuiController {
         }
     }
 
+    private void shufflePuzzleButtonClick(ActionEvent e) {
+        if (guiFunctions.getPuzzle() == null) {
+            return;
+        }
+
+        Puzzle p = guiFunctions.getPuzzle();
+        p.shuffle();
+
+        redrawPuzzleButtons();
+    }
+
+    /**
+     * The handler for the guess button click.
+     * Takes the text from tbGuess and passes it
+     * to the puzzle's guess function.
+     * The result is then displayed in a dialog.
+     * 
+     * @param e The ActionEvent from the button click.
+     */
     private void guessWordButtonClick(ActionEvent e) {
         if (tbGuess.getText() == null || tbGuess.getText().isEmpty()) {
             showErrorDialog("You need to type a guess first!");
@@ -402,6 +433,10 @@ public class GuiController {
             showErrorDialog("There was a problem making the puzzle. " + ex.getMessage());
         }
 
+        redrawPuzzleButtons();
+    }
+
+    private void redrawPuzzleButtons() {
         Puzzle p = guiFunctions.getPuzzle();
         if (p != null) {
             char[] secondaryLetters = p.getSecondaryLetters();
@@ -419,6 +454,13 @@ public class GuiController {
         }
     }
 
+    /**
+     * Draws the rank progress bar.
+     * All of the hexes up to the puzzle's
+     * current rank will use full rank images,
+     * and any hexes above the current rank
+     * will use empty rank images.
+     */
     private void redrawRank() {
         final String FULL_RANK_START = Paths.get("src", "main", "resources", "hex_full_start.png").toString();
         final String FULL_RANK_END = Paths.get("src", "main", "resources", "hex_full_end.png").toString();
@@ -473,6 +515,11 @@ public class GuiController {
         rankImagePanel.repaint();
     }
 
+    /**
+     * Displays a dialog box with the given message and an information icon.
+     * 
+     * @param message The message to show in the dialog.
+     */
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(
             mainFrame, 
@@ -482,6 +529,11 @@ public class GuiController {
         );        
     }
 
+    /**
+     * Displays a dialog box with the given message and an error icon.
+     * 
+     * @param errorMessage The message to show in the dialog.
+     */
     private void showErrorDialog(String errorMessage) {
         JOptionPane.showMessageDialog(
             mainFrame, 
@@ -491,6 +543,10 @@ public class GuiController {
         );
     }
 
+    /**
+     * Fills the found word box with all found words from the puzzle's
+     * found words list. 
+     */
     private void drawFoundWords() {
         foundWordsArea.setText("");
         Puzzle puzzle = guiFunctions.getPuzzle();
