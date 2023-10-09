@@ -7,12 +7,14 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import com.google.gson.Gson;
 
 import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.PuzzleSave;
 import xterminators.spellingbee.model.Rank;
 
 public class GuiFunctions {
@@ -108,22 +110,37 @@ public class GuiFunctions {
 
     /**
      * Saves the puzzle to a JSON format.
+     * @throws IOException - if an I/O error occurs.
      */
-    private void savePuzzle() {
+    public String savePuzzle() throws IOException{
         //Create an object of the Gson class
         Gson saved = new Gson();
+
+        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
+
+        char[] baseWord = new char[7];
+        baseWord[6] = puzzle.getPrimaryLetter();
+        for(int i = 0; i < baseWord.length - 1; i++){
+            baseWord[i] = nonRequiredLetters[i];
+        }
 
         String filename = "";
 
         //This will create a title for the Json file consisting
-        // of the primary letter followed by the secondary letters.
-        filename = filename + puzzle.getPrimaryLetter();
-        for (char c : puzzle.getSecondaryLetters()){
+        // of the non-required letters followed by the required letter.
+        for (char c : baseWord){
             filename = filename + c;
         }
 
+        // Take the necessary attributes and create a puzzleSave object,
+        PuzzleSave testSave = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
+        puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+
         //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (puzzle);
+        String savedJson = saved.toJson (testSave);
+
+        //The message that will be displayed as a result of this change.
+        String result = "";
 
         //Create the file and populate it with the saved Json
         try{
@@ -141,10 +158,10 @@ public class GuiFunctions {
                 //Close the writer
                 writing.close ();
                 //Notify the user
-                //TODO Replace with GUI System.out.println("File created: " + filename + ".json");
-            } else {
-                //TODO Replace with GUI System.out.println("A file by that name already exists." + getNewLineCharacter() + "Overwriting the file");
+                result = "File created: " + filename + ".json";
 
+            } else {
+                result = "A file by that name already exists. Overwriting the file";
                 //Open a writer to replace the information in the file.
                 PrintWriter writer = new PrintWriter(savedFile);
                 writer.print(savedJson);
@@ -152,17 +169,21 @@ public class GuiFunctions {
             }
         }
         catch (IOException e) {
-            //TODO Replace with GUI System.out.println("An error occurred");
+            result = "File could not be saved, an Input/Output error occurred";
         }        
+        return result;
     }
 
     /**
      * Loads a saved puzzle from a JSON format.
+     * @param loadFile - the file to be loaded
      */
-    private void loadPuzzle(String loadFile) {
+    public String loadPuzzle(String loadFile) {
         
         Gson load = new Gson();
         String jsonPuzzle = "";
+
+        String result = "";
 
         try{
             //Create a file object to read the contents of loadFile
@@ -176,10 +197,44 @@ public class GuiFunctions {
             }
             fileReader.close();
             //Construct a new puzzle based on the loaded file
-            this.puzzle = load.fromJson (jsonPuzzle, Puzzle.class);
-        } catch (FileNotFoundException e) {
-            System.out.println("The puzzle file could not be found.");
+            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
+
+            //Initialize the values that will be used by PuzzleSave
+            char[] BaseWord = loading.getPSBase();
+            char RequiredLetter = BaseWord[6];
+
+            char[] newSecondaryLetters = new char[6];
+            for(int i = 0; i < newSecondaryLetters.length; i ++){
+                newSecondaryLetters[i] = BaseWord[i];
+            }
+
+            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
+
+            ArrayList<String> newFoundWords = new ArrayList<String>();
+
+            for(String word : loading.getPSFoundWords() ) {
+                newFoundWords.add(word);
+            }
+
+            String work = "";
+            for ( char c : BaseWord) {
+                work = work + c;
+            }
+
+            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters,
+            dictionaryFile, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
+
+            puzzle = LoadedPuzzle;
+
+            result = "Succesfully loaded " + loadFile + "!";
         }
+        catch (FileNotFoundException e) {
+            result = "The file cannot be found";
+        }
+        catch (IOException e) {
+            result = "There was an input or output error";
+        }
+        return result;
     }
 
     /**

@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.gui.GuiFunctions;
 
 import java.util.ArrayList;
 import java.nio.file.Paths;
@@ -200,12 +201,18 @@ public class GuiController {
 
         // Save Puzzle
         JButton savePuzzleButton = createButton("Save Puzzle", 0, 0, 50, 12, actionPanel);
-        //savePuzzletButton.addActionListener(this::savePuzzleButtonClick);
+        savePuzzleButton.addActionListener(e -> {
+            try {
+                savePuzzleButtonClick(e);
+            } catch (IOException a) {
+                System.out.println("There was an I/O error, please try again.");
+            }
+        });
         actionPanel.add(savePuzzleButton);
 
         // Load Puzzle
         JButton loadPuzzleButton = createButton("Load Puzzle", 0, 0, 50, 12, actionPanel);
-        //loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
+        loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
         actionPanel.add(loadPuzzleButton);
 
         //
@@ -323,8 +330,60 @@ public class GuiController {
         tbGuess.setText("");
     }
 
-    private void randomPuzzleButtonClick(ActionEvent e) {
+    //private void randomPuzzleButtonClick(ActionEvent e) {
         
+    //}
+
+    /**
+     * The function that is called whenever the savepuzzlebutton is clicked.
+     * @param e - The button click
+     * @throws IOException - If an I/O error occurs.
+     */
+    private void savePuzzleButtonClick(ActionEvent e) throws IOException{
+        try{
+            // Causes a pop up informing the user that their file was saved and where.
+            showMessage(guiFunctions.savePuzzle() + " in the current directory : "
+             + Paths.get("").toAbsolutePath().toString());
+        }
+        // Catches I/O errors
+        catch ( IOException a){
+            System.out.println("There was an I/O error, please try again.");
+        }
+    }
+
+    /**
+     * Function that is called when loadPuzzleButton is clicked.
+     * @param e - the button click.
+     */
+    private void loadPuzzleButtonClick(ActionEvent e){
+        // Creates a JFileChooser for file selection.
+        JFileChooser j = new JFileChooser();
+
+        // Shows the created JFileChooser with an open dialog
+        j.showOpenDialog(j);
+        // Converts the selectedfile name to string format
+        String loadFile = "" + j.getSelectedFile() + "";
+
+        // Pop-up informing the user of the results for trying to load the file.
+        showMessage(guiFunctions.loadPuzzle(loadFile));
+
+        // Refreshes the button and foundwords views.
+        Puzzle p = guiFunctions.getPuzzle();
+        if (p != null) {
+            char[] secondaryLetters = p.getSecondaryLetters();
+            char[] allLetters = new char[secondaryLetters.length + 1];
+
+            for (int i = 0; i < letterButtons.size(); ++i) {
+                if (i >= secondaryLetters.length) break;
+                letterButtons.get(i).setText(secondaryLetters[i] + "");
+                allLetters[i] = secondaryLetters[i];
+            }
+            primaryLetterButton.setText(p.getPrimaryLetter() + "");
+
+            allLetters[allLetters.length - 1] = p.getPrimaryLetter();
+            guessKeyListener.setAllowedLetters(allLetters);
+            drawFoundWords();
+        }
     }
 
     /**

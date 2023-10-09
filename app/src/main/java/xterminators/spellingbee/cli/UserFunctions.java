@@ -325,6 +325,8 @@ public class UserFunctions {
 
     /**
      * Loads a saved puzzle from a JSON format.
+     * @param loadFile - the file to be loaded.
+     * @throws IOException - if an I/O exception occurs.
      */
     private void loadPuzzle(String loadFile) throws IOException {
         
