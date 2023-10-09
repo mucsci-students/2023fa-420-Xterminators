@@ -420,7 +420,7 @@ public class CLIController {
      * 
      * @param filePath the path to save the puzzle to
      */
-    private void save(File filePath) throws IOException {
+    private void save(String filePath) throws IOException {
         //Create an object of the Gson class
         Gson saved = new Gson();
 
@@ -449,19 +449,9 @@ public class CLIController {
 
         //Create the file and populate it with the saved Json
         try{
-            if(filePath.exists()) {
-                FileWriter writing = new FileWriter(filePath);
-                //Insert input
-                writing.write (savedJson);
-                //Close the writer
-                writing.close ();
-                //Notify the user
-                    System.out.println("File created: " + filename + ".json");
-            }
-            else {
-                String pathName = filePath + ".json";
-                File savedFile = new File(pathName);
-                //Returns true if a new file is created.
+            String pathName = filePath + ".json";
+            File savedFile = new File(pathName);
+            //Returns true if a new file is created.
                 if(savedFile.createNewFile()){
 
                     //Create a file writer to populate the created File
@@ -472,18 +462,11 @@ public class CLIController {
                     writing.close ();
                     //Notify the user
                     System.out.println("File created: " + filename + ".json");
-            } else {
-                System.out.println("A file by that name already exists." + getNewLineCharacter() + "Overwriting the file");
-
-                //Open a writer to replace the information in the file.
-                PrintWriter writer = new PrintWriter(savedFile);
-                writer.print(savedJson);
-                writer.close();
-            }
-        }
-        catch (IOException e) {
+                }
+            
+        } catch (IOException e) {
             System.out.println("An error occurred");
-        }
+            }
         
     }
 
