@@ -4,6 +4,7 @@
 package xterminators.spellingbee;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
@@ -12,7 +13,7 @@ import xterminators.spellingbee.cli.CLIView;
 import xterminators.spellingbee.gui.GuiController;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Case Insensitive check for --cli in args
         if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
             File dictionaryFile = new File(
