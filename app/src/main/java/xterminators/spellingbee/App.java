@@ -13,7 +13,7 @@ import xterminators.spellingbee.cli.CLIView;
 import xterminators.spellingbee.gui.GuiController;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // Case Insensitive check for --cli in args
         if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
             File dictionaryFile = new File(
