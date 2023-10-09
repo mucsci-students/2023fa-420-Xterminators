@@ -52,9 +52,8 @@ public class CLIController {
      * Enters the command execution loop for the Spelling Bee game. The
      * controller will read in commands from the user, process them, and sends
      * output to the view to be displayed.
-     * @throws IOException
      */
-    public void run() throws IOException {
+    public void run() {
         System.out.println("Welcome to the Spelling Bee!");
         System.out.printf(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands.\n",
@@ -240,7 +239,7 @@ public class CLIController {
      * 
      * @param filePath The path of the save file
      */
-    private void load(String filePath) throws IOException {
+    private void load(String filePath){
         
         Gson load = new Gson();
         String jsonPuzzle = "";
@@ -420,7 +419,7 @@ public class CLIController {
      * 
      * @param filePath the path to save the puzzle to
      */
-    private void save(String filePath) throws IOException {
+    private void save(String filePath) {
         //Create an object of the Gson class
         Gson saved = new Gson();
 
@@ -439,16 +438,17 @@ public class CLIController {
         for (char c : baseWord){
             filename = filename + c;
         }
-
-        // Take the necessary attributes and create a puzzleSave object,
-        PuzzleSave savedPuzzle = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
-        puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
-
-        //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (savedPuzzle);
-
-        //Create the file and populate it with the saved Json
         try{
+
+            // Take the necessary attributes and create a puzzleSave object,
+            PuzzleSave savedPuzzle = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
+            puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+
+            //Converts the current puzzle object to Json
+            String savedJson = saved.toJson (savedPuzzle);
+
+            //Create the file and populate it with the saved Json
+        
             String pathName = filePath + ".json";
             File savedFile = new File(pathName);
             //Returns true if a new file is created.
@@ -472,9 +472,8 @@ public class CLIController {
 
     /**
      * Saves the puzzle to a json file at a default location.
-     * @throws IOException
      */
-    private void save() throws IOException {
+    private void save() {
         //Create an object of the Gson class
         Gson saved = new Gson();
 
@@ -494,14 +493,16 @@ public class CLIController {
             filename = filename + c;
         }
 
-        // Take the necessary attributes and create a puzzleSave object,
-        PuzzleSave savedPuzzle = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(), puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
-
-        //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (savedPuzzle);
+        
 
         //Create the file and populate it with the saved Json
         try{
+            // Take the necessary attributes and create a puzzleSave object,
+            PuzzleSave savedPuzzle = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(), puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+
+            //Converts the current puzzle object to Json
+            String savedJson = saved.toJson (savedPuzzle);
+
             File savedFile = new File(filename + ".json");
 
             //Returns true if a new file is created.
