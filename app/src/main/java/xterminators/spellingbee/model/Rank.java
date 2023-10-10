@@ -1,3 +1,5 @@
+package xterminators.spellingbee.model;
+
 public enum Rank {
     BEGINNER("Beginner", 0.00),
     GOOD_START("Good Start", 0.02),

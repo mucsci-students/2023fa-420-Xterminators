@@ -1,13 +1,21 @@
+package xterminators.spellingbee.cli;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import com.google.gson.Gson;
+
+import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.PuzzleSave;
 
 public class UserFunctions {
 
@@ -18,9 +26,11 @@ public class UserFunctions {
     }
 
     /** The path to the dictionary file for the game. */
-    public static final String DICTIONARY_PATH = "src\\dictionary_optimized.txt";
+    public static final String DICTIONARY_PATH
+        = Paths.get("app", "src", "main", "resources", "dictionary_optimized.txt").toString();
     /** The path to the dictionary of valid starting words. */
-    public static final String ROOT_DICTIONARY_PATH = "src\\dictionary_roots.txt";
+    public static final String ROOT_DICTIONARY_PATH
+        = Paths.get("app", "src", "main", "resources", "dictionary_roots.txt").toString();
 
     /** Command to exit the program. */
     public static final String EXIT_COMMAND = "exit";
@@ -74,6 +84,7 @@ public class UserFunctions {
                 printCommands();
                 break;
             case NEW_COMMAND:
+                System.out.println(System.getProperty("user.dir"));
                 if (parameters == null) {
                     createNewPuzzle();
                 } else if (parameters.length == 1) {
@@ -103,13 +114,20 @@ public class UserFunctions {
                 showFoundWords();
                 break;
             case SAVE_COMMAND:
-                savePuzzle();
+                try {
+                    savePuzzle();
+                } catch (IOException e){
+                    System.out.println("An error occurred while saving the puzzle.");
+                }
+                
                 break;
             case LOAD_COMMAND:
                 if (parameters.length != 1){
                     System.out.println("In order to load, a file must be specified.");
-                } else {
+                } else try {
                     loadPuzzle(parameters[0]);
+                } catch (IOException e){
+                    System.out.println("There was an error loading the puzzle.");
                 }
                 break;
             case SHOW_COMMAND:
@@ -247,22 +265,33 @@ public class UserFunctions {
 
     /**
      * Saves the puzzle to a JSON format.
+     * @throws IOException
      */
-    private void savePuzzle() {
+    private void savePuzzle() throws IOException {
         //Create an object of the Gson class
         Gson saved = new Gson();
 
+        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
+
+        char[] baseWord = new char[7];
+        baseWord[6] = puzzle.getPrimaryLetter();
+        for(int i = 0; i < baseWord.length - 1; i++){
+            baseWord[i] = nonRequiredLetters[i];
+        }
+
         String filename = "";
 
-        //This will mcreate a title for the Json file consisting
-        // of the primary letter followed by the secondary letters.
-        filename = filename + puzzle.getPrimaryLetter();
-        for (char c : puzzle.getSecondaryLetters()){
+        //This will create a title for the Json file consisting
+        // of the non-required letters followed by the required letter.
+        for (char c : baseWord){
             filename = filename + c;
         }
 
+        // Take the necessary attributes and create a puzzleSave object,
+        PuzzleSave testSave = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(), puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+
         //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (puzzle);
+        String savedJson = saved.toJson (testSave);
 
         //Create the file and populate it with the saved Json
         try{
@@ -296,9 +325,10 @@ public class UserFunctions {
 
     /**
      * Loads a saved puzzle from a JSON format.
+     * @param loadFile - the file to be loaded.
+     * @throws IOException - if an I/O exception occurs.
      */
-
-    private void loadPuzzle(String loadFile) {
+    private void loadPuzzle(String loadFile) throws IOException {
         
         Gson load = new Gson();
         String jsonPuzzle = "";
@@ -315,10 +345,43 @@ public class UserFunctions {
             }
             fileReader.close();
             //Construct a new puzzle based on the loaded file
-            this.puzzle = load.fromJson (jsonPuzzle, Puzzle.class);
+            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
+
+            //Initialize the values that will be used by PuzzleSave
+            char[] BaseWord = loading.getPSBase();
+            char RequiredLetter = BaseWord[6];
+
+            char[] newSecondaryLetters = new char[6];
+            for(int i = 0; i < newSecondaryLetters.length; i ++){
+                newSecondaryLetters[i] = BaseWord[i];
+            }
+
+            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
+
+            ArrayList<String> newFoundWords = new ArrayList<String>();
+
+            for(String word : loading.getPSFoundWords() ) {
+                newFoundWords.add(word);
+            }
+
+            String work = "";
+            for ( char c : BaseWord) {
+                work = work + c;
+            }
+
+            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters, dictionaryFile, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
+
+            puzzle = LoadedPuzzle;
+            
+            //this.puzzle = LoadedPuzzle;
+
             printPuzzle();
-        } catch (FileNotFoundException e) {
-            System.out.println("The puzzle file could not be found.");
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("The file cannot be found.");
+        }
+        catch (IOException e) {
+            System.out.println("There was an I/O error");
         }
     }
 
