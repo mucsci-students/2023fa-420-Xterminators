@@ -30,6 +30,9 @@ public class Puzzle {
     /** The number of points currently earned in the puzzle. */
     private int earnedPoints;
 
+    /** The HelpData object storing all the help data for the puzzle. */
+    private HelpData helpData;
+
     /**
      * Constructs a Puzzle object from the required letter, and the six other
      * acceptable letters. Fills validWords by parcing through dictionaryFile.
@@ -320,6 +323,15 @@ public class Puzzle {
         }
         
         return points;
+    }
+
+    /**
+     * Gets the help data for the puzzle.
+     * 
+     * @return The help data for the puzzle
+     */
+    public HelpData getHelpData() {
+        return helpData;
     }
 
     /**
