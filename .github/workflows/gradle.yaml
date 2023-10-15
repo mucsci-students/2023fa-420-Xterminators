@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - develop
+    types: [opened, reopened]
   push:
     branches:
       - '*'
@@ -26,6 +27,6 @@ jobs:
 
     - name: Execute Gradle build
       run: ./gradlew build
-      
+
     - name: Execute Gradle test
       run: ./gradlew test
