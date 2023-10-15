@@ -23,8 +23,8 @@ import org.apache.commons.lang3.tuple.Pair;
 public record HelpData(
     int numWords,
     int totalPoints,
-    int numPangrams,
-    int numPerfectPangrams,
+    long numPangrams,
+    long numPerfectPangrams,
     Map<Pair<Character, Integer>, Integer> startingLetterGrid,
     Map<String, Integer> startingLetterPairs
 ) {}
