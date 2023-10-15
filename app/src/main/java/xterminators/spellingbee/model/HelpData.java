@@ -25,6 +25,6 @@ public record HelpData(
     int totalPoints,
     long numPangrams,
     long numPerfectPangrams,
-    Map<Pair<Character, Integer>, Integer> startingLetterGrid,
-    Map<String, Integer> startingLetterPairs
+    Map<Pair<Character, Integer>, Long> startingLetterGrid,
+    Map<String, Long> startingLetterPairs
 ) {}
