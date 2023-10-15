@@ -39,7 +39,7 @@ public class CLIViewTest {
         view.showFoundWords(foundWords);
 
         assertEquals(
-            "You have not found any words yet.\n",
+            "You have not found any words yet." + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -51,7 +51,8 @@ public class CLIViewTest {
         view.showFoundWords(foundWords);
 
         assertEquals(
-            "You have found 1 word:\noffhanded\n",
+            "You have found 1 word:" + System.lineSeparator() +
+            "offhanded"              + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -63,7 +64,10 @@ public class CLIViewTest {
         view.showFoundWords(foundWords);
 
         assertEquals(
-            "You have found 3 words:\noffhanded\noffhand\nhand\n",
+            "You have found 3 words:" + System.lineSeparator() +
+            "offhanded"               + System.lineSeparator() +
+            "offhand"                 + System.lineSeparator() +
+            "hand"                    + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -73,7 +77,8 @@ public class CLIViewTest {
         view.showGuess("offhanded", -1);
 
         assertEquals(
-            "You already found the word \"offhanded\". Try again.\n",
+            "You already found the word \"offhanded\". Try again."
+                + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -83,7 +88,8 @@ public class CLIViewTest {
         view.showGuess("bad", 0);
 
         assertEquals(
-            "The word \"bad\" is not a word in the puzzle. Try again.\n",
+            "The word \"bad\" is not a word in the puzzle. Try again."
+                + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -93,7 +99,8 @@ public class CLIViewTest {
         view.showGuess("offhand", 7);
 
         assertEquals(
-            "You found \"offhand\". You earned 7 points.\n",
+            "You found \"offhand\". You earned 7 points."
+                + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -107,7 +114,7 @@ public class CLIViewTest {
             expectedOut.append(command.getCommand());
             expectedOut.append(": ");
             expectedOut.append(command.getShortHelp());
-            expectedOut.append('\n');
+            expectedOut.append(System.lineSeparator());
         }
 
         assertEquals(
@@ -122,7 +129,7 @@ public class CLIViewTest {
         view.showHelp(command);
 
         assertEquals(
-            command.getLongHelp() + '\n',
+            command.getLongHelp() + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -132,7 +139,7 @@ public class CLIViewTest {
         view.showMessage("Message to be displayed to user.");
 
         assertEquals(
-            "Message to be displayed to user.\n",
+            "Message to be displayed to user." + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -145,7 +152,8 @@ public class CLIViewTest {
         // control chars. The ansi reset char is needed at the end of the string
         // so that the rest of the game is not red and bold.
         assertEquals(
-            "\u001B[1m\u001B[31mA bad error that the user needs to see.\u001B[0m\n",
+            "\u001B[1m\u001B[31mA bad error that the user needs to see.\u001B[0m"
+                + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -160,18 +168,16 @@ public class CLIViewTest {
         );
 
         assertEquals(
-            """
-                +---+
-            +---+ f +---+
-            | e +---+ h |
-            +---+ o +---+
-            | d +---+ a |
-            +---+ n +---+
-                +---+
-            
-            Current Rank  : Beginner
-            Current Points: 0
-            """,
+            "    +---+"                + System.lineSeparator() +
+            "+---+ f +---+"            + System.lineSeparator() +
+            "| e +---+ h |"            + System.lineSeparator() +
+            "+---+ o +---+"            + System.lineSeparator() +
+            "| d +---+ a |"            + System.lineSeparator() +
+            "+---+ n +---+"            + System.lineSeparator() +
+            "    +---+"                + System.lineSeparator() +
+                                         System.lineSeparator() +            
+            "Current Rank  : Beginner" + System.lineSeparator() +
+            "Current Points: 0"        + System.lineSeparator(),
             outContent.toString()
         );
     }
@@ -181,20 +187,18 @@ public class CLIViewTest {
         view.showRanks(Rank.GOOD, 85, 1000);
 
         assertEquals(
-            """
-            Current Rank: Good - 85 points
-            
-             Beginner   - 0    points minimum
-             Good Start - 20   points minimum
-             Moving Up  - 50   points minimum
-            *Good       - 80   points minimum
-             Solid      - 150  points minimum
-             Nice       - 250  points minimum
-             Great      - 400  points minimum
-             Amazing    - 500  points minimum
-             Genius     - 700  points minimum
-             Queen Bee  - 1000 points minimum
-            """,
+            "Current Rank: Good - 85 points"    + System.lineSeparator() +
+                                                  System.lineSeparator() +
+            " Beginner   - 0    points minimum" + System.lineSeparator() +
+            " Good Start - 20   points minimum" + System.lineSeparator() +
+            " Moving Up  - 50   points minimum" + System.lineSeparator() +
+            "*Good       - 80   points minimum" + System.lineSeparator() +
+            " Solid      - 150  points minimum" + System.lineSeparator() +
+            " Nice       - 250  points minimum" + System.lineSeparator() +
+            " Great      - 400  points minimum" + System.lineSeparator() +
+            " Amazing    - 500  points minimum" + System.lineSeparator() +
+            " Genius     - 700  points minimum" + System.lineSeparator() +
+            " Queen Bee  - 1000 points minimum" + System.lineSeparator(),
             outContent.toString()
         );
     }
