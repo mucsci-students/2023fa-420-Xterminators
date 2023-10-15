@@ -425,8 +425,8 @@ public class Puzzle {
             // (first letter, word length)
             .map(s -> new ImmutablePair<>(s.charAt(0), s.length()))
             .collect(Collectors.groupingBy(
-                // Groups (collapses elements into groups) by he identity
-                // function. Each distinct pair is its onw group.
+                // Groups (collapses elements into groups) by the identity
+                // function. Each distinct pair is its own group.
                 Function.identity(),
                 // Maps each group to the number of elements in it.
                 // Here, the number of words with that starting letter and
