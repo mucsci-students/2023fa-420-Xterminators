@@ -130,12 +130,12 @@ public class CLIView {
         if (earnedPoints == 1) {
             System.out.println(
                 "Current Rank: " + rank.getRankName() + " - " +
-                earnedPoints + " point\n"
+                earnedPoints + " point" + System.lineSeparator()
             );
         } else {
             System.out.println(
                 "Current Rank: " + rank.getRankName() + " - " +
-                earnedPoints + " points\n"
+                earnedPoints + " points" + System.lineSeparator()
             );
         }
 
