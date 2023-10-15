@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
@@ -398,5 +404,47 @@ public class Puzzle {
         return true;
     }
 
-    
+    private HelpData calculateHelpData() {
+        int numWords = validWords.size();
+
+        long numPangrams = validWords.parallelStream()
+            .filter(this::isPangram)
+            .count();
+        
+        long numPerfectPangrams = validWords.parallelStream()
+            .filter(this::isPangram)
+            .filter(s -> s.length() == 7)
+            .count();
+        
+        Map<Pair<Character, Integer>, Long> grid = validWords.parallelStream()
+            // maps each word to a pair (char, int) representing
+            // (first letter, word length)
+            .map(s -> new ImmutablePair<>(s.charAt(0), s.length()))
+            .collect(Collectors.groupingBy(
+                // Groups (collapses elements into groups) by he identity
+                // function. Each distinct pair is its onw group.
+                Function.identity(),
+                // Maps each group to the number of elements in it.
+                // Here, the number of words with that starting letter and
+                // length.
+                Collectors.counting()
+            ));
+        
+        Map<String, Long> letterLists = validWords.parallelStream()
+            // Maps each word down to just its first two letters
+            .map(s -> s.substring(0, 2))
+            .collect(Collectors.groupingBy(
+                Function.identity(),
+                Collectors.counting()
+            ));
+
+        return new HelpData(
+            numWords,
+            totalPoints,
+            numPangrams,
+            numPerfectPangrams,
+            grid,
+            letterLists
+        );
+    }
 }
