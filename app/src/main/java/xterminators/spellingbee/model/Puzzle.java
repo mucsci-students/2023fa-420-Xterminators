@@ -83,6 +83,8 @@ public class Puzzle {
         }
 
         bufferedReader.close();
+
+        this.helpData = calculateHelpData();
     }
 
     /**
@@ -131,6 +133,8 @@ public class Puzzle {
         }
 
         bufferedReader.close();
+
+        this.helpData = calculateHelpData();
     }
 
      /**
