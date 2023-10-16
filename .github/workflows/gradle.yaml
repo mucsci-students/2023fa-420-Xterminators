@@ -26,3 +26,11 @@ jobs:
 
     - name: Execute Gradle build
       run: ./gradlew build
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          app/build/reports/tests
+          app/build/test-results
