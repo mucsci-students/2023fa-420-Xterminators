@@ -5,6 +5,8 @@ on:
     branches:
       - develop
     types: [opened, reopened, synchronize]
+  push:
+    branches: "**"
 
 jobs:
   gradle:
