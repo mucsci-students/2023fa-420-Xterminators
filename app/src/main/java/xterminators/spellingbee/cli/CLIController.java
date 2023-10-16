@@ -431,13 +431,6 @@ public class CLIController {
             baseWord[i] = nonRequiredLetters[i];
         }
 
-        String filename = "";
-
-        //This will create a title for the Json file consisting
-        // of the non-required letters followed by the required letter.
-        for (char c : baseWord){
-            filename = filename + c;
-        }
         try{
 
             // Take the necessary attributes and create a puzzleSave object,
@@ -461,7 +454,7 @@ public class CLIController {
                     //Close the writer
                     writing.close ();
                     //Notify the user
-                    System.out.println("File created: " + filename + ".json");
+                    System.out.println("File created: " + pathName);
                 }
             
         } catch (IOException e) {
