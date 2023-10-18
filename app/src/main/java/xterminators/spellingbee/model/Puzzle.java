@@ -316,6 +316,7 @@ public class Puzzle {
         // If points (wordValue) != 0, then the word is valid
         if (points != 0) {
             foundWords.add(word);
+            Collections.sort(foundWords);
             earnedPoints += points;
         }
         
