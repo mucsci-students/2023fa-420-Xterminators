@@ -186,7 +186,7 @@ public class GuiView {
      */
     private void initActionComponents() {
         JPanel actionPanel = new JPanel();
-        actionPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH - 30, FRAME_HEIGHT - 105);
+        actionPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH - 20, FRAME_HEIGHT - 105);
         actionPanel.setBackground(Color.gray);
         mainPanel.add(actionPanel);
 
@@ -194,14 +194,13 @@ public class GuiView {
         JButton newPuzzleButton = createButton("New Puzzle", 0, 0, 50, 12, actionPanel);
         newPuzzleButton.addActionListener(this::newPuzzleButtonClick);
 
+        //Random Puzzle
+        JButton randomPuzzleButton = createButton("New Random Puzzle", 0, 0, 50, 12, actionPanel);
+        randomPuzzleButton.addActionListener(this::randomPuzzleButtonClick);
+
         // Shuffle Letters
         JButton shufflePuzzleButton = createButton("Shuffle", 0, 16, 50, 12, actionPanel);
         shufflePuzzleButton.addActionListener(this::shufflePuzzleButtonClick);
-
-        //Random Puzzle
-        //JButton randomPuzzleButton = createButton("Random Puzzle", 0, 0, 50, 12, actionPanel);
-        //randomPuzzleButton.addActionListener(this::randomPuzzleButtonClick);
-        //actionPanel.add(randomPuzzleButton);
 
         // Save Puzzle
         JButton savePuzzleButton = createButton("Save Puzzle", 0, 0, 50, 12, actionPanel);
@@ -212,12 +211,10 @@ public class GuiView {
                 System.out.println("There was an I/O error, please try again.");
             }
         });
-        actionPanel.add(savePuzzleButton);
 
         // Load Puzzle
         JButton loadPuzzleButton = createButton("Load Puzzle", 0, 0, 50, 12, actionPanel);
         loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
-        actionPanel.add(loadPuzzleButton);
 
         //
         // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
@@ -230,11 +227,11 @@ public class GuiView {
     private void initFoundWordsComponents() {
         JLabel foundWordsLabel = new JLabel("Found Words");
         foundWordsLabel.setFont(standardFont);
-        foundWordsLabel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 20, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
+        foundWordsLabel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 50, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
         mainPanel.add(foundWordsLabel);
 
         JPanel foundWordsPanel = new JPanel();
-        foundWordsPanel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 5, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH, FRAME_HEIGHT - 105);
+        foundWordsPanel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 35, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH, FRAME_HEIGHT - 105);
         foundWordsPanel.setBackground(Color.gray);
         mainPanel.add(foundWordsPanel);
 
@@ -322,6 +319,14 @@ public class GuiView {
         }
     }
 
+    /**
+     * The handler for the shuffle button click.
+     * If there is a puzzle loaded, the letters
+     * will be shuffled and the puzzle letter buttons
+     * will be redrawn.
+     * 
+     * @param e The ActionEvent from the button click.
+     */
     private void shufflePuzzleButtonClick(ActionEvent e) {
         if (guiController.getPuzzle() == null) {
             return;
@@ -362,9 +367,34 @@ public class GuiView {
         tbGuess.setText("");
     }
 
-    //private void randomPuzzleButtonClick(ActionEvent e) {
-        
-    //}
+    /**
+     * The handler for the random puzzle button click.
+     * If there is a puzzle loaded, the user will be 
+     * warned and asked for confirmation to load a new
+     * puzzle. If there is no puzzle loaded or the user
+     * confirms that they want to overwrite the current
+     * puzzle, a new puzzle is created.
+     * 
+     * @param e The ActionEvent from the button click.
+     */
+    private void randomPuzzleButtonClick(ActionEvent e) {
+        if (guiController.getPuzzle() != null) {
+            int userChoice = JOptionPane.showConfirmDialog(
+                mainFrame,
+                "There is already a puzzle loaded. " + 
+                "Do you want to load a new one anyway?",
+                "Puzzle Already Loaded",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (userChoice == JOptionPane.YES_OPTION) {
+                createPuzzle("", 'a');
+            }
+            // No action on NO_OPTION   
+        } else {
+            createPuzzle("", 'a');
+        }
+    }
 
     /**
      * The function that is called whenever the savepuzzlebutton is clicked.
