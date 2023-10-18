@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import xterminators.spellingbee.cli.CLIController;
 import xterminators.spellingbee.cli.CLIView;
-import xterminators.spellingbee.gui.GuiController;
+import xterminators.spellingbee.gui.GuiView;
 
 public class App {
     public static void main(String[] args) {
@@ -29,7 +29,7 @@ public class App {
 
             cliController.run();
         } else {
-            GuiController ui = new GuiController();
+            GuiView ui = new GuiView();
             ui.InitUI();
         }
     }
