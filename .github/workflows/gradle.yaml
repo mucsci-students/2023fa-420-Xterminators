@@ -30,7 +30,7 @@ jobs:
     - name: Upload Test Results
       uses: actions/upload-artifact@v3
       with:
-        name: test-results
+        name: test-results-${{ matrix.os }}
         path: |
           app/build/reports/tests
           app/build/test-results
