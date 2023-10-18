@@ -17,14 +17,14 @@ import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleSave;
 import xterminators.spellingbee.model.Rank;
 
-public class GuiFunctions {
+public class GuiController {
 
     private Puzzle puzzle;
-    private GuiController guiController;
+    private GuiView guiView;
 
-    public GuiFunctions(GuiController guic) {
+    public GuiController(GuiView guic) {
         puzzle = null;
-        guiController = guic;
+        guiView = guic;
     }
 
     /** The path to the dictionary file for the game. */
