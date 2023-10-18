@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
@@ -29,6 +35,9 @@ public class Puzzle {
     private int totalPoints;
     /** The number of points currently earned in the puzzle. */
     private int earnedPoints;
+
+    /** The HelpData object storing all the help data for the puzzle. */
+    private HelpData helpData;
 
     /**
      * Constructs a Puzzle object from the required letter, and the six other
@@ -74,6 +83,8 @@ public class Puzzle {
         }
 
         bufferedReader.close();
+
+        this.helpData = calculateHelpData();
     }
 
     /**
@@ -122,6 +133,8 @@ public class Puzzle {
         }
 
         bufferedReader.close();
+
+        this.helpData = calculateHelpData();
     }
 
      /**
@@ -324,6 +337,15 @@ public class Puzzle {
     }
 
     /**
+     * Gets the help data for the puzzle.
+     * 
+     * @return The help data for the puzzle
+     */
+    public HelpData getHelpData() {
+        return helpData;
+    }
+
+    /**
      * Shuffles the secondary letters for the next display
      * 
      * @implNote Used the Fisher–Yates shuffle algorithim to shuffle secondaryLetters.
@@ -387,5 +409,47 @@ public class Puzzle {
         return true;
     }
 
-    
+    private HelpData calculateHelpData() {
+        int numWords = validWords.size();
+
+        long numPangrams = validWords.parallelStream()
+            .filter(this::isPangram)
+            .count();
+        
+        long numPerfectPangrams = validWords.parallelStream()
+            .filter(this::isPangram)
+            .filter(s -> s.length() == 7)
+            .count();
+        
+        Map<Pair<Character, Integer>, Long> grid = validWords.parallelStream()
+            // maps each word to a pair (char, int) representing
+            // (first letter, word length)
+            .map(s -> new ImmutablePair<>(s.charAt(0), s.length()))
+            .collect(Collectors.groupingBy(
+                // Groups (collapses elements into groups) by the identity
+                // function. Each distinct pair is its own group.
+                Function.identity(),
+                // Maps each group to the number of elements in it.
+                // Here, the number of words with that starting letter and
+                // length.
+                Collectors.counting()
+            ));
+        
+        Map<String, Long> letterLists = validWords.parallelStream()
+            // Maps each word down to just its first two letters
+            .map(s -> s.substring(0, 2))
+            .collect(Collectors.groupingBy(
+                Function.identity(),
+                Collectors.counting()
+            ));
+
+        return new HelpData(
+            numWords,
+            totalPoints,
+            numPangrams,
+            numPerfectPangrams,
+            grid,
+            letterLists
+        );
+    }
 }
