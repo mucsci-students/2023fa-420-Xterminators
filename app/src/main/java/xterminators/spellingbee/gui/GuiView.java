@@ -89,6 +89,7 @@ public class GuiView {
         mainFrame.setLocation(centerX, centerY);
         mainFrame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         mainFrame.setLayout(null);
+        mainFrame.setResizable(false);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
     }
