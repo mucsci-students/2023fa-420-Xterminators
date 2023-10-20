@@ -40,6 +40,17 @@ public class Puzzle {
     private HelpData helpData;
 
     /**
+     * A record for containing all the data in a JSON save of a puzzle.
+     */
+    private record PuzzleData(
+        char[] baseWord,
+        List<String> foundWords,
+        int playerPoints,
+        char requiredLetter,
+        int maxPoints
+    ) {}
+
+    /**
      * Constructs a Puzzle object from the required letter, and the six other
      * acceptable letters. Fills validWords by parcing through dictionaryFile.
      * 
