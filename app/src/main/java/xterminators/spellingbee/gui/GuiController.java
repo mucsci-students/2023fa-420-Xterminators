@@ -27,12 +27,17 @@ public class GuiController {
         guiView = guic;
     }
 
-    /** The path to the dictionary file for the game. */
-    public static final String DICTIONARY_PATH
-        = Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString();
-    /** The path to the dictionary of valid starting words. */
-    public static final String ROOT_DICTIONARY_PATH
-        = Paths.get("src", "main", "resources", "dictionary_roots.txt").toString();
+    // Idealy these two files would just be instance variable and be passed to
+    // a constructor, but they will be hardcoded untill proper constructors are
+    // made.
+    /** The file pointing to the full dictionary of usable words. */
+    public static final File DICTIONARY_FILE = new File(
+        Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
+    );
+    /** The file pointing to the dictionary of valid root words. */
+    public static final File ROOT_DICTIONARY_FILE = new File(
+        Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
+    );
 
     public Puzzle getPuzzle() {
         return puzzle;
@@ -54,8 +59,8 @@ public class GuiController {
         throws IllegalArgumentException, FileNotFoundException, IOException  {
 
         try {
-            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
-            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_PATH);
+            FileReader dictionaryFile = new FileReader(DICTIONARY_FILE);
+            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_FILE);
             if (seedWord != null && !seedWord.equals("")) {
                 puzzle = Puzzle.fromWord(seedWord, requiredLetter, 
                     rootWordsFile, dictionaryFile, false);
@@ -208,7 +213,7 @@ public class GuiController {
                 newSecondaryLetters[i] = BaseWord[i];
             }
 
-            FileReader dictionaryFile = new FileReader(DICTIONARY_PATH);
+            FileReader dictionaryFile = new FileReader(DICTIONARY_FILE);
 
             ArrayList<String> newFoundWords = new ArrayList<String>();
 
