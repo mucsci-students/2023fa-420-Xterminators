@@ -85,6 +85,9 @@ public class GuiView {
         mainPanel.setBackground(Color.gray);
         mainFrame.setContentPane(mainPanel);
 
+        // Start off with a random puzzle
+        createRandomPuzzle();
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int centerX = (int) (screenSize.getWidth() - FRAME_WIDTH) / 2;
         int centerY = (int) (screenSize.getHeight() - FRAME_HEIGHT) / 2;
@@ -294,7 +297,7 @@ public class GuiView {
             if (puzzleWord != null && !puzzleWord.isEmpty()) {
                 createPuzzle(puzzleWord.toLowerCase(), requiredLetter);
             } else {
-                createPuzzle("", 'a');
+                createRandomPuzzle();
             }
             redrawRank();
             drawFoundWords();
@@ -371,12 +374,12 @@ public class GuiView {
             );
 
             if (userChoice == JOptionPane.YES_OPTION) {
-                createPuzzle("", 'a');
+                createRandomPuzzle();
                 refocusGuessTextBox();
             }
             // No action on NO_OPTION   
         } else {
-            createPuzzle("", 'a');
+            createRandomPuzzle();
             refocusGuessTextBox();
         }
     }
@@ -487,6 +490,15 @@ public class GuiView {
         panel.add(newButton);
 
         return newButton;
+    }
+
+    /**
+     * Creates a new random puzzle in GuiFunctions,
+     * and then updates all of the letter buttons
+     * with the puzzle's letters.
+     */
+    private void createRandomPuzzle() {
+        createPuzzle("", 'a');
     }
 
     /**
