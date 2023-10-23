@@ -50,6 +50,8 @@ public class GuiView {
     private static final int PZL_BTN_HEIGHT = 50;
     private static final int PUZZLE_WIDTH = (PZL_BTN_WIDTH * 3) + 60;
 
+    // Initialization *********************************************************
+
     /**
      * This sets up all of the components of the UI.
      * All components are created here, and all event
@@ -248,27 +250,8 @@ public class GuiView {
         foundWordsPanel.add(scrollPane);
     }
 
-    /**
-     * Creates a new button and adds it to the given panel.
-     * 
-     * @param text The text that should be on the button.
-     * @param x The X coordinate of the button.
-     * @param y The Y coordinate of the button.
-     * @param buttonWidth How wide the button should be.
-     * @param buttonHeight How tall the button should be.
-     * @param panel The panel to add the button to.
-     * 
-     * @return The newly created button.
-     */
-    private JButton createButton(String text, int x, int y, int buttonWidth, int buttonHeight, JPanel panel) {
-        JButton newButton = new JButton(text);
-        newButton.setBounds(x, y, buttonWidth, buttonHeight);
-        newButton.setBackground(Color.white);
-        newButton.setFont(standardFont);
-        panel.add(newButton);
-
-        return newButton;
-    }
+    // End Initialization *****************************************************
+    // Button Click Handlers **************************************************
 
     /**
      * The handler for a letter button click.
@@ -318,7 +301,7 @@ public class GuiView {
             }
             redrawRank();
             drawFoundWords();
-            tbGuess.requestFocus();
+            refocusGuessTextBox();
         }
     }
 
@@ -367,7 +350,7 @@ public class GuiView {
             redrawRank();
             showMessage(result);
         }
-        tbGuess.setText("");
+        refocusGuessTextBox();
     }
 
     /**
@@ -392,10 +375,12 @@ public class GuiView {
 
             if (userChoice == JOptionPane.YES_OPTION) {
                 createRandomPuzzle();
+                refocusGuessTextBox();
             }
             // No action on NO_OPTION   
         } else {
             createRandomPuzzle();
+            refocusGuessTextBox();
         }
     }
 
@@ -451,6 +436,62 @@ public class GuiView {
         }
     }
 
+    // End Button Event Handlers **********************************************
+    // Dialogs ****************************************************************
+
+    /**
+     * Displays a dialog box with the given message and an information icon.
+     * 
+     * @param message The message to show in the dialog.
+     */
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
+            message,
+            "",
+            JOptionPane.INFORMATION_MESSAGE
+        );        
+    }
+
+    /**
+     * Displays a dialog box with the given message and an error icon.
+     * 
+     * @param errorMessage The message to show in the dialog.
+     */
+    private void showErrorDialog(String errorMessage) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
+            errorMessage,
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    // End Dialogs ************************************************************
+    // Other Functions ********************************************************
+
+    /**
+     * Creates a new button and adds it to the given panel.
+     * 
+     * @param text The text that should be on the button.
+     * @param x The X coordinate of the button.
+     * @param y The Y coordinate of the button.
+     * @param buttonWidth How wide the button should be.
+     * @param buttonHeight How tall the button should be.
+     * @param panel The panel to add the button to.
+     * 
+     * @return The newly created button.
+     */
+    private JButton createButton(String text, int x, int y, int buttonWidth, int buttonHeight, JPanel panel) {
+        JButton newButton = new JButton(text);
+        newButton.setBounds(x, y, buttonWidth, buttonHeight);
+        newButton.setBackground(Color.white);
+        newButton.setFont(standardFont);
+        panel.add(newButton);
+
+        return newButton;
+    }
+
     /**
      * Creates a new random puzzle in GuiFunctions,
      * and then updates all of the letter buttons
@@ -479,6 +520,12 @@ public class GuiView {
         redrawPuzzleButtons();
     }
 
+    /**
+     * Sets the text of all the puzzle buttons to the letters
+     * of the puzzle. This is necessary whenever the letters
+     * are expected to change, such as after a new puzzle is
+     * created or the puzzle letters are shuffled.
+     */
     private void redrawPuzzleButtons() {
         Puzzle p = guiController.getPuzzle();
         if (p != null) {
@@ -559,34 +606,6 @@ public class GuiView {
     }
 
     /**
-     * Displays a dialog box with the given message and an information icon.
-     * 
-     * @param message The message to show in the dialog.
-     */
-    private void showMessage(String message) {
-        JOptionPane.showMessageDialog(
-            mainFrame, 
-            message,
-            "",
-            JOptionPane.INFORMATION_MESSAGE
-        );        
-    }
-
-    /**
-     * Displays a dialog box with the given message and an error icon.
-     * 
-     * @param errorMessage The message to show in the dialog.
-     */
-    private void showErrorDialog(String errorMessage) {
-        JOptionPane.showMessageDialog(
-            mainFrame, 
-            errorMessage,
-            "Error",
-            JOptionPane.ERROR_MESSAGE
-        );
-    }
-
-    /**
      * Fills the found word box with all found words from the puzzle's
      * found words list. 
      */
@@ -599,4 +618,11 @@ public class GuiView {
             }
         }
     }
+
+    private void refocusGuessTextBox() {
+        tbGuess.setText("");
+        tbGuess.requestFocus();
+    }
+
+    // End Other Functions ****************************************************
 }
