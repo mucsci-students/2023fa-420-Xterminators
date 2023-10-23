@@ -129,7 +129,7 @@ public class GuiController {
         //This will create a title for the Json file consisting
         // of the non-required letters followed by the required letter.
         for (char c : baseWord){
-            filename = filename + c;
+            filename += c;
         }
 
         // Take the necessary attributes and create a puzzleSave object,
