@@ -1,6 +1,8 @@
 package xterminators.spellingbee.model;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,11 +11,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
@@ -49,6 +55,35 @@ public class Puzzle {
         char requiredLetter,
         int maxPoints
     ) {}
+
+     /**
+      * Loads the puzzle saved in the file into a new Puzzle object.
+      *
+      * @param savedPuzzle the file where a puzzle is saved
+      * @param dictionaryFile
+      * @return a new Puzzle constructed from the file contents
+      * @throws FileNotFoundException
+      * @throws JsonSyntaxException
+      */
+    public static Puzzle loadPuzzle(File savedPuzzle, File dictionaryFile)
+        throws FileNotFoundException, JsonSyntaxException
+    {
+        Scanner reader = new Scanner(savedPuzzle);
+
+        StringBuilder json = new StringBuilder();
+
+        while(reader.hasNextLine()) {
+            json.append(reader.nextLine());
+        }
+
+        reader.close();
+
+        Gson gson = new Gson();
+
+        PuzzleData saveData = gson.fromJson(json.toString(), PuzzleData.class);
+
+        return new Puzzle(saveData, dictionaryFile);
+    }
 
     /**
      * Constructs a Puzzle object from the required letter, and the six other
