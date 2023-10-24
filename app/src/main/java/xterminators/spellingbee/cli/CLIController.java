@@ -63,9 +63,8 @@ public class CLIController {
 
         Scanner scanner = new Scanner(System.in);
 
-        boolean exitFlag = false;
-
-        while (scanner.hasNextLine() && !exitFlag) {
+        inputLoop:
+        while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
 
             String[] tokens = input.split(" ");
@@ -92,7 +91,7 @@ public class CLIController {
 
             switch (curCommand) {
                 case EXIT -> {
-                    exitFlag = true;
+                   break inputLoop;
                 }
                 case FOUND_WORDS -> {
                     foundWords();
