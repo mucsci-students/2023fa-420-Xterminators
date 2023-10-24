@@ -55,16 +55,18 @@ public class Puzzle {
         char requiredLetter,
         int maxPoints
     ) {}
-
-     /**
-      * Loads the puzzle saved in the file into a new Puzzle object.
-      *
-      * @param savedPuzzle the file where a puzzle is saved
-      * @param dictionaryFile
-      * @return a new Puzzle constructed from the file contents
-      * @throws FileNotFoundException
-      * @throws JsonSyntaxException
-      */
+    
+    /**
+     * 
+     * @param savedPuzzle the file where a puzzle is saved
+     * @param dictionaryFile the dictionary file to be used to generate
+     *                       validWords
+     * @return a new Puzzle constructed from the save file's contents
+     * @throws FileNotFoundException if the save file doesn't exist or
+     *                               if the dictionary file doesn't exist
+     * @throws JsonSyntaxException if json is not a valid representation for a
+     *                             saved puzzle
+     */
     public static Puzzle loadPuzzle(File savedPuzzle, File dictionaryFile)
         throws FileNotFoundException, JsonSyntaxException
     {
