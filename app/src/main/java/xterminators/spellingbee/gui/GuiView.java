@@ -50,6 +50,8 @@ public class GuiView {
     private static final int PZL_BTN_HEIGHT = 50;
     private static final int PUZZLE_WIDTH = (PZL_BTN_WIDTH * 3) + 60;
 
+    // Initialization *********************************************************
+
     /**
      * This sets up all of the components of the UI.
      * All components are created here, and all event
@@ -83,12 +85,16 @@ public class GuiView {
         mainPanel.setBackground(Color.gray);
         mainFrame.setContentPane(mainPanel);
 
+        // Start off with a random puzzle
+        createRandomPuzzle();
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int centerX = (int) (screenSize.getWidth() - FRAME_WIDTH) / 2;
         int centerY = (int) (screenSize.getHeight() - FRAME_HEIGHT) / 2;
         mainFrame.setLocation(centerX, centerY);
         mainFrame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         mainFrame.setLayout(null);
+        mainFrame.setResizable(false);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
     }
@@ -185,7 +191,7 @@ public class GuiView {
      */
     private void initActionComponents() {
         JPanel actionPanel = new JPanel();
-        actionPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH - 30, FRAME_HEIGHT - 105);
+        actionPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH - 20, FRAME_HEIGHT - 105);
         actionPanel.setBackground(Color.gray);
         mainPanel.add(actionPanel);
 
@@ -193,14 +199,13 @@ public class GuiView {
         JButton newPuzzleButton = createButton("New Puzzle", 0, 0, 50, 12, actionPanel);
         newPuzzleButton.addActionListener(this::newPuzzleButtonClick);
 
+        //Random Puzzle
+        JButton randomPuzzleButton = createButton("New Random Puzzle", 0, 0, 50, 12, actionPanel);
+        randomPuzzleButton.addActionListener(this::randomPuzzleButtonClick);
+
         // Shuffle Letters
         JButton shufflePuzzleButton = createButton("Shuffle", 0, 16, 50, 12, actionPanel);
         shufflePuzzleButton.addActionListener(this::shufflePuzzleButtonClick);
-
-        //Random Puzzle
-        //JButton randomPuzzleButton = createButton("Random Puzzle", 0, 0, 50, 12, actionPanel);
-        //randomPuzzleButton.addActionListener(this::randomPuzzleButtonClick);
-        //actionPanel.add(randomPuzzleButton);
 
         // Save Puzzle
         JButton savePuzzleButton = createButton("Save Puzzle", 0, 0, 50, 12, actionPanel);
@@ -211,12 +216,10 @@ public class GuiView {
                 System.out.println("There was an I/O error, please try again.");
             }
         });
-        actionPanel.add(savePuzzleButton);
 
         // Load Puzzle
         JButton loadPuzzleButton = createButton("Load Puzzle", 0, 0, 50, 12, actionPanel);
         loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
-        actionPanel.add(loadPuzzleButton);
 
         //
         // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
@@ -229,11 +232,11 @@ public class GuiView {
     private void initFoundWordsComponents() {
         JLabel foundWordsLabel = new JLabel("Found Words");
         foundWordsLabel.setFont(standardFont);
-        foundWordsLabel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 20, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
+        foundWordsLabel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 50, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
         mainPanel.add(foundWordsLabel);
 
         JPanel foundWordsPanel = new JPanel();
-        foundWordsPanel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 5, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH, FRAME_HEIGHT - 105);
+        foundWordsPanel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 35, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH, FRAME_HEIGHT - 105);
         foundWordsPanel.setBackground(Color.gray);
         mainPanel.add(foundWordsPanel);
 
@@ -247,27 +250,8 @@ public class GuiView {
         foundWordsPanel.add(scrollPane);
     }
 
-    /**
-     * Creates a new button and adds it to the given panel.
-     * 
-     * @param text The text that should be on the button.
-     * @param x The X coordinate of the button.
-     * @param y The Y coordinate of the button.
-     * @param buttonWidth How wide the button should be.
-     * @param buttonHeight How tall the button should be.
-     * @param panel The panel to add the button to.
-     * 
-     * @return The newly created button.
-     */
-    private JButton createButton(String text, int x, int y, int buttonWidth, int buttonHeight, JPanel panel) {
-        JButton newButton = new JButton(text);
-        newButton.setBounds(x, y, buttonWidth, buttonHeight);
-        newButton.setBackground(Color.white);
-        newButton.setFont(standardFont);
-        panel.add(newButton);
-
-        return newButton;
-    }
+    // End Initialization *****************************************************
+    // Button Click Handlers **************************************************
 
     /**
      * The handler for a letter button click.
@@ -313,14 +297,22 @@ public class GuiView {
             if (puzzleWord != null && !puzzleWord.isEmpty()) {
                 createPuzzle(puzzleWord.toLowerCase(), requiredLetter);
             } else {
-                createPuzzle("", 'a');
+                createRandomPuzzle();
             }
             redrawRank();
             drawFoundWords();
-            tbGuess.requestFocus();
+            refocusGuessTextBox();
         }
     }
 
+    /**
+     * The handler for the shuffle button click.
+     * If there is a puzzle loaded, the letters
+     * will be shuffled and the puzzle letter buttons
+     * will be redrawn.
+     * 
+     * @param e The ActionEvent from the button click.
+     */
     private void shufflePuzzleButtonClick(ActionEvent e) {
         if (guiController.getPuzzle() == null) {
             return;
@@ -358,12 +350,39 @@ public class GuiView {
             redrawRank();
             showMessage(result);
         }
-        tbGuess.setText("");
+        refocusGuessTextBox();
     }
 
-    //private void randomPuzzleButtonClick(ActionEvent e) {
-        
-    //}
+    /**
+     * The handler for the random puzzle button click.
+     * If there is a puzzle loaded, the user will be 
+     * warned and asked for confirmation to load a new
+     * puzzle. If there is no puzzle loaded or the user
+     * confirms that they want to overwrite the current
+     * puzzle, a new puzzle is created.
+     * 
+     * @param e The ActionEvent from the button click.
+     */
+    private void randomPuzzleButtonClick(ActionEvent e) {
+        if (guiController.getPuzzle() != null) {
+            int userChoice = JOptionPane.showConfirmDialog(
+                mainFrame,
+                "There is already a puzzle loaded. " + 
+                "Do you want to load a new one anyway?",
+                "Puzzle Already Loaded",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (userChoice == JOptionPane.YES_OPTION) {
+                createRandomPuzzle();
+                refocusGuessTextBox();
+            }
+            // No action on NO_OPTION   
+        } else {
+            createRandomPuzzle();
+            refocusGuessTextBox();
+        }
+    }
 
     /**
      * The function that is called whenever the savepuzzlebutton is clicked.
@@ -417,6 +436,71 @@ public class GuiView {
         }
     }
 
+    // End Button Event Handlers **********************************************
+    // Dialogs ****************************************************************
+
+    /**
+     * Displays a dialog box with the given message and an information icon.
+     * 
+     * @param message The message to show in the dialog.
+     */
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
+            message,
+            "",
+            JOptionPane.INFORMATION_MESSAGE
+        );        
+    }
+
+    /**
+     * Displays a dialog box with the given message and an error icon.
+     * 
+     * @param errorMessage The message to show in the dialog.
+     */
+    private void showErrorDialog(String errorMessage) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
+            errorMessage,
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    // End Dialogs ************************************************************
+    // Other Functions ********************************************************
+
+    /**
+     * Creates a new button and adds it to the given panel.
+     * 
+     * @param text The text that should be on the button.
+     * @param x The X coordinate of the button.
+     * @param y The Y coordinate of the button.
+     * @param buttonWidth How wide the button should be.
+     * @param buttonHeight How tall the button should be.
+     * @param panel The panel to add the button to.
+     * 
+     * @return The newly created button.
+     */
+    private JButton createButton(String text, int x, int y, int buttonWidth, int buttonHeight, JPanel panel) {
+        JButton newButton = new JButton(text);
+        newButton.setBounds(x, y, buttonWidth, buttonHeight);
+        newButton.setBackground(Color.white);
+        newButton.setFont(standardFont);
+        panel.add(newButton);
+
+        return newButton;
+    }
+
+    /**
+     * Creates a new random puzzle in GuiFunctions,
+     * and then updates all of the letter buttons
+     * with the puzzle's letters.
+     */
+    private void createRandomPuzzle() {
+        createPuzzle("", 'a');
+    }
+
     /**
      * Creates a new puzzle in GuiFunctions,
      * and then updates all of the letter buttons
@@ -436,6 +520,12 @@ public class GuiView {
         redrawPuzzleButtons();
     }
 
+    /**
+     * Sets the text of all the puzzle buttons to the letters
+     * of the puzzle. This is necessary whenever the letters
+     * are expected to change, such as after a new puzzle is
+     * created or the puzzle letters are shuffled.
+     */
     private void redrawPuzzleButtons() {
         Puzzle p = guiController.getPuzzle();
         if (p != null) {
@@ -516,34 +606,6 @@ public class GuiView {
     }
 
     /**
-     * Displays a dialog box with the given message and an information icon.
-     * 
-     * @param message The message to show in the dialog.
-     */
-    private void showMessage(String message) {
-        JOptionPane.showMessageDialog(
-            mainFrame, 
-            message,
-            "",
-            JOptionPane.INFORMATION_MESSAGE
-        );        
-    }
-
-    /**
-     * Displays a dialog box with the given message and an error icon.
-     * 
-     * @param errorMessage The message to show in the dialog.
-     */
-    private void showErrorDialog(String errorMessage) {
-        JOptionPane.showMessageDialog(
-            mainFrame, 
-            errorMessage,
-            "Error",
-            JOptionPane.ERROR_MESSAGE
-        );
-    }
-
-    /**
      * Fills the found word box with all found words from the puzzle's
      * found words list. 
      */
@@ -556,4 +618,11 @@ public class GuiView {
             }
         }
     }
+
+    private void refocusGuessTextBox() {
+        tbGuess.setText("");
+        tbGuess.requestFocus();
+    }
+
+    // End Other Functions ****************************************************
 }
