@@ -418,7 +418,7 @@ public class Puzzle {
         }
 
         // If the word is already found, return -1
-        if (foundWords.stream().anyMatch(s -> s.equalsIgnoreCase(word))) {
+        if (foundWords.stream().anyMatch(word::equalsIgnoreCase)) {
             return -1;
         }
 
