@@ -34,9 +34,9 @@ public class Puzzle {
     /** The secondary letters of the puzzle. */
     private char[] secondaryLetters;
     /** The list of all valid words for the puzzle. */
-    private ArrayList<String> validWords;
+    private List<String> validWords;
     /** The list of all words currently found in the puzzle. */
-    private ArrayList<String> foundWords;
+    private List<String> foundWords;
     /** The total number of points that can be earned in the puzzle. */
     private int totalPoints;
     /** The number of points currently earned in the puzzle. */
@@ -55,8 +55,9 @@ public class Puzzle {
         char requiredLetter,
         int maxPoints
     ) {}
-    
+
     /**
+     * Loads a saved puzzle json into a Puzzle object.
      * 
      * @param savedPuzzle the file where a puzzle is saved
      * @param dictionaryFile the dictionary file to be used to generate
@@ -64,11 +65,15 @@ public class Puzzle {
      * @return a new Puzzle constructed from the save file's contents
      * @throws FileNotFoundException if the save file doesn't exist or
      *                               if the dictionary file doesn't exist
+     * @throws IOException
      * @throws JsonSyntaxException if json is not a valid representation for a
      *                             saved puzzle
+     * @throws IllegalArgumentException if the json file contains an impossible
+     *                                  puzzle
      */
     public static Puzzle loadPuzzle(File savedPuzzle, File dictionaryFile)
-        throws FileNotFoundException, JsonSyntaxException
+        throws FileNotFoundException, IOException, JsonSyntaxException,
+               IllegalArgumentException
     {
         Scanner reader = new Scanner(savedPuzzle);
 
@@ -85,6 +90,67 @@ public class Puzzle {
         PuzzleData saveData = gson.fromJson(json.toString(), PuzzleData.class);
 
         return new Puzzle(saveData, dictionaryFile);
+    }
+
+    /**
+     * Constructs a Puzzle object from the given puzzle data.
+     * 
+     * @param puzzleData the puzzle data to construct into a Puzzle
+     * @param dictionaryFile the dictionary of words to parse
+     * @throws FileNotFoundException if the dictionary file is not found
+     * @throws IOException
+     * @throws IllegalArgumentException if the puzzle data represents an invalid
+     *                                  puzzle
+     */
+    private Puzzle(PuzzleData puzzleData, File dictionaryFile)
+        throws FileNotFoundException, IOException, IllegalArgumentException
+    {
+        this.primaryLetter = puzzleData.requiredLetter();
+
+        List<Character> otherLetters = new ArrayList<>();
+        for (char c : puzzleData.baseWord()) {
+            if (c != primaryLetter && !otherLetters.contains(c)) {
+                otherLetters.add(Character.valueOf(c));
+            }
+        }
+
+        if (otherLetters.size() < 6) {
+            throw new IllegalArgumentException(
+                "Not enough unique letters in base word"
+            );
+        } else if (otherLetters.size() > 6) {
+            throw new IllegalArgumentException(
+                "Too many unique letters in base word"
+            );
+        }
+        // Past here otherLetters.size() == 6
+
+        this.secondaryLetters = new char[6];
+
+        for (int i = 0; i < 6; i++) {
+            this.secondaryLetters[i] = otherLetters.get(i);
+        }
+
+        FileReader dictionaryFileReader = new FileReader(dictionaryFile);
+        BufferedReader dictBuffReader = new BufferedReader(dictionaryFileReader);
+
+        this.validWords = dictBuffReader.lines()
+            .parallel()
+            .filter(this::isValid)
+            .toList();
+
+        dictBuffReader.close();
+        dictionaryFileReader.close();
+
+        this.totalPoints = validWords.parallelStream()
+            .mapToInt(this::wordValue)
+            .sum();
+        
+        this.foundWords = new ArrayList<>(puzzleData.foundWords());
+
+        this.earnedPoints = this.foundWords.parallelStream()
+            .mapToInt(this::wordValue)
+            .sum();
     }
 
     /**
@@ -408,6 +474,11 @@ public class Puzzle {
             secondaryLetters[index] = secondaryLetters[i];
             secondaryLetters[i] = temp;
         }
+    }
+
+    private boolean isValid(String word) {
+        // TODO: Implement isValid
+        // Should only use primaryLetter and secondaryLetters
     }
 
     /**
