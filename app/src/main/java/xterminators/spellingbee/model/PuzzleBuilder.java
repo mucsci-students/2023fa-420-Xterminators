@@ -35,25 +35,9 @@ public class PuzzleBuilder {
     }
 
     /**
-     * Sets the builder to build a puzzle with the given required letter.
-     * Returns whether or not the letter is a valid required letter based on the
-     * root word. If the letter is not a valid required letter, no action is
-     * taken. This function assumes a root word is set.
-     *
-     * @param requiredLetter the required letter to be used
-     * @return if the required letter is valid for the root word
-     */
-    public boolean setRequiredLetter(char requiredLetter) {
-        // TODO: Implement setRequiredLetter
-        return false;
-    }
-
-    /**
      * Sets the builder to build a puzzle with the given root word and required
      * letter. Returns whether or not the pair is a valid start for a puzzle. If
-     * the pair is not a valid start for a puzzle, not action is taken. If the
-     * pair is a valid start for a puzzle, this is equivalent to setRoot(root) &&
-     * setRequiredLetter(requiredLetter).
+     * the pair is not a valid start for a puzzle, not action is taken.
      *
      * @param root the root word to be used
      * @param requiredLetter the required letter to be used
@@ -74,14 +58,6 @@ public class PuzzleBuilder {
     }
 
     /**
-     * Clears the current set root word, if one exists. This also clears any set
-     * required letter.
-     */
-    public void clearRootWord() {
-        // TODO: Implement clearRootWord
-    }
-
-    /**
      * Clears the current set required letter, if one exists.
      */
     public void clearRequiredLetter() {
@@ -90,7 +66,8 @@ public class PuzzleBuilder {
 
     /**
      * Builds and returns a Puzzle object based on the current state of the
-     * puzzle builder.
+     * puzzle builder. If no root word is set, a random one will be used. If no
+     * required letter is set a random one will be used.
      *
      * @return the built Puzzle object
      */
