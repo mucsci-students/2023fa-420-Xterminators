@@ -493,19 +493,15 @@ public class Puzzle {
     }
 
     /**
-     * Calculates the point value of a word.
+     * Calculates the point value of a word. Assumes the word is valid, will
+     * give undefined results if called on an invalid word.
      * 
      * @param word The word to calculate the value of
-     * @return The point value of the word if it is a valid guess,
-     *         0 if the guess is invalid
+     * @return The point value of the word assuming it is a valid guess
      */
     private int wordValue(String word) {
-        // If validWords does not contain word ignoring case, return 0
-        if (validWords.stream().noneMatch(s -> s.equalsIgnoreCase(word))) {
-            return 0;
-        }
-
         int wordValue;
+
         if (word.length() == MINIMUM_WORD_LENGTH) {
             wordValue = 1;
         } else {
