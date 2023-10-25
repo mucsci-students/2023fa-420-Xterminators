@@ -1,7 +1,9 @@
 package xterminators.spellingbee.model;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 /**
  * Puzzle builder for creating Puzzles from a single standard interface.
@@ -9,6 +11,8 @@ import java.io.FileNotFoundException;
 public class PuzzleBuilder {
     private File fullDictionary;
     private File rootsDictionary;
+
+    private String rootWord;
 
     /**
      * Creates a new PuzzleBuilder object.
@@ -36,6 +40,8 @@ public class PuzzleBuilder {
 
         this.fullDictionary = fullDictionary;
         this.rootsDictionary = rootsDictionary;
+
+        this.rootWord = null;
     }
 
     /**
@@ -48,8 +54,22 @@ public class PuzzleBuilder {
      * @return if the root word is a legal root word
      */
     public boolean setRootWord(String root) {
-        // TODO: Implement setRootWord
-        return false;
+        try {
+            FileReader rootsFileReader = new FileReader(rootsDictionary);
+            BufferedReader rootsReader = new BufferedReader(rootsFileReader);
+
+            boolean rootIsValid = rootsReader.lines()
+                .anyMatch(root::equals);
+
+            rootsReader.close();
+            rootsFileReader.close();
+
+            this.rootWord = root;
+
+            return rootIsValid;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
