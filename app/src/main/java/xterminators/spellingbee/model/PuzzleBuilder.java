@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
  * Puzzle builder for creating Puzzles from a single standard interface.
  */
 public class PuzzleBuilder {
+    private File fullDictionary;
+    private File rootsDictionary;
+
     /**
      * Creates a new PuzzleBuilder object.
      *
@@ -17,7 +20,22 @@ public class PuzzleBuilder {
     public PuzzleBuilder(File fullDictionary, File rootsDictionary)
         throws FileNotFoundException
     {
-        // TODO: Implement constructor
+        if (!fullDictionary.exists()) {
+            throw new FileNotFoundException(
+                "The full dictionary (" + fullDictionary.getAbsolutePath() + ") " +
+                "does not exist."
+            );
+        }
+
+        if (!rootsDictionary.exists()) {
+            throw new FileNotFoundException(
+                "The root dictionary (" + rootsDictionary.getAbsolutePath() + ") " +
+                "does not exist."
+            );
+        }
+
+        this.fullDictionary = fullDictionary;
+        this.rootsDictionary = rootsDictionary;
     }
 
     /**
