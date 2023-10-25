@@ -1,6 +1,7 @@
 package xterminators.spellingbee.model;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,6 +56,66 @@ public class PuzzleBuilderTest {
             () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
             "The PuzzleBuilder constructor should not throw if the dictionaries " +
             "are valid."
+        );
+    }
+
+    @Test
+    public void testSetRootWord_BadRoots() {
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertFalse(
+            builder.setRootWord(null),
+            "setRootWord on a null root should return false."
+        );
+
+        assertFalse(
+            builder.setRootWord(""),
+            "setRootWord on an empty string root should return false."
+        );
+
+        assertFalse(
+            builder.setRootWord("hand"),
+            "setRootWord on a too short root should return false."
+        );
+
+        assertFalse(
+            builder.setRootWord("entries"),
+            "setRootWord on a root with too few unique letters should return " +
+            "false."
+        );
+
+        assertFalse(
+            builder.setRootWord("guardians"),
+            "setRootWord on root with too many unique letters should return " +
+            "false."
+        );
+    }
+
+    @Test
+    public void testSetRootWord_ValidWord() {
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertTrue(
+            builder.setRootWord("offhanded"),
+            "setRootWord should return true for a valid root word."
+        );
+
+        assertTrue(
+            builder.setRootWord("violent"),
+            "setRootWord should return true for a valid root word."
+        );
+
+        assertTrue(
+            builder.setRootWord("guardian"),
+            "setRootWord should return true for a valid root word."
         );
     }
 }
