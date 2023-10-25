@@ -476,9 +476,39 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Determines if a word is a valid word for this puzzle.
+     * 
+     * @param word the word to be checked for validity
+     * @return whether or not the word is a valid word for this puzzle
+     */
     private boolean isValid(String word) {
-        // TODO: Implement isValid
-        // Should only use primaryLetter and secondaryLetters
+        if (word.length() < MINIMUM_WORD_LENGTH
+            || word.indexOf(primaryLetter) == -1)
+        {
+            return false;
+        }
+
+        // Checks each letter for validity
+        wordLetterLoop:
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+
+            for (char secondary : secondaryLetters) {
+                if (c == secondary || c == primaryLetter) {
+                    // If the letter is in secondaryLetters (or is the primary
+                    // letter), check the next letter.
+                    continue wordLetterLoop;
+                }
+            }
+
+            // If none of the secondary letters match c (c is not in 
+            // secondaryLetters), return false, as the word is invalid.
+            return false;
+        }
+
+        // If every letter of the word is valid, return true
+        return true;
     }
 
     /**
