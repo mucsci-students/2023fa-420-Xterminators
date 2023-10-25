@@ -389,15 +389,13 @@ public class GuiView {
      * @param e - The button click
      * @throws IOException - If an I/O error occurs.
      */
-    private void savePuzzleButtonClick(ActionEvent e) throws IOException{
+    private void savePuzzleButtonClick(ActionEvent e) throws IOException{        
         try{
-            // Causes a pop up informing the user that their file was saved and where.
-            showMessage(guiController.savePuzzle() + " in the current directory : "
-             + Paths.get("").toAbsolutePath().toString());
+            showMessage(guiController.savePuzzle());
         }
         // Catches I/O errors
         catch ( IOException a){
-            System.out.println("There was an I/O error, please try again.");
+            showErrorDialog("The puzzle could not be saved due to an IO error.");
         }
     }
 

@@ -117,66 +117,28 @@ public class GuiController {
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle() throws IOException{
-        //Create an object of the Gson class
-        Gson saved = new Gson();
-
-        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
-
-        char[] baseWord = new char[7];
-        baseWord[6] = puzzle.getPrimaryLetter();
-        for(int i = 0; i < baseWord.length - 1; i++){
-            baseWord[i] = nonRequiredLetters[i];
+    public String savePuzzle() throws IOException {
+        if (puzzle == null) {
+            return "There is no puzzle in progress. Please try again.";
         }
 
-        String filename = "";
+        StringBuilder filename = new StringBuilder();
 
         //This will create a title for the Json file consisting
         // of the non-required letters followed by the required letter.
-        for (char c : baseWord){
-            filename += c;
+        for (char c : puzzle.getSecondaryLetters()){
+            filename.append(c);
         }
 
-        // Take the necessary attributes and create a puzzleSave object,
-        PuzzleSave testSave = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
-        puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+        filename.append(puzzle.getPrimaryLetter());
 
-        //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (testSave);
+        filename.append(".json");
 
-        //The message that will be displayed as a result of this change.
-        String result = "";
+        File saveLocation = new File(filename.toString());
 
-        //Create the file and populate it with the saved Json
-        try{
-            File savedFile = new File(filename + ".json");
+        puzzle.save(saveLocation);
 
-            //Returns true if a new file is created.
-            if(savedFile.createNewFile ()){
-
-                //Create a file writer to populate the created File
-                FileWriter writing = new FileWriter(savedFile);
-
-                //Insert input
-                writing.write (savedJson);
-                
-                //Close the writer
-                writing.close ();
-                //Notify the user
-                result = "File created: " + filename + ".json";
-
-            } else {
-                result = "A file by that name already exists. Overwriting the file";
-                //Open a writer to replace the information in the file.
-                PrintWriter writer = new PrintWriter(savedFile);
-                writer.print(savedJson);
-                writer.close();
-            }
-        }
-        catch (IOException e) {
-            result = "File could not be saved, an Input/Output error occurred";
-        }        
-        return result;
+        return "The puzzle was saved at " + saveLocation.getAbsolutePath() + ".";
     }
 
     /**
