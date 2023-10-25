@@ -174,24 +174,14 @@ public class Puzzle {
 
         BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
 
-        char[] sortedLetters = Arrays.copyOf(secondaryLetters, secondaryLetters.length);
-        Arrays.sort(sortedLetters, 0, sortedLetters.length);
-
-        dictLoop:
         for (String word = bufferedReader.readLine(); word != null; 
-             word = bufferedReader.readLine()) {
-            if (word.indexOf(primaryLetter) == -1) {
+             word = bufferedReader.readLine())
+        {
+            if (!this.isValid(word)) {
                 continue;
             }
 
-            for (char c : word.toLowerCase().toCharArray()) {
-                if (c != primaryLetter
-                        && Arrays.binarySearch(sortedLetters, c) < 0) {
-                    continue dictLoop;
-                }
-            }
-
-            // To get to this point, all letters of the puzzle are in the word
+            // To get to this point, the word is valid
             this.validWords.add(word);
             this.totalPoints += this.wordValue(word);
         }
@@ -225,22 +215,12 @@ public class Puzzle {
 
         BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
 
-        char[] sortedLetters = Arrays.copyOf(secondaryLetters, secondaryLetters.length);
-        Arrays.sort(sortedLetters, 0, sortedLetters.length);
-
-        dictLoop:
         // reconstruct the valid words list
         for (String word = bufferedReader.readLine(); word != null; 
-             word = bufferedReader.readLine()) {
-            if (word.indexOf(primaryLetter) == -1) {
+             word = bufferedReader.readLine())
+        {
+            if (!this.isValid(word)) {
                 continue;
-            }
-
-            for (char c : word.toLowerCase().toCharArray()) {
-                if (c != primaryLetter
-                        && Arrays.binarySearch(sortedLetters, c) < 0) {
-                    continue dictLoop;
-                }
             }
 
             this.validWords.add(word);
