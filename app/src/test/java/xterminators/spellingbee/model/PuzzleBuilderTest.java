@@ -118,4 +118,89 @@ public class PuzzleBuilderTest {
             "setRootWord should return true for a valid root word."
         );
     }
+
+    @Test
+    public void testSetRootAndRequired_BadWord() {
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter(null, '\0'),
+            "setRootAndRequiredLetter on a null root should return false."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter("", '\0'),
+            "setRootAndRequiredLetter on an empty string root should return " +
+            "false."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter("hand", 'a'),
+            "setRootAndRequiredLetter on a too short root should return false."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter("entries", 't'),
+            "setRootAndRequiredLetter on a root with too few unique letters " +
+            "should return false."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter("guardians", 'g'),
+            "setRootAndRequiredLetter on root with too many unique letters " +
+            "should return false."
+        );
+    }
+
+    @Test
+    public void testSetRootAndRequired_BadRequiredLetter() {
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter("offhanded", '\0'),
+            "setRootAndRequiredLetter with a non-alphabetical character should " +
+            "return false."
+        );
+
+        assertFalse(
+            builder.setRootAndRequiredLetter("offhanded", 'z'),
+            "setRootAndRequiredLetter with a character not in the root should " +
+            "return false."
+        );
+    }
+
+    @Test
+    public void testSetRootAndRequired_ValidWordAndRequiredLetter() {
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertTrue(
+            builder.setRootAndRequiredLetter("offhanded", 'a'),
+            "setRootWord should return true for a valid root word and required " +
+            "letter."
+        );
+
+        assertTrue(
+            builder.setRootAndRequiredLetter("violent", 'i'),
+            "setRootWord should return true for a valid root word and required " +
+            "letter."
+        );
+
+        assertTrue(
+            builder.setRootAndRequiredLetter("guardian", 'd'),
+            "setRootWord should return true for a valid root word and required " +
+            "letter."
+        );
+    }
 }
