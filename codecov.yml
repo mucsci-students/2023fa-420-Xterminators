@@ -1,0 +1,6 @@
+component_management:
+  individual_components:
+    - component_id: package_model
+      name: model
+      paths: 
+        - app/src/main/java/xterminators/spellingbee/model
