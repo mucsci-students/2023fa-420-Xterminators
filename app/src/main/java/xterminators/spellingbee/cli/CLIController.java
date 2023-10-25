@@ -3,20 +3,17 @@ package xterminators.spellingbee.cli;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.model.PuzzleSave;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
@@ -239,59 +236,23 @@ public class CLIController {
      * @param filePath The path of the save file
      */
     private void load(String filePath){
-        
-        Gson load = new Gson();
-        String jsonPuzzle = "";
+        File savedFile = new File(filePath);
 
-        try{
-            //Create a file object to read the contents of loadFile
-            File myObj = new File (filePath);
-            Scanner fileReader = new Scanner (myObj);
-            
-            //Construct a string by reading the file line by line
-            while (fileReader.hasNextLine()){
-                jsonPuzzle = jsonPuzzle + fileReader.nextLine();
-                
-            }
-            fileReader.close();
-            //Construct a new puzzle based on the loaded file
-            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
-
-            //Initialize the values that will be used by PuzzleSave
-            char[] BaseWord = loading.getPSBase();
-            char RequiredLetter = BaseWord[6];
-
-            char[] newSecondaryLetters = new char[6];
-            for(int i = 0; i < newSecondaryLetters.length; i ++){
-                newSecondaryLetters[i] = BaseWord[i];
-            }
-
-            FileReader dictionary = new FileReader(dictionaryFile);
-
-            ArrayList<String> newFoundWords = new ArrayList<String>();
-
-            for(String word : loading.getPSFoundWords() ) {
-                newFoundWords.add(word);
-            }
-
-            String work = "";
-            for ( char c : BaseWord) {
-                work = work + c;
-            }
-
-            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters, dictionary, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
-
-            puzzle = LoadedPuzzle;
-            
-            //this.puzzle = LoadedPuzzle;
+        try {
+            puzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
             show();
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("The file cannot be found.");
-        }
-        catch (IOException e) {
-            System.out.println("There was an I/O error");
+        } catch (FileNotFoundException e) {
+            view.showErrorMessage(
+                "The file could not be found. Please try again."
+            );
+        } catch (IOException e) {
+            view.showErrorMessage("There was an IO error.");
+        } catch (JsonSyntaxException e) {
+            view.showErrorMessage(
+                "The file was not a valid json representation of a puzzle. " +
+                "Please try again."
+            );
         }
     }
 
