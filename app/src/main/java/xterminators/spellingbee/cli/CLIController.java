@@ -9,14 +9,18 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Map;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.tuple.Pair;
 
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.PuzzleSave;
+import xterminators.spellingbee.model.HelpData;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
@@ -33,6 +37,8 @@ public class CLIController {
     private Puzzle puzzle;
     /** The view which displays output and data to the user. */
     private CLIView view;
+
+    private HelpData helpData;
     
     /**
      * Constructs a new CLIController which connects to the given CLIView, and
@@ -166,6 +172,9 @@ public class CLIController {
                 }
                 case SHUFFLE -> {
                     shuffle();
+                }
+                case HINT -> {
+                    hint();
                 }
             }
         }
@@ -338,6 +347,102 @@ public class CLIController {
             puzzle.getRank(),
             puzzle.getEarnedPoints()
         );
+        // helpData = puzzle.getHelpData();
+
+        // char[] baseWord = new char[7];
+        // baseWord[6] = puzzle.getPrimaryLetter();
+        // char [] nonRequiredLetters = puzzle.getSecondaryLetters();
+        // for(int i = 0; i < baseWord.length - 1; i++){
+        //     baseWord[i] = nonRequiredLetters[i];
+        // }
+        // Map<Pair<Character, Integer>, Long> trying = helpData.startingLetterGrid();
+        
+        // int maxWordSize = 0;
+        // for(Map.Entry<Pair<Character, Integer>, Long> entry : trying.entrySet()){
+        //     int wordSize = entry.getKey().getRight();
+        //     if(wordSize > maxWordSize) maxWordSize = wordSize;
+        // }
+        // String[][] grid = new String[9][maxWordSize - 2];
+        // for(int row = 0; row < 9; row++){
+        //     for(int col = 0; col < maxWordSize - 2; col ++){
+        //         grid[row][col] = "-";
+        //     }
+        // }
+        // grid[0][0] = " ";
+        // grid[8][0] = "\u03A3";
+        // grid[0][maxWordSize - 3] = "\u03A3";
+        // for(int i = 1; i < 8; i++){
+        //     grid[i][0] = "" + baseWord[i - 1];
+        // }
+        // for(int i = 1; i < maxWordSize - 2; i ++){
+        //     grid[0][i] = (i + 3) + "";
+        // }
+        // for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
+        //     for(int k = 1; k < 8; k++){
+        //         if((work.getKey().getLeft()+ "").equals(grid[k][0])){
+        //             grid[k][work.getKey().getRight() - 3] = (work.getValue() + "");
+        //         }
+        //     }
+        // }
+
+        // for(int row = 0; row < 9; row++){
+        //     for(int col = 0; col < maxWordSize - 2; col ++){
+        //         System.out.print(grid[row][col]);
+        //         System.out.print(" ");
+        //     }
+        //     System.out.println("");
+        // }
+
+        //System.out.println(helpData.startingLetterGrid());
+    
+    }
+
+    public void hint(){
+        helpData = puzzle.getHelpData();
+
+        char[] baseWord = new char[7];
+        baseWord[6] = puzzle.getPrimaryLetter();
+        char [] nonRequiredLetters = puzzle.getSecondaryLetters();
+        for(int i = 0; i < baseWord.length - 1; i++){
+            baseWord[i] = nonRequiredLetters[i];
+        }
+        Map<Pair<Character, Integer>, Long> trying = helpData.startingLetterGrid();
+        
+        int maxWordSize = 0;
+        for(Map.Entry<Pair<Character, Integer>, Long> entry : trying.entrySet()){
+            int wordSize = entry.getKey().getRight();
+            if(wordSize > maxWordSize) maxWordSize = wordSize;
+        }
+        String[][] grid = new String[9][maxWordSize - 2];
+        for(int row = 0; row < 9; row++){
+            for(int col = 0; col < maxWordSize - 2; col ++){
+                grid[row][col] = "-";
+            }
+        }
+        grid[0][0] = " ";
+        grid[8][0] = "\u03A3";
+        grid[0][maxWordSize - 3] = "\u03A3";
+        for(int i = 1; i < 8; i++){
+            grid[i][0] = "" + baseWord[i - 1];
+        }
+        for(int i = 1; i < maxWordSize - 2; i ++){
+            grid[0][i] = (i + 3) + "";
+        }
+        for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
+            for(int k = 1; k < 8; k++){
+                if((work.getKey().getLeft()+ "").equals(grid[k][0])){
+                    grid[k][work.getKey().getRight() - 3] = (work.getValue() + "");
+                }
+            }
+        }
+
+        for(int row = 0; row < 9; row++){
+            for(int col = 0; col < maxWordSize - 2; col ++){
+                System.out.print(grid[row][col]);
+                System.out.print(" ");
+            }
+            System.out.println("");
+        }
     }
 
     /**
