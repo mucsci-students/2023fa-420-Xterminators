@@ -41,11 +41,11 @@ public class CLIControllerTest {
     @BeforeEach
     public void setup() {
         File dictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString()
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
         );
 
         File rootsDictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionary_roots.txt").toString()
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
         );
 
         view = mock(CLIView.class);
