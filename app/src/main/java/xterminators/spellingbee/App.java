@@ -10,26 +10,26 @@ import java.util.Arrays;
 
 import xterminators.spellingbee.cli.CLIController;
 import xterminators.spellingbee.cli.CLIView;
-import xterminators.spellingbee.gui.GuiController;
+import xterminators.spellingbee.gui.GuiView;
 
 public class App {
     public static void main(String[] args) {
+        File dictionaryFile = new File(
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
+        );
+
+        File rootsDictionaryFile = new File(
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
+        );
+        
         // Case Insensitive check for --cli in args
         if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
-            File dictionaryFile = new File(
-                Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString()
-            );
-
-            File rootsDictionaryFile = new File(
-                Paths.get("src", "main", "resources", "dictionary_roots.txt").toString()
-            );
-
             CLIView cliView = new CLIView();
             CLIController cliController = new CLIController(cliView, dictionaryFile, rootsDictionaryFile);
 
             cliController.run();
         } else {
-            GuiController ui = new GuiController();
+            GuiView ui = new GuiView();
             ui.InitUI();
         }
     }

@@ -101,17 +101,23 @@ public class CLIView {
     public void showPuzzle(char primaryLetter, char[] secondaryLetters,
                            Rank rank, int points)
     {
-        String puzzleHex = """
-            +---+
-        +---+ %c +---+
-        | %c +---+ %c |
-        +---+ %c +---+
-        | %c +---+ %c |
-        +---+ %c +---+
-            +---+
-        """.formatted(secondaryLetters[0], secondaryLetters[5], secondaryLetters[1],
-                      primaryLetter,
-                      secondaryLetters[4], secondaryLetters[2], secondaryLetters[3]);
+        StringBuilder puzzleHex = new StringBuilder();
+        puzzleHex.append("    +---+")
+            .append(System.lineSeparator());
+        puzzleHex.append("+---+ %c +---+".formatted(secondaryLetters[0]))
+            .append(System.lineSeparator());
+        puzzleHex.append("| %c +---+ %c |".formatted(
+                secondaryLetters[5], secondaryLetters[1]
+            )).append(System.lineSeparator());
+        puzzleHex.append("+---+ %c +---+".formatted(primaryLetter))
+            .append(System.lineSeparator());
+        puzzleHex.append("| %c +---+ %c |".formatted(
+                secondaryLetters[4], secondaryLetters[2]
+            )).append(System.lineSeparator());
+        puzzleHex.append("+---+ %c +---+".formatted(secondaryLetters[3]))
+            .append(System.lineSeparator());
+        puzzleHex.append("    +---+")
+            .append(System.lineSeparator());
         
         System.out.println(puzzleHex);
         System.out.println("Current Rank  : " + rank.getRankName());
@@ -130,12 +136,12 @@ public class CLIView {
         if (earnedPoints == 1) {
             System.out.println(
                 "Current Rank: " + rank.getRankName() + " - " +
-                earnedPoints + " point\n"
+                earnedPoints + " point" + System.lineSeparator()
             );
         } else {
             System.out.println(
                 "Current Rank: " + rank.getRankName() + " - " +
-                earnedPoints + " points\n"
+                earnedPoints + " points" + System.lineSeparator()
             );
         }
 

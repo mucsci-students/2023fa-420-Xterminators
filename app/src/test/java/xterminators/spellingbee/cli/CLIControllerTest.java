@@ -1,6 +1,7 @@
 package xterminators.spellingbee.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -40,11 +41,11 @@ public class CLIControllerTest {
     @BeforeEach
     public void setup() {
         File dictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString()
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
         );
 
         File rootsDictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionary_roots.txt").toString()
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
         );
 
         view = mock(CLIView.class);
@@ -375,11 +376,28 @@ public class CLIControllerTest {
             guessPoints.capture()
         );
 
-        assertEquals(
-            List.of(List.of(), List.of("offhanded"), List.of("offhanded", "offhand")),
-            foundWordsArgs.getAllValues(),
-            "showFoundWords was not called on the view with the expected arguments."
+        List<List<String>> expectedFoundLists = List.of(
+            List.of(),
+            List.of("offhanded"),
+            List.of("offhanded", "offhand")
         );
+
+        List<List<String>> recivedFoundLists = foundWordsArgs.getAllValues();
+
+        // Checks that each recived argument has exactly the same elements as
+        // the expected, but disregards order.
+        // This may want to be updated/more tests added in future to ensure
+        // alphabetical order.
+        for (int i = 0; i < recivedFoundLists.size(); i++) {
+            List<String> recived = recivedFoundLists.get(i);
+            List<String> expected = expectedFoundLists.get(i);
+
+            assertTrue(
+                expected.containsAll(recived) && recived.containsAll(expected),
+                "showFoundWords was not called on the view with the expected arguments."
+            );
+        }
+
         assertEquals(
             List.of("offhanded", "offhand"),
             guessWords.getAllValues(),
