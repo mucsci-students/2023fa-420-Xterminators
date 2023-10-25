@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,9 +51,9 @@ public class Puzzle {
      */
     private record PuzzleData(
         char[] baseWord,
+        char requiredLetter,
         List<String> foundWords,
         int playerPoints,
-        char requiredLetter,
         int maxPoints
     ) {}
 
@@ -340,6 +341,35 @@ public class Puzzle {
                 candidateWords.remove(wordIndex);
             }
         }
+    }
+
+    /**
+     * Saves the puzzle at the given file location.
+     * 
+     * @param saveLocation the file at which to save the puzzle
+     */
+    public void save(File saveLocation) throws IOException {
+        char[] baseWord
+            = Arrays.copyOf(secondaryLetters, secondaryLetters.length + 1);
+        
+        baseWord[secondaryLetters.length] = primaryLetter;
+
+        PuzzleData saveData = new PuzzleData(
+            baseWord,
+            primaryLetter,
+            foundWords,
+            earnedPoints,
+            totalPoints
+        );
+
+        Gson gson = new Gson();
+        String json = gson.toJson(saveData);
+
+        FileWriter writer = new FileWriter(saveLocation);
+
+        writer.write(json);
+
+        writer.close();
     }
 
     /**
