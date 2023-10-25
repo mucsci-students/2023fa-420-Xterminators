@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleSave;
@@ -146,50 +147,13 @@ public class GuiController {
      * @param loadFile - the file to be loaded
      */
     public String loadPuzzle(String loadFile) {
-        
-        Gson load = new Gson();
-        String jsonPuzzle = "";
-
         String result = "";
 
         try{
             //Create a file object to read the contents of loadFile
-            File myObj = new File (loadFile);
-            Scanner fileReader = new Scanner (myObj);
+            File savedFile = new File (loadFile);
             
-            //Construct a string by reading the file line by line
-            while (fileReader.hasNextLine()){
-                jsonPuzzle = jsonPuzzle + fileReader.nextLine();
-                
-            }
-            fileReader.close();
-            //Construct a new puzzle based on the loaded file
-            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
-
-            //Initialize the values that will be used by PuzzleSave
-            char[] BaseWord = loading.getPSBase();
-            char RequiredLetter = BaseWord[6];
-
-            char[] newSecondaryLetters = new char[6];
-            for(int i = 0; i < newSecondaryLetters.length; i ++){
-                newSecondaryLetters[i] = BaseWord[i];
-            }
-
-            FileReader dictionaryFile = new FileReader(DICTIONARY_FILE);
-
-            ArrayList<String> newFoundWords = new ArrayList<String>();
-
-            for(String word : loading.getPSFoundWords() ) {
-                newFoundWords.add(word);
-            }
-
-            String work = "";
-            for ( char c : BaseWord) {
-                work = work + c;
-            }
-
-            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters,
-            dictionaryFile, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
+            Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, DICTIONARY_FILE);
 
             puzzle = LoadedPuzzle;
 
@@ -200,6 +164,8 @@ public class GuiController {
         }
         catch (IOException e) {
             result = "There was an input or output error";
+        } catch (JsonSyntaxException e) {
+            result = "The file was not properly formatted as a puzzle.";
         }
         return result;
     }
