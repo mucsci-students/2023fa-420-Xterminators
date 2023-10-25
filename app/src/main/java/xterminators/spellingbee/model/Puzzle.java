@@ -151,6 +151,8 @@ public class Puzzle {
         this.earnedPoints = this.foundWords.parallelStream()
             .mapToInt(this::wordValue)
             .sum();
+        
+        this.helpData = this.calculateHelpData();
     }
 
     /**
