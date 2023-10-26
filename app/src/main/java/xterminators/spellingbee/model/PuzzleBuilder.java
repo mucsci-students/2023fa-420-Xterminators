@@ -64,7 +64,9 @@ public class PuzzleBuilder {
             rootsReader.close();
             rootsFileReader.close();
 
-            this.rootWord = root;
+            if (rootIsValid) {
+                this.rootWord = root;
+            }
 
             return rootIsValid;
         } catch (Exception e) {
