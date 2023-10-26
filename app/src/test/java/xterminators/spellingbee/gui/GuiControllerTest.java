@@ -70,8 +70,8 @@ public class GuiControllerTest {
     public void testCreateNewPuzzleEmptyInput() {
         controller.createNewPuzzle("", 'a');
 
-        assertNotNull("Puzzle null after createNewPuzzle(\"\", 'a').", 
-                        controller.getPuzzle());
+        assertNotNull(controller.getPuzzle(),
+                        "Puzzle null after createNewPuzzle(\"\", 'a').");
         assertValidInitialPuzzle(controller.getPuzzle());
     }
 
@@ -79,8 +79,8 @@ public class GuiControllerTest {
     public void testCreateNewPuzzleWithBaseWord() {
         controller.createNewPuzzle("violent", 'l');
 
-        assertNotNull("Puzzle null after createNewPuzzle(\"violent\", 'l').", 
-                        controller.getPuzzle());
+        assertNotNull(controller.getPuzzle(), 
+                        "Puzzle null after createNewPuzzle(\"violent\", 'l').");
         assertValidInitialPuzzle(controller.getPuzzle());
     }
 
@@ -108,14 +108,14 @@ public class GuiControllerTest {
     public void testCreateNewRandomPuzzle() {
         controller.createNewPuzzle();
 
-        assertNotNull("Puzzle null after createNewPuzzle().", 
-                        controller.getPuzzle());
+        assertNotNull(controller.getPuzzle(),
+                        "Puzzle null after createNewPuzzle().");
         assertValidInitialPuzzle(controller.getPuzzle());
     }
 
     @Test 
     public void testShufflePuzzleWithNoPuzzle() {
-        assertThrows(NullPointerException, controller.shuffle());
+        assertThrows(NullPointerException, controller.shuffleLetters());
     }
 
     @Test 
@@ -124,7 +124,7 @@ public class GuiControllerTest {
 
         Puzzle p = controller.getPuzzle();
         String original = p.getSecondaryLetters();
-        controller.shuffle();
+        controller.shuffleLetters();
         String reshuffled = p.getSecondaryLetters();
         assertNotEquals("Puzzle letter order unchanged after shuffle", 
                         original, reshuffled);
@@ -134,7 +134,7 @@ public class GuiControllerTest {
     public void testGuessNull() {
         controller.createNewPuzzle();
         
-        assertEquals(controller.guess(null), 
+        assertEquals(controller.guessWord(null), 
                     "\"\" was not a valid word. Try again!");
     }
 
@@ -142,7 +142,7 @@ public class GuiControllerTest {
     public void testGuessEmptyString() {
         controller.createNewPuzzle();
 
-        assertEquals(controller.guess(""), 
+        assertEquals(controller.guessWord(""), 
                     "\"\" was not a valid word. Try again!");
     }
 
@@ -150,7 +150,7 @@ public class GuiControllerTest {
     public void testGuessInvalidWord() {
         controller.createNewPuzzle("violent", 'o');
 
-        assertEquals(controller.guess("live"), 
+        assertEquals(controller.guessWord("live"), 
                     "\"live\" was not a valid word. Try again!");
     }
 
@@ -158,28 +158,28 @@ public class GuiControllerTest {
     public void testGuessValidWord() {
         controller.createNewPuzzle("violent", 'l');
 
-        assertEquals(controller.guess("live"),
+        assertEquals(controller.guessWord("live"),
                     "Good job! Your word was worth 1 point.");
     }
 
     @Test
     public void testGuessFoundWord() {
         controller.createNewPuzzle("violent", 'l');
-        controller.guess("live");
+        controller.guessWord("live");
 
-        assertEquals(controller.guess("live"),
+        assertEquals(controller.guessWord("live"),
                     "You already found this word.");
     }
 
     @Test 
     public void testGuessValidWordWithRankAdvancement() {
         controller.createNewPuzzle("violent", 'l');
-        controller.guess("violent");
-        controller.guess("liven");
-        controller.guess("novel");
-        controller.guess("little");
+        controller.guessWord("violent");
+        controller.guessWord("liven");
+        controller.guessWord("novel");
+        controller.guessWord("little");
 
-        assertEquals(controller.guess("lentil"),
+        assertEquals(controller.guessWord("lentil"),
                     "Good job! Your word was worth 6 points." + 
                     "You reached a new rank! Your rank is now " +
                     "Good Start.");
