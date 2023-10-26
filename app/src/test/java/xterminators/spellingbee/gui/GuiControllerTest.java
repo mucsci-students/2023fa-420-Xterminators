@@ -26,9 +26,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
-import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
+import xterminators.spellingbee.gui.GuiController;
+import xterminators.spellingbee.gui.GuiView;
 
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.Puzzle;
 
 
 public class GuiControllerTest {
