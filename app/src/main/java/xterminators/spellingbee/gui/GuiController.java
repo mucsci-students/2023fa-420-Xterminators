@@ -3,19 +3,12 @@ package xterminators.spellingbee.gui;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.FileWriter;
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import com.google.gson.Gson;
+
 import com.google.gson.JsonSyntaxException;
 
 import xterminators.spellingbee.model.Puzzle;
-import xterminators.spellingbee.model.PuzzleSave;
 import xterminators.spellingbee.model.Rank;
 
 public class GuiController {
