@@ -1,30 +1,20 @@
 package xterminators.spellingbee.gui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.ArgumentCaptor;
 
 import xterminators.spellingbee.gui.GuiController;
 import xterminators.spellingbee.gui.GuiView;
@@ -167,6 +157,28 @@ public class GuiControllerTest {
             // savePuzzle() makes filename in order
             // of characters in puzzle letter array
             assertEquals("File created:", result.substring(0, 13));
+            
+            String filename = result.substring(13, 12);
+            Path filepath = Paths.get(filename);
+            Files.delete(filepath);
+        } catch (Exception e) {}
+    }
+
+    @Test 
+    public void testLoadPuzzle() {
+        try {
+            controller.createNewPuzzle();
+            String result = controller.savePuzzle();
+
+            // Get substring "1234567.json" from
+            // result string "File created: 1234567.json"
+            String filename = result.substring(13, 12);
+
+            assertEquals("Succesfully loaded " + filename + "!",
+                        controller.loadPuzzle(filename));
+
+            Path filepath = Paths.get(filename);
+            Files.delete(filepath);
         } catch (Exception e) {}
     }
 
