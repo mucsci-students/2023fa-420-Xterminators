@@ -35,7 +35,6 @@ public class GuiController {
         this.rootsDictionaryFile = rootsDictionaryFile;
     }
 
-
     public Puzzle getPuzzle() {
         return puzzle;
     }
@@ -65,11 +64,7 @@ public class GuiController {
                 // no seedWord provided, assume random puzzle
                 puzzle = Puzzle.randomPuzzle(rootWordsFileReader, dictionaryFileReader);
             }
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (FileNotFoundException e) {
-            throw e;
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             throw e;
         }
     }
@@ -78,6 +73,9 @@ public class GuiController {
      * Creates a new puzzle using a random word from the dictionary.
      * The random word will have exactly 7 unique letters but may be 
      * longer than 7 characters.
+     * @throws IllegalArgumentException if the starting word was not valid.
+     * @throws FileNotFoundException if the dictionary file could not be found.
+     * @throws IOException if there was a problem reading the dictionary file.
      */
     public void createNewPuzzle() 
         throws IllegalArgumentException, FileNotFoundException, IOException{
@@ -98,16 +96,14 @@ public class GuiController {
      * @throws IOException - if an I/O error occurs.
      */
     public String savePuzzle() throws IOException{
-        //Create an object of the Gson class
         Gson saved = new Gson();
 
         char[] nonRequiredLetters = puzzle.getSecondaryLetters();
 
         char[] baseWord = new char[7];
+        System.arraycopy(nonRequiredLetters, 0, baseWord, 0, nonRequiredLetters.length);
+
         baseWord[6] = puzzle.getPrimaryLetter();
-        for(int i = 0; i < baseWord.length - 1; i++){
-            baseWord[i] = nonRequiredLetters[i];
-        }
 
         String filename = "";
 
@@ -117,37 +113,31 @@ public class GuiController {
             filename += c;
         }
 
-        // Take the necessary attributes and create a puzzleSave object,
+        // Take the necessary attributes and create a puzzleSave object
         PuzzleSave testSave = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
         puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
 
         //Converts the current puzzle object to Json
         String savedJson = saved.toJson (testSave);
-
-        //The message that will be displayed as a result of this change.
         String result = "";
 
-        //Create the file and populate it with the saved Json
-        try{
+        try {
             File savedFile = new File(filename + ".json");
 
             //Returns true if a new file is created.
-            if(savedFile.createNewFile ()){
+            if(savedFile.createNewFile()) {
 
                 //Create a file writer to populate the created File
                 FileWriter writing = new FileWriter(savedFile);
 
-                //Insert input
-                writing.write (savedJson);
-                
-                //Close the writer
-                writing.close ();
-                //Notify the user
+                writing.write(savedJson);
+                writing.close();
+
                 result = "File created: " + filename + ".json";
 
             } else {
                 result = "A file by that name already exists. Overwriting the file";
-                //Open a writer to replace the information in the file.
+
                 PrintWriter writer = new PrintWriter(savedFile);
                 writer.print(savedJson);
                 writer.close();
@@ -195,7 +185,7 @@ public class GuiController {
 
             FileReader dictionaryFileReader = new FileReader(dictionaryFile);
 
-            ArrayList<String> newFoundWords = new ArrayList<String>();
+            ArrayList<String> newFoundWords = new ArrayList<>();
 
             for(String word : loading.getPSFoundWords() ) {
                 newFoundWords.add(word);
@@ -210,7 +200,6 @@ public class GuiController {
             dictionaryFileReader, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
 
             puzzle = LoadedPuzzle;
-
             result = "Succesfully loaded " + loadFile + "!";
         }
         catch (FileNotFoundException e) {
@@ -232,7 +221,7 @@ public class GuiController {
         if (word == null) {
             word = "";
         }
-        
+
         String result = "";
 
         if (puzzle == null) {

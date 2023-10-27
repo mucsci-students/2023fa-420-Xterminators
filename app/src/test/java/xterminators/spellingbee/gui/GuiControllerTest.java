@@ -193,6 +193,12 @@ public class GuiControllerTest {
     }
 
     @Test 
+    public void testGuessWithNullPuzzle() {
+        assertEquals("No puzzle is loaded.",
+                    controller.guessWord("word"));
+    }
+
+    @Test 
     public void testGuessEmptyString() {
         try {
             controller.createNewPuzzle();
