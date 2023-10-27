@@ -229,6 +229,10 @@ public class GuiController {
      * @param word The word that's being guessed.
      */
     public String guessWord(String word) {
+        if (word == null) {
+            word = "";
+        }
+        
         String result = "";
 
         if (puzzle == null) {

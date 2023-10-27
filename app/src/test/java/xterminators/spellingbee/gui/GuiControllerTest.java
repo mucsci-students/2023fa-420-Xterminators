@@ -68,7 +68,9 @@ public class GuiControllerTest {
 
     @Test 
     public void testCreateNewPuzzleEmptyInput() {
-        controller.createNewPuzzle("", 'a');
+        try {
+            controller.createNewPuzzle("", 'a');
+        } catch (Exception e) {}
 
         assertNotNull(controller.getPuzzle(),
                         "Puzzle null after createNewPuzzle(\"\", 'a').");
@@ -77,36 +79,46 @@ public class GuiControllerTest {
 
     @Test
     public void testCreateNewPuzzleWithBaseWord() {
-        controller.createNewPuzzle("violent", 'l');
+        try {
+            controller.createNewPuzzle("violent", 'l');
+        } catch (Exception e) {}
 
-        assertNotNull(controller.getPuzzle(), 
+        Puzzle p = controller.getPuzzle();
+
+        assertNotNull(p, 
                         "Puzzle null after createNewPuzzle(\"violent\", 'l').");
-        assertValidInitialPuzzle(controller.getPuzzle());
+        assertValidInitialPuzzle(p);
     }
 
     @Test 
     public void testCreateNewPuzzleWithInvalidBaseWord() {
         // Test short base word
-        assertThrows(IllegalArgumentException, 
-                    controller.createNewPuzzle("vvv", 'v'));
+        assertThrows(IllegalArgumentException.class, () -> {
+                    controller.createNewPuzzle("vvv", 'v');
+                    });
         // Test base word not in dictionary
-        assertThrows(IllegalArgumentException, 
-                    controller.createNewPuzzle("1234567", '3'));
+        assertThrows(IllegalArgumentException.class, () -> {
+                    controller.createNewPuzzle("1234567", '3');
+                    });
         // Test base word without 7 unique letters
-        assertThrows(IllegalArgumentException,
-                    controller.createNewPuzzle("bookkeeper", 'b'));
+        assertThrows(IllegalArgumentException.class, () -> {
+                    controller.createNewPuzzle("bookkeeper", 'b');
+                    });
     }
 
     @Test 
     public void testCreateNewPuzzleWithInvalidPrimaryLetter() {
         // Test primary letter not in base word
-        assertThrows(IllegalArgumentException,
-                    controller.createNewPuzzle("violent", 'b'));
+        assertThrows(IllegalArgumentException.class, () -> {
+                    controller.createNewPuzzle("violent", 'b');
+                    });
     }
 
     @RepeatedTest(5)
     public void testCreateNewRandomPuzzle() {
-        controller.createNewPuzzle();
+        try {
+            controller.createNewPuzzle();
+        } catch (Exception e) {}
 
         assertNotNull(controller.getPuzzle(),
                         "Puzzle null after createNewPuzzle().");
@@ -115,32 +127,46 @@ public class GuiControllerTest {
 
     @Test 
     public void testShufflePuzzleWithNoPuzzle() {
-        assertThrows(NullPointerException, controller.shuffleLetters());
+        assertThrows(NullPointerException.class, () -> {
+            controller.shuffleLetters();
+        });
     }
 
     @Test 
     public void testShufflePuzzle() {
-        controller.createNewPuzzle();
+        try {
+            controller.createNewPuzzle();
+        } catch (Exception e) {}
 
         Puzzle p = controller.getPuzzle();
-        String original = p.getSecondaryLetters();
+        String original = "";
+        for (char c : p.getSecondaryLetters()) {
+            original += c;
+        }
         controller.shuffleLetters();
-        String reshuffled = p.getSecondaryLetters();
+        String reshuffled = "";
+        for (char c : p.getSecondaryLetters()) {
+            reshuffled += c;
+        }
         assertNotEquals("Puzzle letter order unchanged after shuffle", 
                         original, reshuffled);
     }
 
     @Test 
     public void testGuessNull() {
-        controller.createNewPuzzle();
+        try {
+            controller.createNewPuzzle();
+        } catch (Exception e) {}
         
-        assertEquals(controller.guessWord(null), 
-                    "\"\" was not a valid word. Try again!");
+        assertEquals("\"\" was not a valid word. Try again!", 
+                    controller.guessWord(null));
     }
 
     @Test 
     public void testGuessEmptyString() {
-        controller.createNewPuzzle();
+        try {
+            controller.createNewPuzzle();
+        } catch (Exception e) {}
 
         assertEquals(controller.guessWord(""), 
                     "\"\" was not a valid word. Try again!");
@@ -148,7 +174,9 @@ public class GuiControllerTest {
 
     @Test 
     public void testGuessInvalidWord() {
-        controller.createNewPuzzle("violent", 'o');
+        try {
+            controller.createNewPuzzle("violent", 'o');
+        } catch (Exception e) {}
 
         assertEquals(controller.guessWord("live"), 
                     "\"live\" was not a valid word. Try again!");
@@ -156,7 +184,9 @@ public class GuiControllerTest {
 
     @Test 
     public void testGuessValidWord() {
-        controller.createNewPuzzle("violent", 'l');
+        try {
+            controller.createNewPuzzle("violent", 'l');
+        } catch (Exception e) {}
 
         assertEquals(controller.guessWord("live"),
                     "Good job! Your word was worth 1 point.");
@@ -164,7 +194,9 @@ public class GuiControllerTest {
 
     @Test
     public void testGuessFoundWord() {
-        controller.createNewPuzzle("violent", 'l');
+        try {
+            controller.createNewPuzzle("violent", 'l');
+        } catch (Exception e) {}
         controller.guessWord("live");
 
         assertEquals(controller.guessWord("live"),
@@ -173,7 +205,9 @@ public class GuiControllerTest {
 
     @Test 
     public void testGuessValidWordWithRankAdvancement() {
-        controller.createNewPuzzle("violent", 'l');
+        try {
+            controller.createNewPuzzle("violent", 'l');
+        } catch (Exception e) {}
         controller.guessWord("violent");
         controller.guessWord("liven");
         controller.guessWord("novel");
