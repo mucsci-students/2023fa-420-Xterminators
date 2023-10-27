@@ -153,6 +153,24 @@ public class GuiControllerTest {
     }
 
     @Test 
+    public void testSavePuzzle() {
+        try {
+            // Create random puzzle because
+            // order of characters in filename can
+            // change regardless of word
+            controller.createNewPuzzle();
+
+            String result = controller.savePuzzle();
+
+            assertNotNull(result);
+            // Can't assert whole string because 
+            // savePuzzle() makes filename in order
+            // of characters in puzzle letter array
+            assertEquals("File created:", result.substring(0, 13));
+        } catch (Exception e) {}
+    }
+
+    @Test 
     public void testGuessNull() {
         try {
             controller.createNewPuzzle();
@@ -168,8 +186,8 @@ public class GuiControllerTest {
             controller.createNewPuzzle();
         } catch (Exception e) {}
 
-        assertEquals(controller.guessWord(""), 
-                    "\"\" was not a valid word. Try again!");
+        assertEquals("\"\" was not a valid word. Try again!",
+                    controller.guessWord(""));
     }
 
     @Test 
@@ -178,8 +196,8 @@ public class GuiControllerTest {
             controller.createNewPuzzle("violent", 'o');
         } catch (Exception e) {}
 
-        assertEquals(controller.guessWord("live"), 
-                    "\"live\" was not a valid word. Try again!");
+        assertEquals("\"live\" was not a valid word. Try again!",
+                    controller.guessWord("live"));
     }
 
     @Test 
@@ -188,8 +206,8 @@ public class GuiControllerTest {
             controller.createNewPuzzle("violent", 'l');
         } catch (Exception e) {}
 
-        assertEquals(controller.guessWord("live"),
-                    "Good job! Your word was worth 1 point.");
+        assertEquals("Good job! Your word was worth 1 point.",
+                    controller.guessWord("live"));
     }
 
     @Test
@@ -199,8 +217,8 @@ public class GuiControllerTest {
         } catch (Exception e) {}
         controller.guessWord("live");
 
-        assertEquals(controller.guessWord("live"),
-                    "You already found this word.");
+        assertEquals("You already found this word.",
+                    controller.guessWord("live"));
     }
 
     @Test 
