@@ -148,31 +148,15 @@ public class PuzzleBuilder {
             }
         }
 
-        if (requiredLetter == '\0') {
-            List<Character> distinctLetters = new ArrayList<>();
-            for (char c : rootWord.toCharArray()) {
-                if (!distinctLetters.contains(c)) {
-                    distinctLetters.add(c);
-                }
-            }
-
-            this.requiredLetter = distinctLetters.get(rng.nextInt(distinctLetters.size()));
-
-            char[] secondaryLetters = new char[distinctLetters.size() - 1];
-            for (int i = 0, j = 0; i < distinctLetters.size(); i++) {
-                if (distinctLetters.get(i) != requiredLetter) {
-                    secondaryLetters[j++] = distinctLetters.get(i);
-                }
-            }
-
-            return new Puzzle(requiredLetter, secondaryLetters, new FileReader(fullDictionary));
-        }
-
         List<Character> distinctLetters = new ArrayList<>();
         for (char c : rootWord.toCharArray()) {
             if (!distinctLetters.contains(c)) {
                 distinctLetters.add(c);
             }
+        }
+
+        if (requiredLetter == '\0') {
+            this.requiredLetter = distinctLetters.get(rng.nextInt(distinctLetters.size()));
         }
         
         char[] secondaryLetters = new char[distinctLetters.size() - 1];
