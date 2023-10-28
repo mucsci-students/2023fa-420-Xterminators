@@ -110,7 +110,7 @@ public class GuiController {
 
         puzzle.save(saveLocation);
 
-        return "The puzzle was saved at " + saveLocation.getAbsolutePath() + ".";
+        return "File created: " + saveLocation.getAbsolutePath();
     }
 
     /**
@@ -124,7 +124,7 @@ public class GuiController {
             //Create a file object to read the contents of loadFile
             File savedFile = new File (loadFile);
             
-            Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, DICTIONARY_FILE);
+            Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
             puzzle = LoadedPuzzle;
             result = "Succesfully loaded " + loadFile + "!";
