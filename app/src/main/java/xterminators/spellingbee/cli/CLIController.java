@@ -416,6 +416,29 @@ public class CLIController {
             }
             grid[8][col] = sumValCol + "";
         }
+
+        //Initialize the two letter list matrix and populate with '-'
+        String [][] twoLetList = new String[7][7];
+        for(int i = 0; i < 7; i++){
+            for(int k = 0; k < 7; k ++){
+                twoLetList[i][k] = "-";
+            }
+        }
+
+        //Places the starting letter pairs into rows based on starting letter
+        for(Map.Entry<String, Long> item : helpData.startingLetterPairs().entrySet()){
+            for(int i = 0; i < 7; i++){
+                if((baseWord[i] + "").equals(item.getKey().charAt(0) + "")){
+                    for(int k = 0; k < 7; k++){
+                        if((baseWord[k] + "").equals(item.getKey().charAt(1) + "")){
+                            twoLetList[i][k] = item + "";
+                        }
+                    }
+                }
+            }
+        }
+
+        //Print everything out
         System.out.println("Spelling Bee Grid\n");
         System.out.println("Center letter is in" + "\u001B[1m BOLD \n");
         System.out.print( (baseWord[6] + " ").toUpperCase() + "\u001B[0m");
@@ -433,25 +456,11 @@ public class CLIController {
             }
             System.out.println("");
         }
-        System.out.println("\n\u001B[1mTwo letter list: \u001B[0m\n\n");
-        String [][] twoLetList = new String[7][7];
-        for(int i = 0; i < 7; i++){
-            for(int k = 0; k < 7; k ++){
-                twoLetList[i][k] = "-";
-            }
-        }
-        for(Map.Entry<String, Long> item : helpData.startingLetterPairs().entrySet()){
-            for(int i = 0; i < 7; i++){
-                if((baseWord[i] + "").equals(item.getKey().charAt(0) + "")){
-                    for(int k = 0; k < 7; k++){
-                        if((baseWord[k] + "").equals(item.getKey().charAt(1) + "")){
-                            twoLetList[i][k] = item + "";
-                        }
-                    }
-                }
-            }
-        }
 
+        //Print out the start of the two letter list section
+        System.out.println("\n\u001B[1mTwo letter list: \u001B[0m\n");
+        
+        //Prints out the list of two letter starts.
         for(int i = 0; i < 7; i++){
             for (int k = 0; k < 6; k++){
                 if(!twoLetList[i][k].equals("-")){
