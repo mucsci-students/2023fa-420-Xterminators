@@ -1,6 +1,7 @@
 package xterminators.spellingbee.model;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -201,6 +205,227 @@ public class PuzzleBuilderTest {
             builder.setRootAndRequiredLetter("guardian", 'd'),
             "setRootWord should return true for a valid root word and required " +
             "letter."
+        );
+    }
+
+    @Test
+    public void testBuild_SetRootAndLetter() {
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertTrue(
+            builder.setRootAndRequiredLetter("offhanded", 'a'),
+            "setRootWord should return true for a valid root word and required " +
+            "letter."
+        );
+
+        Puzzle puzzle = builder.build();
+
+        assertPuzzle(
+            puzzle,
+            'a',
+            new char[] {'d', 'e', 'f', 'h', 'n', 'o'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        assertTrue(
+            builder.setRootAndRequiredLetter("violent", 'i'),
+            "setRootWord should return true for a valid root word and required " +
+            "letter."
+        );
+
+        puzzle = builder.build();
+
+        assertPuzzle(
+            puzzle,
+            'i',
+            new char[] {'e', 'l', 'n', 'o', 't', 'v'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        assertTrue(
+            builder.setRootAndRequiredLetter("guardian", 'd'),
+            "setRootWord should return true for a valid root word and required " +
+            "letter."
+        );
+
+        puzzle = builder.build();
+
+        assertPuzzle(
+            puzzle,
+            'd',
+            new char[] {'a', 'g', 'i', 'n', 'r', 'u'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+    }
+
+    @Test
+    public void testBuild_SetRoot() {
+        Random rng = new Random(0l);
+
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        assertTrue(
+            builder.setRootWord("offhanded"),
+            "setRootWord should return true for a valid root word."
+        );
+
+        Puzzle puzzle = builder.build(rng);
+
+        assertPuzzle(
+            puzzle,
+            'd',
+            new char[] {'a', 'e', 'f', 'h', 'n', 'o'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        assertTrue(
+            builder.setRootWord("violent"),
+            "setRootWord should return true for a valid root word."
+        );
+
+        puzzle = builder.build(rng);
+
+        assertPuzzle(
+            puzzle,
+            'o',
+            new char[] {'e', 'i', 'l', 'n', 't', 'v'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        assertTrue(
+            builder.setRootWord("guardian"),
+            "setRootWord should return true for a valid root word."
+        );
+
+        puzzle = builder.build(rng);
+
+        assertPuzzle(
+            puzzle,
+            'd',
+            new char[] {'a', 'g', 'i', 'n', 'r', 'u'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+    }
+
+    @Test
+    public void testBuild_Random() {
+        Random rng = new Random(0l);
+
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        Puzzle puzzle = builder.build(rng);
+
+        // ambling primary: b
+
+        assertPuzzle(
+            puzzle,
+            'b',
+            new char[] {'a', 'e', 'g', 'i', 'l', 'm'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        puzzle = builder.build(rng);
+
+        // latesome primary: t
+
+        assertPuzzle(
+            puzzle,
+            't',
+            new char[] {'l', 'a', 'e', 's', 'o', 'm'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        puzzle = builder.build(rng);
+
+        // tinkliest primary: t
+
+        assertPuzzle(
+            puzzle,
+            't',
+            new char[] {'i', 'n', 'k', 'l', 'e', 's'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+    }
+
+    /**
+     * Asserts a Puzzle has all the given attributes.
+     * 
+     * @param puzzle
+     * @param primaryLetter
+     * @param secondaryLetters
+     * @param totalPoints
+     * @param earnedPoints
+     * @param foundWords
+     * @param rank
+     */
+    void assertPuzzle(
+        Puzzle puzzle,
+        char primaryLetter,
+        char[] secondaryLetters,
+        int earnedPoints,
+        List<String> foundWords,
+        Rank rank
+    ) {
+        assertEquals(
+            puzzle.getPrimaryLetter(),
+            primaryLetter,
+            "The primary letter of the puzzle did not match expected."
+        );
+
+        char[] sortedPuzzleSecondaryLetters = puzzle.getSecondaryLetters();
+        Arrays.sort(sortedPuzzleSecondaryLetters);
+        Arrays.sort(secondaryLetters);
+        assertTrue(
+            Arrays.equals(sortedPuzzleSecondaryLetters, secondaryLetters),
+            "The secondary letters of the puzzle did not match expected."
+        );
+
+        assertEquals(
+            puzzle.getEarnedPoints(),
+            earnedPoints,
+            "The earned points of the puzzle did not match expected."
+        );
+
+        assertEquals(
+            puzzle.getFoundWords(),
+            foundWords,
+            "The found words of the puzzle did not match expected."
+        );
+
+        assertEquals(
+            puzzle.getRank(),
+            rank,
+            "The rank of the puzzle did not match expected."
         );
     }
 }
