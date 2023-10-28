@@ -90,6 +90,8 @@ public class Puzzle {
     /**
      * Constructs a puzzle object that takes the attributes from a PuzzleSave 
      * object, so saved files can be loaded.
+     * 
+     * @deprecated use {@link PuzzleBuilder} to create Puzzles instead.
      *  
      * @param primaryLetter the required letter for the puzzle
      * @param secondaryLetters the non-required letters for the puzzle
@@ -99,6 +101,7 @@ public class Puzzle {
      * @param foundWords the list of words that had been found at time of save
      * @throws IOException if an I/O error occurs
      */
+    @Deprecated
     public Puzzle(char primaryLetter, char[] secondaryLetters,
                   FileReader dictionaryFile, int earnedPoints, int totalPoints, ArrayList<String> foundWords) throws IOException {
 
@@ -137,18 +140,21 @@ public class Puzzle {
         this.helpData = calculateHelpData();
     }
 
-     /**
-      * Create a puzzle from a given starting word with given required letter.
-      * Fills validWords by parsing through dictionaryFile.
-      *
-      * @param word The starting word for the puzzle
-      * @param primaryLetter The required letter of the word for the puzzle
-      * @param dictionaryFile The dictionary file to be used to generate validWords
-      * @return A puzzle based on the starting word and required letter
-      * @throws IllegalArgumentException if the word is not usable as a starting
-      *                                  word given the required letter
-      * @throws IOException if an I/O error occurs
-      */
+    /**
+     * Create a puzzle from a given starting word with given required letter.
+     * Fills validWords by parsing through dictionaryFile.
+     * 
+     * @deprecated use {@link PuzzleBuilder} to create Puzzles instead.
+     *
+     * @param word The starting word for the puzzle
+     * @param primaryLetter The required letter of the word for the puzzle
+     * @param dictionaryFile The dictionary file to be used to generate validWords
+     * @return A puzzle based on the starting word and required letter
+     * @throws IllegalArgumentException if the word is not usable as a starting
+     *                                  word given the required letter
+     * @throws IOException if an I/O error occurs
+     */
+    @Deprecated
     public static Puzzle fromWord(String word, char primaryLetter, 
                                   FileReader rootWordsFile, 
                                   FileReader dictionaryFile,
@@ -216,11 +222,14 @@ public class Puzzle {
     /**
      * Creates a puzzle from a random word in the root word dictionary.
      * 
+     * @deprecated use {@link PuzzleBuilder} to create Puzzles instead.
+     * 
      * @param rootWordsFile The dictionary to pick a random word from
      * @param dictionaryFile The dictionary to use to fill the validWords list
      * @return A random puzzle
      * @throws IOException if an I/O error occurs
      */
+    @Deprecated
     public static Puzzle randomPuzzle(FileReader rootWordsFile,
                                       FileReader dictionaryFile)
         throws IOException {
