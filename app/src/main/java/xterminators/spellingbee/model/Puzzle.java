@@ -17,11 +17,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
-    private final static int MINIMUM_WORD_LENGTH = 4;
+    public final static int MINIMUM_WORD_LENGTH = 4;
     /** The number of letters for the puzzle. */
-    private final static int NUMBER_UNIQUE_LETTERS = 7;
+    public final static int NUMBER_UNIQUE_LETTERS = 7;
     /** The number of bonus points recived for finding a pangram. */
-    private final static int PANGRAM_BONUS = 7;
+    public final static int PANGRAM_BONUS = 7;
 
     /** The primary (required) letter of the puzzle. */
     private char primaryLetter;
