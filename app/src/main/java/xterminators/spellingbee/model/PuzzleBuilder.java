@@ -4,7 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.random.RandomGenerator;
+import java.util.stream.Stream;
 
 /**
  * Puzzle builder for creating Puzzles from a single standard interface.
@@ -73,6 +79,7 @@ public class PuzzleBuilder {
 
             if (rootIsValid) {
                 this.rootWord = root;
+                this.requiredLetter = '\0';
             }
 
             return rootIsValid;
@@ -112,10 +119,11 @@ public class PuzzleBuilder {
      * used for any random choices.
      *
      * @return the built Puzzle object
+     * @throws IOException if there is an error reading the dictionary files.
      */
-    public Puzzle build() {
-        // TODO: Implement build
-        return null;
+    public Puzzle build() throws IOException {
+        Random rng = new Random();
+        return build(rng);
     }
 
     /**
@@ -126,10 +134,55 @@ public class PuzzleBuilder {
      * @param rng the random number generator to be used for making any random
      *            choices
      * @return the built Puzzle object
+     * @throws IOException if there is an error reading the dictionary files.
      */
-    public Puzzle build(RandomGenerator rng) {
-        // TODO: Implement build(seed)
-        return null;
+    public Puzzle build(RandomGenerator rng) throws IOException {
+        if (rootWord == null) {
+            long numRoots = 0;
+            try (Stream<String> words = Files.lines(rootsDictionary.toPath())) {
+                numRoots = words.count();
+            }
+
+            try (Stream<String> words = Files.lines(rootsDictionary.toPath())) {
+                this.rootWord = words.skip(rng.nextLong(numRoots)).findFirst().get();
+            }
+        }
+
+        if (requiredLetter == '\0') {
+            List<Character> distinctLetters = new ArrayList<>();
+            for (char c : rootWord.toCharArray()) {
+                if (!distinctLetters.contains(c)) {
+                    distinctLetters.add(c);
+                }
+            }
+
+            this.requiredLetter = distinctLetters.get(rng.nextInt(distinctLetters.size()));
+
+            char[] secondaryLetters = new char[distinctLetters.size() - 1];
+            for (int i = 0, j = 0; i < distinctLetters.size(); i++) {
+                if (distinctLetters.get(i) != requiredLetter) {
+                    secondaryLetters[j++] = distinctLetters.get(i);
+                }
+            }
+
+            return new Puzzle(requiredLetter, secondaryLetters, new FileReader(fullDictionary));
+        }
+
+        List<Character> distinctLetters = new ArrayList<>();
+        for (char c : rootWord.toCharArray()) {
+            if (!distinctLetters.contains(c)) {
+                distinctLetters.add(c);
+            }
+        }
+        
+        char[] secondaryLetters = new char[distinctLetters.size() - 1];
+        for (int i = 0, j = 0; i < distinctLetters.size(); i++) {
+            if (distinctLetters.get(i) != requiredLetter) {
+                secondaryLetters[j++] = distinctLetters.get(i);
+            }
+        }
+
+        return new Puzzle(requiredLetter, secondaryLetters, new FileReader(fullDictionary));
     }
 }
 
