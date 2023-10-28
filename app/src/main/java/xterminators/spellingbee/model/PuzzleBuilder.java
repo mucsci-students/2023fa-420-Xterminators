@@ -13,6 +13,7 @@ public class PuzzleBuilder {
     private File rootsDictionary;
 
     private String rootWord;
+    private char requiredLetter;
 
     /**
      * Creates a new PuzzleBuilder object.
@@ -42,6 +43,7 @@ public class PuzzleBuilder {
         this.rootsDictionary = rootsDictionary;
 
         this.rootWord = null;
+        this.requiredLetter = '\0';
     }
 
     /**
@@ -89,8 +91,17 @@ public class PuzzleBuilder {
      *         puzzle
      */
     public boolean setRootAndRequiredLetter(String root, char requiredLetter) {
-        // TODO: Implement setRootAndRequiredLetter
-        return false;
+        if (root == null || root.indexOf(requiredLetter) == -1) {
+            return false;
+        }
+
+        if (!setRootWord(root)) {
+            return false;
+        }
+
+        this.requiredLetter = requiredLetter;
+        
+        return true;
     }
 
     /**
