@@ -49,7 +49,7 @@ public class Puzzle {
     /**
      * A record for containing all the data in a JSON save of a puzzle.
      */
-    private record PuzzleData(
+    protected record PuzzleData(
         char[] baseWord,
         char requiredLetter,
         List<String> foundWords,
@@ -103,7 +103,7 @@ public class Puzzle {
      * @throws IllegalArgumentException if the puzzle data represents an invalid
      *                                  puzzle
      */
-    private Puzzle(PuzzleData puzzleData, File dictionaryFile)
+    protected Puzzle(PuzzleData puzzleData, File dictionaryFile)
         throws FileNotFoundException, IOException, IllegalArgumentException
     {
         this.primaryLetter = puzzleData.requiredLetter();
