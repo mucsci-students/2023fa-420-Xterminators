@@ -222,7 +222,11 @@ public class PuzzleBuilderTest {
             "letter."
         );
 
-        Puzzle puzzle = builder.build();
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> builder.build(),
+            "build should not throw if the builder has a valid root word and " +
+            "required letter."
+        );
 
         assertPuzzle(
             puzzle,
@@ -239,7 +243,11 @@ public class PuzzleBuilderTest {
             "letter."
         );
 
-        puzzle = builder.build();
+        puzzle = assertDoesNotThrow(
+            () -> builder.build(),
+            "build should not throw if the builder has a valid root word and " +
+            "required letter."
+        );
 
         assertPuzzle(
             puzzle,
@@ -256,7 +264,11 @@ public class PuzzleBuilderTest {
             "letter."
         );
 
-        puzzle = builder.build();
+        puzzle = assertDoesNotThrow(
+            () -> builder.build(),
+            "build should not throw if the builder has a valid root word and " +
+            "required letter."
+        );
 
         assertPuzzle(
             puzzle,
@@ -283,7 +295,10 @@ public class PuzzleBuilderTest {
             "setRootWord should return true for a valid root word."
         );
 
-        Puzzle puzzle = builder.build(rng);
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> builder.build(rng),
+            "build should not throw if the builder has a valid root word."
+        );
 
         assertPuzzle(
             puzzle,
@@ -299,7 +314,10 @@ public class PuzzleBuilderTest {
             "setRootWord should return true for a valid root word."
         );
 
-        puzzle = builder.build(rng);
+        puzzle = assertDoesNotThrow(
+            () -> builder.build(rng),
+            "build should not throw if the builder has a valid root word."
+        );
 
         assertPuzzle(
             puzzle,
@@ -315,7 +333,10 @@ public class PuzzleBuilderTest {
             "setRootWord should return true for a valid root word."
         );
 
-        puzzle = builder.build(rng);
+        puzzle = assertDoesNotThrow(
+            () -> builder.build(rng),
+            "build should not throw if the builder has a valid root word."
+        );
 
         assertPuzzle(
             puzzle,
@@ -337,40 +358,49 @@ public class PuzzleBuilderTest {
             "are valid."
         );
 
-        Puzzle puzzle = builder.build(rng);
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> builder.build(rng),
+            "build should not throw if the builder has a root dictionary."
+        );
 
-        // ambling primary: b
+        // invitress rprimary: r
 
         assertPuzzle(
             puzzle,
-            'b',
-            new char[] {'a', 'e', 'g', 'i', 'l', 'm'},
+            'r',
+            new char[] {'e', 'i', 'n', 's', 't', 'v'},
             0,
             List.of(),
             Rank.BEGINNER
         );
 
-        puzzle = builder.build(rng);
+        puzzle = assertDoesNotThrow(
+            () -> builder.build(rng),
+            "build should not throw if the builder has a root dictionary."
+        );
 
-        // latesome primary: t
+        // thrinax primary: t
 
         assertPuzzle(
             puzzle,
             't',
-            new char[] {'l', 'a', 'e', 's', 'o', 'm'},
+            new char[] {'a', 'h', 'i', 'n', 'r', 'x'},
             0,
             List.of(),
             Rank.BEGINNER
         );
 
-        puzzle = builder.build(rng);
+        puzzle = assertDoesNotThrow(
+            () -> builder.build(rng),
+            "build should not throw if the builder has a root dictionary."
+        );
 
-        // tinkliest primary: t
+        // wishtonwish primary: o
 
         assertPuzzle(
             puzzle,
-            't',
-            new char[] {'i', 'n', 'k', 'l', 'e', 's'},
+            'o',
+            new char[] {'h', 'i', 'n', 's', 't', 'w'},
             0,
             List.of(),
             Rank.BEGINNER
