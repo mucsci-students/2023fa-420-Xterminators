@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -347,53 +346,7 @@ public class CLIController {
             puzzle.getRank(),
             puzzle.getEarnedPoints()
         );
-        // helpData = puzzle.getHelpData();
 
-        // char[] baseWord = new char[7];
-        // baseWord[6] = puzzle.getPrimaryLetter();
-        // char [] nonRequiredLetters = puzzle.getSecondaryLetters();
-        // for(int i = 0; i < baseWord.length - 1; i++){
-        //     baseWord[i] = nonRequiredLetters[i];
-        // }
-        // Map<Pair<Character, Integer>, Long> trying = helpData.startingLetterGrid();
-        
-        // int maxWordSize = 0;
-        // for(Map.Entry<Pair<Character, Integer>, Long> entry : trying.entrySet()){
-        //     int wordSize = entry.getKey().getRight();
-        //     if(wordSize > maxWordSize) maxWordSize = wordSize;
-        // }
-        // String[][] grid = new String[9][maxWordSize - 2];
-        // for(int row = 0; row < 9; row++){
-        //     for(int col = 0; col < maxWordSize - 2; col ++){
-        //         grid[row][col] = "-";
-        //     }
-        // }
-        // grid[0][0] = " ";
-        // grid[8][0] = "\u03A3";
-        // grid[0][maxWordSize - 3] = "\u03A3";
-        // for(int i = 1; i < 8; i++){
-        //     grid[i][0] = "" + baseWord[i - 1];
-        // }
-        // for(int i = 1; i < maxWordSize - 2; i ++){
-        //     grid[0][i] = (i + 3) + "";
-        // }
-        // for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
-        //     for(int k = 1; k < 8; k++){
-        //         if((work.getKey().getLeft()+ "").equals(grid[k][0])){
-        //             grid[k][work.getKey().getRight() - 3] = (work.getValue() + "");
-        //         }
-        //     }
-        // }
-
-        // for(int row = 0; row < 9; row++){
-        //     for(int col = 0; col < maxWordSize - 2; col ++){
-        //         System.out.print(grid[row][col]);
-        //         System.out.print(" ");
-        //     }
-        //     System.out.println("");
-        // }
-
-        //System.out.println(helpData.startingLetterGrid());
     
     }
 
@@ -413,21 +366,27 @@ public class CLIController {
             int wordSize = entry.getKey().getRight();
             if(wordSize > maxWordSize) maxWordSize = wordSize;
         }
-        String[][] grid = new String[9][maxWordSize - 2];
+        //Initialize the matrix
+        String[][] grid = new String[9][maxWordSize - 1];
+        //Populate the matrix with dashes
         for(int row = 0; row < 9; row++){
-            for(int col = 0; col < maxWordSize - 2; col ++){
+            for(int col = 0; col < maxWordSize - 1; col ++){
                 grid[row][col] = "-";
             }
         }
         grid[0][0] = " ";
         grid[8][0] = "\u03A3";
-        grid[0][maxWordSize - 3] = "\u03A3";
+        grid[0][maxWordSize - 2] = "\u03A3";
+        //Put the puzzle letters into the matrix
         for(int i = 1; i < 8; i++){
             grid[i][0] = "" + baseWord[i - 1];
         }
+        //Puts the word length into the matrix
         for(int i = 1; i < maxWordSize - 2; i ++){
             grid[0][i] = (i + 3) + "";
         }
+        //This for loop maps the number of words to their size and letters
+        //in the grid.
         for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
             for(int k = 1; k < 8; k++){
                 if((work.getKey().getLeft()+ "").equals(grid[k][0])){
@@ -435,16 +394,74 @@ public class CLIController {
                 }
             }
         }
+        // This calculates the sum of the words that start with each letter.
+        int sumValLet;
+        for(int row = 1; row < 8; row++){
+            sumValLet = 0;
+            for(int col = 1; col < maxWordSize - 3; col ++){
+                if (!grid[row][col].equals("-")){
+                    sumValLet = sumValLet + Integer.parseInt(grid[row][col]);
+                }
+            }
+            grid[row][maxWordSize - 2] = sumValLet + "";
+        }
 
+        int sumValCol;
+        for(int col = 1; col < maxWordSize - 1; col++){
+            sumValCol = 0;
+            for(int row = 1; row < 8; row ++){
+                if (!grid[row][col].equals("-")){
+                    sumValCol = sumValCol + Integer.parseInt(grid[row][col]);
+                }
+            }
+            grid[8][col] = sumValCol + "";
+        }
+        System.out.println("Spelling Bee Grid\n");
+        System.out.println("Center letter is in" + "\u001B[1m BOLD \n");
+        System.out.print( (baseWord[6] + " ").toUpperCase() + "\u001B[0m");
+        for(int i = 0; i < 6; i++){
+            System.out.print((baseWord[i] + "").toUpperCase() + " ");
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println("WORDS: " + helpData.numWords() + ", POINTS: " + helpData.totalPoints() + ", PANGRAMS: " + helpData.numPangrams() + " (" + helpData.numPerfectPangrams() + " Perfect)\n");
+        //This for loop prints out the matrix
         for(int row = 0; row < 9; row++){
-            for(int col = 0; col < maxWordSize - 2; col ++){
-                System.out.print(grid[row][col]);
+            for(int col = 0; col < maxWordSize - 1; col ++){
+                System.out.print(String.format("%-" + 3 +"s", grid[row][col].toUpperCase()));
                 System.out.print(" ");
             }
             System.out.println("");
         }
-    }
+        System.out.println("\n\u001B[1mTwo letter list: \u001B[0m\n\n");
+        String [][] twoLetList = new String[7][7];
+        for(int i = 0; i < 7; i++){
+            for(int k = 0; k < 7; k ++){
+                twoLetList[i][k] = "-";
+            }
+        }
+        for(Map.Entry<String, Long> item : helpData.startingLetterPairs().entrySet()){
+            for(int i = 0; i < 7; i++){
+                if((baseWord[i] + "").equals(item.getKey().charAt(0) + "")){
+                    for(int k = 0; k < 7; k++){
+                        if((baseWord[k] + "").equals(item.getKey().charAt(1) + "")){
+                            twoLetList[i][k] = item + "";
+                        }
+                    }
+                }
+            }
+        }
 
+        for(int i = 0; i < 7; i++){
+            for (int k = 0; k < 6; k++){
+                if(!twoLetList[i][k].equals("-")){
+                    System.out.print(String.format("%-" + 6 + "s", twoLetList[i][k].toUpperCase()));
+                }
+            }
+            System.out.println();
+        }
+    }
+    
     /**
      * Creates a new puzzle with the given base word. Sends command to view to
      * display the new puzzle.
