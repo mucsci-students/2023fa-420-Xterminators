@@ -54,6 +54,10 @@ public class PuzzleBuilder {
      * @return if the root word is a legal root word
      */
     public boolean setRootWord(String root) {
+        if (root == null || root.length() < Puzzle.NUMBER_UNIQUE_LETTERS) {
+            return false;
+        }
+
         try {
             FileReader rootsFileReader = new FileReader(rootsDictionary);
             BufferedReader rootsReader = new BufferedReader(rootsFileReader);
