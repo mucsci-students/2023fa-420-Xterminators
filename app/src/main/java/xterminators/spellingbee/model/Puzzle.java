@@ -48,7 +48,7 @@ public class Puzzle {
      * @param dictionaryFile The dictionary file to be used to generate validWords.
      * @throws IOException if an I/O error occurs.
      */
-    public Puzzle(char primaryLetter, char[] secondaryLetters,
+    protected Puzzle(char primaryLetter, char[] secondaryLetters,
                   FileReader dictionaryFile) throws IOException {
         this.primaryLetter = primaryLetter;
         this.secondaryLetters = Arrays.copyOf(secondaryLetters,
