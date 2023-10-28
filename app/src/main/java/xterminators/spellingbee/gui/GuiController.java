@@ -3,18 +3,12 @@ package xterminators.spellingbee.gui;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.FileWriter;
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import com.google.gson.Gson;
+
+import com.google.gson.JsonSyntaxException;
 
 import xterminators.spellingbee.model.Puzzle;
-import xterminators.spellingbee.model.PuzzleSave;
 import xterminators.spellingbee.model.Rank;
 
 public class GuiController {
@@ -95,58 +89,28 @@ public class GuiController {
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle() throws IOException{
-        Gson saved = new Gson();
+    public String savePuzzle() throws IOException {
+        if (puzzle == null) {
+            return "There is no puzzle in progress. Please try again.";
+        }
 
-        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
-
-        char[] baseWord = new char[7];
-        System.arraycopy(nonRequiredLetters, 0, baseWord, 0, nonRequiredLetters.length);
-
-        baseWord[6] = puzzle.getPrimaryLetter();
-
-        String filename = "";
+        StringBuilder filename = new StringBuilder();
 
         //This will create a title for the Json file consisting
         // of the non-required letters followed by the required letter.
-        for (char c : baseWord){
-            filename += c;
+        for (char c : puzzle.getSecondaryLetters()){
+            filename.append(c);
         }
 
-        // Take the necessary attributes and create a puzzleSave object
-        PuzzleSave testSave = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
-        puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+        filename.append(puzzle.getPrimaryLetter());
 
-        //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (testSave);
-        String result = "";
+        filename.append(".json");
 
-        try {
-            File savedFile = new File(filename + ".json");
+        File saveLocation = new File(filename.toString());
 
-            //Returns true if a new file is created.
-            if(savedFile.createNewFile()) {
+        puzzle.save(saveLocation);
 
-                //Create a file writer to populate the created File
-                FileWriter writing = new FileWriter(savedFile);
-
-                writing.write(savedJson);
-                writing.close();
-
-                result = "File created: " + filename + ".json";
-
-            } else {
-                result = "A file by that name already exists. Overwriting the file";
-
-                PrintWriter writer = new PrintWriter(savedFile);
-                writer.print(savedJson);
-                writer.close();
-            }
-        }
-        catch (IOException e) {
-            result = "File could not be saved, an Input/Output error occurred";
-        }        
-        return result;
+        return "File created: " + saveLocation.getAbsolutePath();
     }
 
     /**
@@ -154,50 +118,13 @@ public class GuiController {
      * @param loadFile - the file to be loaded
      */
     public String loadPuzzle(String loadFile) {
-        
-        Gson load = new Gson();
-        String jsonPuzzle = "";
-
         String result = "";
 
         try{
             //Create a file object to read the contents of loadFile
-            File myObj = new File (loadFile);
-            Scanner fileReader = new Scanner (myObj);
+            File savedFile = new File (loadFile);
             
-            //Construct a string by reading the file line by line
-            while (fileReader.hasNextLine()){
-                jsonPuzzle = jsonPuzzle + fileReader.nextLine();
-                
-            }
-            fileReader.close();
-            //Construct a new puzzle based on the loaded file
-            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
-
-            //Initialize the values that will be used by PuzzleSave
-            char[] BaseWord = loading.getPSBase();
-            char RequiredLetter = BaseWord[6];
-
-            char[] newSecondaryLetters = new char[6];
-            for(int i = 0; i < newSecondaryLetters.length; i ++){
-                newSecondaryLetters[i] = BaseWord[i];
-            }
-
-            FileReader dictionaryFileReader = new FileReader(dictionaryFile);
-
-            ArrayList<String> newFoundWords = new ArrayList<>();
-
-            for(String word : loading.getPSFoundWords() ) {
-                newFoundWords.add(word);
-            }
-
-            String work = "";
-            for ( char c : BaseWord) {
-                work = work + c;
-            }
-
-            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters,
-            dictionaryFileReader, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
+            Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
             puzzle = LoadedPuzzle;
             result = "Succesfully loaded " + loadFile + "!";
@@ -207,6 +134,8 @@ public class GuiController {
         }
         catch (IOException e) {
             result = "There was an input or output error";
+        } catch (JsonSyntaxException e) {
+            result = "The file was not properly formatted as a puzzle.";
         }
         return result;
     }
