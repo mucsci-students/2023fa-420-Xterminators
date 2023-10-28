@@ -37,3 +37,18 @@ or run the application with the CLI:
 - JJ Snader
 - Jonathan Hart
 - Luke Vance
+
+## 🎨 Design Patterns Used
+
+- MVC (Model-View-Controller)
+    - MVC was used as the primary design pattern for the application.
+    - The `Puzzle` class is used as the model.
+    - The `CLIController` and `GuiController` classes are used as controllers
+      for communication between the view and model in their respective UI modes.
+    - The `CLIView` and `GuiView` were used as frontend views between the user
+      and the application for their respective UI modes.
+- Builder Pattern
+    - The builder pattern was used for most creations of the `Puzzle` object.
+    - A `PuzzleBuilder` would be constructed and then given information to build
+      a `Puzzle` with either a known root word and primary letter, a random
+      primary letter, or a fully random puzzle.
