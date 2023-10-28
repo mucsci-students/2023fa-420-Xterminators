@@ -437,7 +437,9 @@ public class PuzzleBuilderTest {
         Arrays.sort(secondaryLetters);
         assertTrue(
             Arrays.equals(sortedPuzzleSecondaryLetters, secondaryLetters),
-            "The secondary letters of the puzzle did not match expected."
+            "The secondary letters of the puzzle did not match expected." +
+            "Expected: " + Arrays.toString(secondaryLetters) + "\n" + "Actual: "
+            + Arrays.toString(sortedPuzzleSecondaryLetters)
         );
 
         assertEquals(
