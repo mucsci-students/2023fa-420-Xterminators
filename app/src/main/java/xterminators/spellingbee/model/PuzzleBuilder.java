@@ -105,21 +105,6 @@ public class PuzzleBuilder {
     }
 
     /**
-     * Clears the current state of the puzzle builder, including any set root
-     * word or required letter.
-     */
-    public void clear() {
-        // TODO: Implement clear
-    }
-
-    /**
-     * Clears the current set required letter, if one exists.
-     */
-    public void clearRequiredLetter() {
-        // TODO: Implement clearRequiredLetter
-    }
-
-    /**
      * Builds and returns a Puzzle object based on the current state of the
      * puzzle builder. If no root word is set, a random one will be used. If no
      * required letter is set a random one will be used.
