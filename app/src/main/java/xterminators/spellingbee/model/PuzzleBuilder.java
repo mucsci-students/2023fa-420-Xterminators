@@ -107,12 +107,26 @@ public class PuzzleBuilder {
     /**
      * Builds and returns a Puzzle object based on the current state of the
      * puzzle builder. If no root word is set, a random one will be used. If no
-     * required letter is set a random one will be used.
+     * required letter is set a random one will be used. A random seed will be
+     * used for any random choices.
      *
      * @return the built Puzzle object
      */
     public Puzzle build() {
         // TODO: Implement build
+        return null;
+    }
+    
+    /**
+     * Builds and returns a Puzzle object based on the current state of the
+     * puzzle builder. If no root word is set, a random one will be used. If no
+     * required letter is set a random one will be used.
+     * 
+     * @param seed the seed to be used if a random piece is needed
+     * @return the built Puzzle object
+     */
+    public Puzzle build(long seed) {
+        // TODO: Implement build(seed)
         return null;
     }
 }
