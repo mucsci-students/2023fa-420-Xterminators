@@ -15,6 +15,7 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 
 import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.PuzzleSave;
 
@@ -301,13 +302,8 @@ public class CLIController {
      */
     private void newPuzzle() {
         try {
-            FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
-            FileReader dictionaryReader = new FileReader(dictionaryFile);
-
-            puzzle = Puzzle.randomPuzzle(rootWordsReader, dictionaryReader);
-            
-            rootWordsReader.close();
-            dictionaryReader.close();
+            PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
+            puzzle = builder.build();
         } catch (FileNotFoundException e) {
             if (e.getMessage().contains(rootsDictionaryFile.getName())) {
                 view.showErrorMessage(
@@ -317,13 +313,7 @@ public class CLIController {
                 view.showErrorMessage(
                     "Could not find dictionary of valid words. No puzzle created."
                 );
-            } else {
-                view.showErrorMessage(
-                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
-                    e.getLocalizedMessage()
-                );
             }
-
             return;
         } catch (IOException e) {
             view.showErrorMessage(
@@ -348,16 +338,16 @@ public class CLIController {
      */
     private void newPuzzle(String word, char requiredLetter) {
         try {
-            FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
-            FileReader dictionaryReader = new FileReader(dictionaryFile);
+            PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
 
-            puzzle = Puzzle.fromWord(
-                word,
-                requiredLetter,
-                rootWordsReader,
-                dictionaryReader,
-                false
-            );
+            if (!builder.setRootAndRequiredLetter(word, requiredLetter)) {
+                view.showErrorMessage(
+                    "Invalid starting word. Please try again."
+                );
+                return;
+            }
+
+            puzzle = builder.build();
         } catch (FileNotFoundException e) {
             if (e.getMessage().contains(rootsDictionaryFile.getName())) {
                 view.showErrorMessage(
@@ -367,18 +357,7 @@ public class CLIController {
                 view.showErrorMessage(
                     "Could not find dictionary of valid words. No puzzle created."
                 );
-            } else {
-                view.showErrorMessage(
-                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
-                    e.getLocalizedMessage()
-                );
             }
-
-            return;
-        } catch (IllegalArgumentException e) {
-            view.showErrorMessage(
-                "Invalid starting word. Please try again."
-            );
             return;
         } catch (IOException e) {
             view.showErrorMessage(
