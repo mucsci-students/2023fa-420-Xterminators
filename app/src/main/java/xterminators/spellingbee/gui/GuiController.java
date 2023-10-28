@@ -29,8 +29,8 @@ public class GuiController {
     private File rootsDictionaryFile;
 
     public GuiController(GuiView guic, File dictionaryFile, File rootsDictionaryFile) {
-        puzzle = null;
-        guiView = guic;
+        this.puzzle = null;
+        this.guiView = guic;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
     }
