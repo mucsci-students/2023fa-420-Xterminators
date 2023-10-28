@@ -363,12 +363,12 @@ public class PuzzleBuilderTest {
             "build should not throw if the builder has a root dictionary."
         );
 
-        // invitress rprimary: r
+        // invocant primary: n (rand line 32660, rand prim index 1)
 
         assertPuzzle(
             puzzle,
-            'r',
-            new char[] {'e', 'i', 'n', 's', 't', 'v'},
+            'n',
+            new char[] {'a', 'c', 'i', 'o', 't', 'v'},
             0,
             List.of(),
             Rank.BEGINNER
@@ -379,12 +379,12 @@ public class PuzzleBuilderTest {
             "build should not throw if the builder has a root dictionary."
         );
 
-        // thrinax primary: t
+        // thripel primary: e (rand line 65009, rand prim index 5)
 
         assertPuzzle(
             puzzle,
-            't',
-            new char[] {'a', 'h', 'i', 'n', 'r', 'x'},
+            'e',
+            new char[] {'h', 'i', 'l', 'p', 'r', 't'},
             0,
             List.of(),
             Rank.BEGINNER
@@ -395,7 +395,7 @@ public class PuzzleBuilderTest {
             "build should not throw if the builder has a root dictionary."
         );
 
-        // wishtonwish primary: o
+        // wismuth primary: s (rand line 73510, rand prim index 3)
 
         assertPuzzle(
             puzzle,
