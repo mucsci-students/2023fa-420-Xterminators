@@ -52,6 +52,15 @@ public class GuiView {
 
     // Initialization *********************************************************
 
+    public GuiView(File dictionaryFile, File rootsDictionaryFile) {
+        guiController = new GuiController(this, dictionaryFile, rootsDictionaryFile);
+        mainFrame = new JFrame("Spelling Bee");
+        mainPanel = new JPanel();
+        standardFont = new Font("Helvetica", Font.BOLD, 16);
+        smallFont = new Font("Helvetica", Font.BOLD, 13);
+        guessKeyListener = new GuessKeyListener();
+    }
+
     /**
      * This sets up all of the components of the UI.
      * All components are created here, and all event
@@ -61,14 +70,6 @@ public class GuiView {
      * try to avoid them as much as possible.
      */
     public void InitUI() {
-
-        mainFrame = new JFrame("Spelling Bee");
-        mainPanel = new JPanel();
-        standardFont = new Font("Helvetica", Font.BOLD, 16);
-        smallFont = new Font("Helvetica", Font.BOLD, 13);
-        guessKeyListener = new GuessKeyListener();
-        guiController = new GuiController(this);
-
         try {
             Image iconImage = javax.imageio.ImageIO.read(new File(BEE_PATH));
             mainFrame.setIconImage(iconImage);

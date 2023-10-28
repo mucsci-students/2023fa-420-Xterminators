@@ -13,25 +13,21 @@ import xterminators.spellingbee.model.Rank;
 
 public class GuiController {
 
+    /** The puzzle object. */
     private Puzzle puzzle;
+    /** The view that the user interacts with. */
     private GuiView guiView;
-
-    public GuiController(GuiView guic) {
-        puzzle = null;
-        guiView = guic;
-    }
-
-    // Idealy these two files would just be instance variable and be passed to
-    // a constructor, but they will be hardcoded untill proper constructors are
-    // made.
     /** The file pointing to the full dictionary of usable words. */
-    public static final File DICTIONARY_FILE = new File(
-        Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
-    );
+    private File dictionaryFile;
     /** The file pointing to the dictionary of valid root words. */
-    public static final File ROOT_DICTIONARY_FILE = new File(
-        Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
-    );
+    private File rootsDictionaryFile;
+
+    public GuiController(GuiView guic, File dictionaryFile, File rootsDictionaryFile) {
+        this.puzzle = null;
+        this.guiView = guic;
+        this.dictionaryFile = dictionaryFile;
+        this.rootsDictionaryFile = rootsDictionaryFile;
+    }
 
     public Puzzle getPuzzle() {
         return puzzle;
@@ -53,20 +49,16 @@ public class GuiController {
         throws IllegalArgumentException, FileNotFoundException, IOException  {
 
         try {
-            FileReader dictionaryFile = new FileReader(DICTIONARY_FILE);
-            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_FILE);
+            FileReader dictionaryFileReader = new FileReader(dictionaryFile);
+            FileReader rootWordsFileReader = new FileReader(rootsDictionaryFile);
             if (seedWord != null && !seedWord.equals("")) {
                 puzzle = Puzzle.fromWord(seedWord, requiredLetter, 
-                    rootWordsFile, dictionaryFile, false);
+                    rootWordsFileReader, dictionaryFileReader, false);
             } else {
                 // no seedWord provided, assume random puzzle
-                puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+                puzzle = Puzzle.randomPuzzle(rootWordsFileReader, dictionaryFileReader);
             }
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (FileNotFoundException e) {
-            throw e;
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             throw e;
         }
     }
@@ -75,6 +67,9 @@ public class GuiController {
      * Creates a new puzzle using a random word from the dictionary.
      * The random word will have exactly 7 unique letters but may be 
      * longer than 7 characters.
+     * @throws IllegalArgumentException if the starting word was not valid.
+     * @throws FileNotFoundException if the dictionary file could not be found.
+     * @throws IOException if there was a problem reading the dictionary file.
      */
     public void createNewPuzzle() 
         throws IllegalArgumentException, FileNotFoundException, IOException{
@@ -88,23 +83,6 @@ public class GuiController {
      */
     public void shuffleLetters() {
         puzzle.shuffle();
-    }
-
-    /**
-     * Prints the list of found words.
-     */
-    private void showFoundWords() {
-        if (puzzle == null) {
-            return;
-        }
-
-        String newline = "\n";
-        StringBuilder output = new StringBuilder();
-        for (String word : puzzle.getFoundWords()) {
-            output.append(word + newline);
-        }
-        System.out.println("Found Words:");
-        System.out.println(output.toString());
     }
 
     /**
@@ -149,7 +127,6 @@ public class GuiController {
             Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, DICTIONARY_FILE);
 
             puzzle = LoadedPuzzle;
-
             result = "Succesfully loaded " + loadFile + "!";
         }
         catch (FileNotFoundException e) {
@@ -170,10 +147,15 @@ public class GuiController {
      * @param word The word that's being guessed.
      */
     public String guessWord(String word) {
+        if (word == null) {
+            word = "";
+        }
+
         String result = "";
 
         if (puzzle == null) {
             result = "No puzzle is loaded.";
+            return result;
         }
 
         Rank prevRank = puzzle.getRank();
@@ -200,44 +182,5 @@ public class GuiController {
                 curRank.getRankName() + ".";
         }
         return result;
-    }
-
-    /**
-     * Prints all available ranks, along with the current rank.
-     */
-    private void showRanks() {
-        //TODO Make this work with GUI 
-        if (puzzle == null) {
-            return;
-        }
-
-        int totalPoints = puzzle.getTotalPoints();
-        int earnedPoints = puzzle.getEarnedPoints();
-        Rank curRank = puzzle.getRank();
-
-        if (earnedPoints == 1) {
-            System.out.println(
-                "Current Rank: " + curRank.getRankName() + " - " +
-                earnedPoints + " point\n"
-            );
-        } else {
-            System.out.println(
-                "Current Rank: " + curRank.getRankName() + " - " +
-                earnedPoints + " points\n"
-            );
-        }
-
-        int namePadWidth = 0;
-        int pointPadWidth = 0;
-        for (Rank rank : Rank.values()) {
-            int reqPoints = rank.getRequiredPoints(totalPoints);
-            if (String.valueOf(reqPoints).length() > pointPadWidth) {
-                pointPadWidth = String.valueOf(reqPoints).length();
-            }
-            if (rank.getRankName().length() > namePadWidth) {
-                namePadWidth = rank.getRankName().length();
-            }
-            
-        }
     }
 }
