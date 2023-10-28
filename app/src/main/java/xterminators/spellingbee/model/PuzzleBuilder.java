@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.random.RandomGenerator;
 
 /**
  * Puzzle builder for creating Puzzles from a single standard interface.
@@ -116,16 +117,17 @@ public class PuzzleBuilder {
         // TODO: Implement build
         return null;
     }
-    
+
     /**
      * Builds and returns a Puzzle object based on the current state of the
      * puzzle builder. If no root word is set, a random one will be used. If no
      * required letter is set a random one will be used.
      * 
-     * @param seed the seed to be used if a random piece is needed
+     * @param rng the random number generator to be used for making any random
+     *            choices
      * @return the built Puzzle object
      */
-    public Puzzle build(long seed) {
+    public Puzzle build(RandomGenerator rng) {
         // TODO: Implement build(seed)
         return null;
     }
