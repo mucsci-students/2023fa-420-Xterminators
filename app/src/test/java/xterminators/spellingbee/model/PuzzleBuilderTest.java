@@ -352,55 +352,67 @@ public class PuzzleBuilderTest {
     public void testBuild_Random() {
         Random rng = new Random(0l);
 
-        PuzzleBuilder builder = assertDoesNotThrow(
+        PuzzleBuilder builder1 = assertDoesNotThrow(
             () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
             "The PuzzleBuilder constructor should not throw if the dictionaries " +
             "are valid."
         );
 
         Puzzle puzzle = assertDoesNotThrow(
-            () -> builder.build(rng),
+            () -> builder1.build(rng),
             "build should not throw if the builder has a root dictionary."
         );
 
-        // invocant primary: n (rand line 32660, rand prim index 1)
+        // invocation primary: c (rand line 32661, rand prim index 4)
 
         assertPuzzle(
             puzzle,
-            'n',
-            new char[] {'a', 'c', 'i', 'o', 't', 'v'},
+            'c',
+            new char[] {'i', 'n', 'o', 't', 'v', 'a'},
             0,
             List.of(),
             Rank.BEGINNER
         );
 
+        PuzzleBuilder builder2 = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
         puzzle = assertDoesNotThrow(
-            () -> builder.build(rng),
+            () -> builder2.build(rng),
             "build should not throw if the builder has a root dictionary."
         );
 
-        // thripel primary: e (rand line 65009, rand prim index 5)
+        // thripple primary: t (rand line 65010, rand prim index 0)
+
+        assertPuzzle(
+            puzzle,
+            't',
+            new char[] {'e', 'h', 'i', 'l', 'p', 'r'},
+            0,
+            List.of(),
+            Rank.BEGINNER
+        );
+
+        PuzzleBuilder builder3 = assertDoesNotThrow(
+            () -> new PuzzleBuilder(dictionaryFile, rootsDictionaryFile),
+            "The PuzzleBuilder constructor should not throw if the dictionaries " +
+            "are valid."
+        );
+
+        puzzle = assertDoesNotThrow(
+            () -> builder3.build(rng),
+            "build should not throw if the builder has a root dictionary."
+        );
+
+        // wisplike primary: e (rand line 73511, rand prim index 6)
 
         assertPuzzle(
             puzzle,
             'e',
-            new char[] {'h', 'i', 'l', 'p', 'r', 't'},
-            0,
-            List.of(),
-            Rank.BEGINNER
-        );
-
-        puzzle = assertDoesNotThrow(
-            () -> builder.build(rng),
-            "build should not throw if the builder has a root dictionary."
-        );
-
-        // wismuth primary: s (rand line 73510, rand prim index 3)
-
-        assertPuzzle(
-            puzzle,
-            'o',
-            new char[] {'h', 'i', 'n', 's', 't', 'w'},
+            new char[] {'i', 'k', 'l', 'p', 's', 'w'},
             0,
             List.of(),
             Rank.BEGINNER
