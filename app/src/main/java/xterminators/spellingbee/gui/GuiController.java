@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import com.google.gson.JsonSyntaxException;
 
 import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 
 public class GuiController {
@@ -49,16 +50,42 @@ public class GuiController {
         throws IllegalArgumentException, FileNotFoundException, IOException  {
 
         try {
-            FileReader dictionaryFileReader = new FileReader(dictionaryFile);
-            FileReader rootWordsFileReader = new FileReader(rootsDictionaryFile);
-            if (seedWord != null && !seedWord.equals("")) {
-                puzzle = Puzzle.fromWord(seedWord, requiredLetter, 
-                    rootWordsFileReader, dictionaryFileReader, false);
-            } else {
-                // no seedWord provided, assume random puzzle
-                puzzle = Puzzle.randomPuzzle(rootWordsFileReader, dictionaryFileReader);
+            PuzzleBuilder builder = new PuzzleBuilder(
+                dictionaryFile,
+                rootsDictionaryFile
+            );
+
+            // If seedWord is empty, a random puzzle will be generated instead.
+            if (seedWord.equals("")) {
+                puzzle = builder.build();
+                return;
             }
-        } catch (IllegalArgumentException | IOException e) {
+
+            if (seedWord.length() < Puzzle.NUMBER_UNIQUE_LETTERS) {
+                throw new IllegalArgumentException(
+                    "The seed word must be at least " + Puzzle.NUMBER_UNIQUE_LETTERS +
+                    " characters long."
+                );
+            }
+
+            if (seedWord.indexOf(seedWord) == -1) {
+                throw new IllegalArgumentException(
+                    "The seed word must contain the required letter."
+                );
+            }
+
+            if (!builder.setRootAndRequiredLetter(seedWord, requiredLetter)) {
+                throw new IllegalArgumentException(
+                    "The seed word must be a valid root word and contain the required letter."
+                );
+            }
+
+            puzzle = builder.build();
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (FileNotFoundException e) {
+            throw e;
+        } catch (IOException e) {
             throw e;
         }
     }

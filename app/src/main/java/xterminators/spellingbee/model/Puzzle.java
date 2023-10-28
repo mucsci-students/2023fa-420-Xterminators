@@ -24,11 +24,11 @@ import com.google.gson.JsonSyntaxException;
 
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
-    private final static int MINIMUM_WORD_LENGTH = 4;
+    public final static int MINIMUM_WORD_LENGTH = 4;
     /** The number of letters for the puzzle. */
-    private final static int NUMBER_UNIQUE_LETTERS = 7;
+    public final static int NUMBER_UNIQUE_LETTERS = 7;
     /** The number of bonus points recived for finding a pangram. */
-    private final static int PANGRAM_BONUS = 7;
+    public final static int PANGRAM_BONUS = 7;
 
     /** The primary (required) letter of the puzzle. */
     private char primaryLetter;
@@ -165,7 +165,7 @@ public class Puzzle {
      * @param dictionaryFile The dictionary file to be used to generate validWords.
      * @throws IOException if an I/O error occurs.
      */
-    public Puzzle(char primaryLetter, char[] secondaryLetters,
+    protected Puzzle(char primaryLetter, char[] secondaryLetters,
                   FileReader dictionaryFile) throws IOException {
         this.primaryLetter = primaryLetter;
         this.secondaryLetters = Arrays.copyOf(secondaryLetters,
@@ -192,115 +192,6 @@ public class Puzzle {
         bufferedReader.close();
 
         this.helpData = calculateHelpData();
-    }
-
-     /**
-      * Create a puzzle from a given starting word with given required letter.
-      * Fills validWords by parsing through dictionaryFile.
-      *
-      * @param word The starting word for the puzzle
-      * @param primaryLetter The required letter of the word for the puzzle
-      * @param dictionaryFile The dictionary file to be used to generate validWords
-      * @return A puzzle based on the starting word and required letter
-      * @throws IllegalArgumentException if the word is not usable as a starting
-      *                                  word given the required letter
-      * @throws IOException if an I/O error occurs
-      */
-    public static Puzzle fromWord(String word, char primaryLetter, 
-                                  FileReader rootWordsFile, 
-                                  FileReader dictionaryFile,
-                                  boolean isKnownRootWord) 
-        throws IllegalArgumentException, IOException {
-
-        if (word.length() < NUMBER_UNIQUE_LETTERS) {
-            throw new IllegalArgumentException(
-                "Invalid argument: \"" + word + "\" is too short to be a" +
-                "starting word."
-            );
-        }
-        
-        if (word.indexOf(primaryLetter) == -1) {
-            throw new IllegalArgumentException(
-                "Invalid argument: \"" + word + "\" does not contain required" +
-                "letter \'" + primaryLetter + "\'."
-            );
-        }
-
-        ArrayList<Character> chars = new ArrayList<>();
-        for (char c : word.toCharArray()) {
-            if (!chars.contains(c)) {
-                chars.add(c);
-            }
-        }
-
-        if (chars.size() < NUMBER_UNIQUE_LETTERS) {
-            throw new IllegalArgumentException(
-                "Invalid argument: \"" + word + "\" contains too few unique " +
-                "characters to be a starting word."
-            );
-        }
-
-        // This only runs if the root word is a user input.
-        if (!isKnownRootWord) {
-            // Check if it's in the root word dictionary last because this is
-            // the most expensive check. If one of the cheap word checks throws
-            // an exception, we don't have to bother doing this.
-            boolean isRootWord = false;
-            BufferedReader bufferedReader = new BufferedReader(rootWordsFile);
-            for (String rootWord = bufferedReader.readLine(); rootWord != null; 
-                rootWord = bufferedReader.readLine()) {
-                if (!rootWord.equals("") && word.equalsIgnoreCase(rootWord)) {
-                    isRootWord = true;
-                    break;
-                }
-            }
-
-            if (!isRootWord) {
-                throw new IllegalArgumentException(
-                    "Invalid argument: \"" + word + "\" is not in the dictionary.");
-            }
-        }
-
-        chars.remove(Character.valueOf(primaryLetter));
-        char[] secondaryLetters = new char[NUMBER_UNIQUE_LETTERS - 1];
-        for (int i = 0; i < NUMBER_UNIQUE_LETTERS - 1; ++i) {
-            secondaryLetters[i] = chars.get(i);
-        }
-
-        return new Puzzle(primaryLetter, secondaryLetters, dictionaryFile);
-    }
-
-    /**
-     * Creates a puzzle from a random word in the root word dictionary.
-     * 
-     * @param rootWordsFile The dictionary to pick a random word from
-     * @param dictionaryFile The dictionary to use to fill the validWords list
-     * @return A random puzzle
-     * @throws IOException if an I/O error occurs
-     */
-    public static Puzzle randomPuzzle(FileReader rootWordsFile,
-                                      FileReader dictionaryFile)
-        throws IOException {
-
-        ArrayList<String> candidateWords = new ArrayList<>();
-        BufferedReader bufferedReader = new BufferedReader(rootWordsFile);
-        for (String word = bufferedReader.readLine(); word != null; 
-             word = bufferedReader.readLine()) {
-            candidateWords.add(word);
-        }
-        
-        Random random = new Random();
-        while (true) {
-            int wordIndex = random.nextInt(candidateWords.size());
-            String word = candidateWords.get(wordIndex);
-            int charIndex = random.nextInt(word.length());
-            char primaryLetter = word.charAt(charIndex);
-            try {
-                return fromWord(word, primaryLetter, rootWordsFile, dictionaryFile, true);
-            } catch (IllegalArgumentException e) {
-                candidateWords.remove(wordIndex);
-            }
-        }
     }
 
     /**
