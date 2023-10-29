@@ -199,6 +199,15 @@ public class Puzzle {
     }
 
     /**
+     * Gets the global instance of the Puzzle Singleton.
+     * 
+     * @return The global instance of the Puzzle Singleton
+     */
+    public static Puzzle getInstance() {
+        return instance;
+    }
+
+    /**
      * Saves the puzzle at the given file location.
      * 
      * @param saveLocation the file at which to save the puzzle
