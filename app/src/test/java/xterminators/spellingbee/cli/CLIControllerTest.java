@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
 import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
-
+import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 
 public class CLIControllerTest {
@@ -60,6 +61,16 @@ public class CLIControllerTest {
         queuedCommands = null;
         view = null;
         controller = null;
+
+        // Sets the singleton instance of Puzzle to null to emulate a fresh
+        // instance of the program.
+        try {
+            Field instance = Puzzle.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

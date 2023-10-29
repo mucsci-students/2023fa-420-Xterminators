@@ -29,7 +29,7 @@ public class App {
 
             cliController.run();
         } else {
-            GuiView ui = new GuiView();
+            GuiView ui = new GuiView(dictionaryFile, rootsDictionaryFile);
             ui.InitUI();
         }
     }
