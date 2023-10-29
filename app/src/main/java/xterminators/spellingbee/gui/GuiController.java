@@ -13,9 +13,6 @@ import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 
 public class GuiController {
-
-    /** The puzzle object. */
-    private Puzzle puzzle;
     /** The view that the user interacts with. */
     private GuiView guiView;
     /** The file pointing to the full dictionary of usable words. */
@@ -24,14 +21,9 @@ public class GuiController {
     private File rootsDictionaryFile;
 
     public GuiController(GuiView guic, File dictionaryFile, File rootsDictionaryFile) {
-        this.puzzle = null;
         this.guiView = guic;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
-    }
-
-    public Puzzle getPuzzle() {
-        return puzzle;
     }
 
     /**
@@ -57,7 +49,7 @@ public class GuiController {
 
             // If seedWord is empty, a random puzzle will be generated instead.
             if (seedWord.equals("")) {
-                puzzle = builder.build();
+                builder.build();
                 return;
             }
 
@@ -80,7 +72,7 @@ public class GuiController {
                 );
             }
 
-            puzzle = builder.build();
+            builder.build();
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (FileNotFoundException e) {
@@ -109,6 +101,7 @@ public class GuiController {
      * Shuffles the letters in the display.
      */
     public void shuffleLetters() {
+        Puzzle puzzle = Puzzle.getInstance();
         puzzle.shuffle();
     }
 
@@ -117,6 +110,8 @@ public class GuiController {
      * @throws IOException - if an I/O error occurs.
      */
     public String savePuzzle() throws IOException {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             return "There is no puzzle in progress. Please try again.";
         }
@@ -153,7 +148,6 @@ public class GuiController {
             
             Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
-            puzzle = LoadedPuzzle;
             result = "Succesfully loaded " + loadFile + "!";
         }
         catch (FileNotFoundException e) {
@@ -174,6 +168,8 @@ public class GuiController {
      * @param word The word that's being guessed.
      */
     public String guessWord(String word) {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (word == null) {
             word = "";
         }
