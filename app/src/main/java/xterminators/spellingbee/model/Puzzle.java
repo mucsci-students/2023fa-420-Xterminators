@@ -35,6 +35,9 @@ public class Puzzle {
     /** The number of bonus points recived for finding a pangram. */
     public final static int PANGRAM_BONUS = 7;
 
+    /** Global instance of the Puzzle Singleton. */
+    private static Puzzle instance;
+
     /** The primary (required) letter of the puzzle. */
     private char primaryLetter;
     /** The secondary letters of the puzzle. */
@@ -153,6 +156,8 @@ public class Puzzle {
         this.earnedPoints = this.foundWords.parallelStream()
             .mapToInt(this::wordValue)
             .sum();
+
+        instance = this;
         
         this.helpData = this.calculateHelpData();
     }
@@ -187,6 +192,8 @@ public class Puzzle {
 
         this.foundWords = new ArrayList<>();
         this.earnedPoints = 0;
+
+        instance = this;
 
         this.helpData = calculateHelpData();
     }
