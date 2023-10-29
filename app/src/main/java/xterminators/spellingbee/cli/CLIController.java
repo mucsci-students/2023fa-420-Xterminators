@@ -61,7 +61,8 @@ public class CLIController {
     public void run() {
         System.out.println("Welcome to the Spelling Bee!");
         System.out.printf(
-            "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands.\n",
+            "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
+            + System.lineSeparator(),
             Command.NEW.getCommand(),
             Command.HELP.getCommand()
         );
@@ -327,8 +328,8 @@ public class CLIController {
                 );
             } else {
                 view.showErrorMessage(
-                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
-                    e.getLocalizedMessage()
+                    "Unknown FileNotFoundException thrown. No puzzle created" 
+                    + System.lineSeparator() + e.getLocalizedMessage()
                 );
             }
 
@@ -398,14 +399,14 @@ public class CLIController {
         int sumValLet;
         for(int row = 1; row < 8; row++){
             sumValLet = 0;
-            for(int col = 1; col < maxWordSize - 3; col ++){
+            for(int col = 1; col < maxWordSize - 2; col ++){
                 if (!grid[row][col].equals("-")){
                     sumValLet = sumValLet + Integer.parseInt(grid[row][col]);
                 }
             }
             grid[row][maxWordSize - 2] = sumValLet + "";
         }
-
+        //Calculate the sum of words of each length
         int sumValCol;
         for(int col = 1; col < maxWordSize - 1; col++){
             sumValCol = 0;
@@ -439,32 +440,47 @@ public class CLIController {
         }
 
         //Print everything out
-        System.out.println("Spelling Bee Grid\n");
-        System.out.println("Center letter is in" + "\u001B[1m BOLD \n");
+        System.out.println("Spelling Bee Grid" + System.lineSeparator());
+        System.out.println("Required letter is in" + "\u001B[1m BOLD " 
+        + System.lineSeparator());
         System.out.print( (baseWord[6] + " ").toUpperCase() + "\u001B[0m");
         for(int i = 0; i < 6; i++){
             System.out.print((baseWord[i] + "").toUpperCase() + " ");
         }
         System.out.println();
         System.out.println();
-        System.out.println("WORDS: " + helpData.numWords() + ", POINTS: " + helpData.totalPoints() + ", PANGRAMS: " + helpData.numPangrams() + " (" + helpData.numPerfectPangrams() + " Perfect)\n");
+        System.out.println("WORDS: " + helpData.numWords() 
+        + ", POINTS: " + helpData.totalPoints() + ", PANGRAMS: " +
+         helpData.numPangrams() + " (" + helpData.numPerfectPangrams()
+          + " Perfect)" + System.lineSeparator());
         //This for loop prints out the matrix
         for(int row = 0; row < 9; row++){
             for(int col = 0; col < maxWordSize - 1; col ++){
-                System.out.print(String.format("%-" + 3 +"s", grid[row][col].toUpperCase()));
-                System.out.print(" ");
+                if(row == 0 || col == 0 || row == 8 || col == maxWordSize - 2){
+                    System.out.print("\u001B[1m" + String.format("%-" + 3 +"s", 
+                    grid[row][col].toUpperCase()) + "\u001B[0m");
+                    System.out.print(" ");
+                }
+                else{
+                    System.out.print(String.format("%-" + 3 +"s", 
+                    grid[row][col].toUpperCase()));
+                    System.out.print(" ");
+                }
             }
             System.out.println("");
         }
 
         //Print out the start of the two letter list section
-        System.out.println("\n\u001B[1mTwo letter list: \u001B[0m\n");
+        System.out.println(System.lineSeparator() + 
+        "\u001B[1mTwo letter list: \u001B[0m" 
+        + System.lineSeparator());
         
         //Prints out the list of two letter starts.
         for(int i = 0; i < 7; i++){
             for (int k = 0; k < 6; k++){
                 if(!twoLetList[i][k].equals("-")){
-                    System.out.print(String.format("%-" + 6 + "s", twoLetList[i][k].toUpperCase()));
+                    System.out.print(String.format("%-" + 6 + "s", 
+                    twoLetList[i][k].toUpperCase()));
                 }
             }
             System.out.println();
@@ -500,8 +516,8 @@ public class CLIController {
                 );
             } else {
                 view.showErrorMessage(
-                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
-                    e.getLocalizedMessage()
+                    "Unknown FileNotFoundException thrown. No puzzle created." 
+                    + System.lineSeparator() + e.getLocalizedMessage()
                 );
             }
 

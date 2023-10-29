@@ -221,6 +221,9 @@ public class GuiView {
         JButton loadPuzzleButton = createButton("Load Puzzle", 0, 0, 50, 12, actionPanel);
         loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
 
+        // Hints
+        JButton hintButton = createButton("Hint", 0, 0, 50, 12, actionPanel);
+        hintButton.addActionListener(this::hintButtonClick);
         //
         // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
         //
@@ -435,6 +438,12 @@ public class GuiView {
             drawFoundWords();
         }
     }
+
+    private void hintButtonClick(ActionEvent e){
+        showMessage(guiController.hint());
+    }
+
+
 
     // End Button Event Handlers **********************************************
     // Dialogs ****************************************************************

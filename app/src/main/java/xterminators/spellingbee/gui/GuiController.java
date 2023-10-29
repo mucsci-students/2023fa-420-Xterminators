@@ -10,9 +10,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.gson.Gson;
 
+import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleSave;
 import xterminators.spellingbee.model.Rank;
@@ -21,6 +26,7 @@ public class GuiController {
 
     private Puzzle puzzle;
     private GuiView guiView;
+    private HelpData helpData;
 
     public GuiController(GuiView guic) {
         puzzle = null;
@@ -104,7 +110,7 @@ public class GuiController {
             return;
         }
 
-        String newline = "\n";
+        String newline = System.lineSeparator();
         StringBuilder output = new StringBuilder();
         for (String word : puzzle.getFoundWords()) {
             output.append(word + newline);
@@ -281,6 +287,140 @@ public class GuiController {
         return result;
     }
 
+    public String hint(){
+        String result = "";
+        helpData = puzzle.getHelpData();
+
+        char[] baseWord = new char[7];
+        baseWord[6] = puzzle.getPrimaryLetter();
+        char [] nonRequiredLetters = puzzle.getSecondaryLetters();
+        for(int i = 0; i < baseWord.length - 1; i++){
+            baseWord[i] = nonRequiredLetters[i];
+        }
+        Map<Pair<Character, Integer>, Long> trying = helpData.startingLetterGrid();
+        
+        int maxWordSize = 0;
+        for(Map.Entry<Pair<Character, Integer>, Long> entry : trying.entrySet()){
+            int wordSize = entry.getKey().getRight();
+            if(wordSize > maxWordSize) maxWordSize = wordSize;
+        }
+        //Initialize the matrix
+        String[][] grid = new String[9][maxWordSize - 1];
+        //Populate the matrix with dashes
+        for(int row = 0; row < 9; row++){
+            for(int col = 0; col < maxWordSize - 1; col ++){
+                grid[row][col] = "-";
+            }
+        }
+        grid[0][0] = " ";
+        grid[8][0] = "\u03A3";
+        grid[0][maxWordSize - 2] = "\u03A3";
+        //Put the puzzle letters into the matrix
+        for(int i = 1; i < 8; i++){
+            grid[i][0] = "" + baseWord[i - 1];
+        }
+        //Puts the word length into the matrix
+        for(int i = 1; i < maxWordSize - 2; i ++){
+            grid[0][i] = (i + 3) + "";
+        }
+        //This for loop maps the number of words to their size and letters
+        //in the grid.
+        for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
+            for(int k = 1; k < 8; k++){
+                if((work.getKey().getLeft()+ "").equals(grid[k][0])){
+                    grid[k][work.getKey().getRight() - 3] = (work.getValue() + "");
+                }
+            }
+        }
+        // This calculates the sum of the words that start with each letter.
+        int sumValLet;
+        for(int row = 1; row < 8; row++){
+            sumValLet = 0;
+            for(int col = 1; col < maxWordSize - 2; col ++){
+                if (!grid[row][col].equals("-")){
+                    sumValLet = sumValLet + Integer.parseInt(grid[row][col]);
+                }
+            }
+            grid[row][maxWordSize - 2] = sumValLet + "";
+        }
+        //Calculate the sum of words of each length
+        int sumValCol;
+        for(int col = 1; col < maxWordSize - 1; col++){
+            sumValCol = 0;
+            for(int row = 1; row < 8; row ++){
+                if (!grid[row][col].equals("-")){
+                    sumValCol = sumValCol + Integer.parseInt(grid[row][col]);
+                }
+            }
+            grid[8][col] = sumValCol + "";
+        }
+
+        //Initialize the two letter list matrix and populate with '-'
+        String [][] twoLetList = new String[7][7];
+        for(int i = 0; i < 7; i++){
+            for(int k = 0; k < 7; k ++){
+                twoLetList[i][k] = "-";
+            }
+        }
+
+        //Places the starting letter pairs into rows based on starting letter
+        for(Map.Entry<String, Long> item : helpData.startingLetterPairs().entrySet()){
+            for(int i = 0; i < 7; i++){
+                if((baseWord[i] + "").equals(item.getKey().charAt(0) + "")){
+                    for(int k = 0; k < 7; k++){
+                        if((baseWord[k] + "").equals(item.getKey().charAt(1) + "")){
+                            twoLetList[i][k] = item + "";
+                        }
+                    }
+                }
+            }
+        }
+
+        //Print everything out
+        result += "Spelling Bee Grid" + 
+        System.lineSeparator() + System.lineSeparator() +
+    
+        "Required letter is first" +
+        System.lineSeparator() + System.lineSeparator() +
+
+        (baseWord[6] + " ").toUpperCase();
+
+        for(int i = 0; i < 6; i++){
+            result += (baseWord[i] + "").toUpperCase() + " ";
+        }
+        result += System.lineSeparator() + System.lineSeparator() + 
+
+        "WORDS: " + helpData.numWords() + ", POINTS: "
+         + helpData.totalPoints() + ", PANGRAMS: " + helpData.numPangrams()
+          + " (" + helpData.numPerfectPangrams() + " Perfect)" + 
+          System.lineSeparator() + System.lineSeparator();
+
+        //This for loop prints out the matrix
+        for(int row = 0; row < 9; row++){
+            for(int col = 0; col < maxWordSize - 1; col ++){
+                result += String.format("%-" + 5 +"s", 
+                grid[row][col].toUpperCase()) + " ";
+            }
+            result += System.lineSeparator();
+        }
+
+        //Print out the start of the two letter list section
+        result += System.lineSeparator() + "Two letter list: " +
+        System.lineSeparator() + System.lineSeparator();
+        
+        //Prints out the list of two letter starts.
+        for(int i = 0; i < 7; i++){
+            for (int k = 0; k < 6; k++){
+                if(!twoLetList[i][k].equals("-")){
+                    result += String.format("%-" + 6 + "s", 
+                    twoLetList[i][k].toUpperCase());
+                }
+            }
+            result += System.lineSeparator();
+        }
+        return result;
+    }
+
     /**
      * Prints all available ranks, along with the current rank.
      */
@@ -297,12 +437,12 @@ public class GuiController {
         if (earnedPoints == 1) {
             System.out.println(
                 "Current Rank: " + curRank.getRankName() + " - " +
-                earnedPoints + " point\n"
+                earnedPoints + " point" + System.lineSeparator()
             );
         } else {
             System.out.println(
                 "Current Rank: " + curRank.getRankName() + " - " +
-                earnedPoints + " points\n"
+                earnedPoints + " points" + System.lineSeparator()
             );
         }
 
