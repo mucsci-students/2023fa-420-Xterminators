@@ -2,7 +2,6 @@ package xterminators.spellingbee.cli;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +26,6 @@ public class CLIController {
     private File dictionaryFile;
     /** The full dictionary of valid root words to be used. */
     private File rootsDictionaryFile;
-    /** The puzzle with which the controller interacts. */
-    private Puzzle puzzle;
     /** The view which displays output and data to the user. */
     private CLIView view;
     
@@ -176,6 +173,8 @@ public class CLIController {
      * be displayed.
      */
     private void foundWords() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle in progress. Please make or load a puzzle and try again."
@@ -196,6 +195,8 @@ public class CLIController {
      * @param word The word to be guessed
      */
     private void guess(String word) {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle in progress. Please make or load a puzzle and try again."
@@ -240,7 +241,7 @@ public class CLIController {
         File savedFile = new File(filePath);
 
         try {
-            puzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
+            Puzzle puzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
             show();
         } catch (FileNotFoundException e) {
@@ -262,6 +263,8 @@ public class CLIController {
      * words. Sends command to view to display the new puzzle.
      */
     private void newPuzzle() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         try {
             PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
             puzzle = builder.build();
@@ -298,6 +301,8 @@ public class CLIController {
      * @param word The base word for the new puzzle
      */
     private void newPuzzle(String word, char requiredLetter) {
+        Puzzle puzzle = Puzzle.getInstance();
+
         try {
             PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
 
@@ -339,6 +344,8 @@ public class CLIController {
      * Gets the current rank from the puzzle and sends it to view to be displayed.
      */
     private void ranks() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to show ranks for. Please make or load a puzzle and try again."
@@ -359,6 +366,8 @@ public class CLIController {
      * @param filePath the path to save the puzzle to
      */
     private void save(String filePath) {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to save. Please try again."
@@ -382,6 +391,8 @@ public class CLIController {
      * Saves the puzzle to a json file at a default location.
      */
     private void save() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to save. Please try again."
@@ -408,6 +419,8 @@ public class CLIController {
      * Sends a command to view to display the puzzle.
      */
     private void show() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to show. Please make or load a puzzle and try again."
@@ -444,6 +457,8 @@ public class CLIController {
      * redisplay the puzzle.
      */
     private void shuffle() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to be shuffled. Please make or load a puzzle and try again."
