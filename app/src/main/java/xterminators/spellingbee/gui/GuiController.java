@@ -287,10 +287,16 @@ public class GuiController {
         return result;
     }
 
+    /**
+     * A method to display the hints in the GUI.
+     * 
+     * @return String - The message that will be displayed in the GUI
+     */
     public String hint(){
         String result = "";
         helpData = puzzle.getHelpData();
 
+        //Initialize a baseword array for later printing the matrix
         char[] baseWord = new char[7];
         baseWord[6] = puzzle.getPrimaryLetter();
         char [] nonRequiredLetters = puzzle.getSecondaryLetters();
@@ -299,6 +305,7 @@ public class GuiController {
         }
         Map<Pair<Character, Integer>, Long> trying = helpData.startingLetterGrid();
         
+        // Find the maxwordsize to create the matrix
         int maxWordSize = 0;
         for(Map.Entry<Pair<Character, Integer>, Long> entry : trying.entrySet()){
             int wordSize = entry.getKey().getRight();
@@ -312,26 +319,39 @@ public class GuiController {
                 grid[row][col] = "-";
             }
         }
+        // Set the summation rows titles, and a blank row for [0][0].
         grid[0][0] = " ";
         grid[8][0] = "\u03A3";
         grid[0][maxWordSize - 2] = "\u03A3";
+
         //Put the puzzle letters into the matrix
         for(int i = 1; i < 8; i++){
             grid[i][0] = "" + baseWord[i - 1];
         }
-        //Puts the word length into the matrix
+
+        //Puts the word lengths into the matrix
         for(int i = 1; i < maxWordSize - 2; i ++){
             grid[0][i] = (i + 3) + "";
         }
+
+        //Initialize a variable for later manual padding.
+        int maxValLen = 0;
+
         //This for loop maps the number of words to their size and letters
         //in the grid.
         for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
             for(int k = 1; k < 8; k++){
                 if((work.getKey().getLeft()+ "").equals(grid[k][0])){
                     grid[k][work.getKey().getRight() - 3] = (work.getValue() + "");
+
+                    // Check to find the maximum value length.
+                    if((work.getValue() + "").length() > maxValLen){
+                        maxValLen = (work.getValue() + "").length();
+                    }
                 }
             }
         }
+
         // This calculates the sum of the words that start with each letter.
         int sumValLet;
         for(int row = 1; row < 8; row++){
@@ -343,6 +363,7 @@ public class GuiController {
             }
             grid[row][maxWordSize - 2] = sumValLet + "";
         }
+        
         //Calculate the sum of words of each length
         int sumValCol;
         for(int col = 1; col < maxWordSize - 1; col++){
@@ -398,8 +419,12 @@ public class GuiController {
         //This for loop prints out the matrix
         for(int row = 0; row < 9; row++){
             for(int col = 0; col < maxWordSize - 1; col ++){
-                result += String.format("%-" + 5 +"s", 
-                grid[row][col].toUpperCase()) + " ";
+                result +=  grid[row][col].toUpperCase() + "  ";
+                if(grid[row][col].length() < maxValLen){
+                    for(int i = grid[row][col].length(); i < maxValLen + 1; i++){
+                        result += " ";
+                    }
+                }
             }
             result += System.lineSeparator();
         }
