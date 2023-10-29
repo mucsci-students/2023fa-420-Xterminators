@@ -52,3 +52,8 @@ or run the application with the CLI:
     - A `PuzzleBuilder` would be constructed and then given information to build
       a `Puzzle` with either a known root word and primary letter, a random
       primary letter, or a fully random puzzle.
+- Singleton Pattern
+    - The singleton pattern was used for the `Puzzle` as only one puzzle should
+      ever be in progress at any one time.
+    - The `Puzzle.getInstance` function was used in the controllers to allow
+      them not to store a puzzle themselves.
