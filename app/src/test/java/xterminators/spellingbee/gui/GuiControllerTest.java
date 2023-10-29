@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -46,6 +47,16 @@ public class GuiControllerTest {
     public void tearDown() {
         view = null;
         controller = null;
+
+        // Sets the singleton instance of Puzzle to null to emulate a fresh
+        // instance of the program.
+        try {
+            Field instance = Puzzle.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void assertValidInitialPuzzle(Puzzle p) {
