@@ -315,12 +315,13 @@ public class GuiView {
      * @param e The ActionEvent from the button click.
      */
     private void shufflePuzzleButtonClick(ActionEvent e) {
-        if (guiController.getPuzzle() == null) {
+        Puzzle puzzle = Puzzle.getInstance();
+
+        if (puzzle == null) {
             return;
         }
 
-        Puzzle p = guiController.getPuzzle();
-        p.shuffle();
+        puzzle.shuffle();
 
         redrawPuzzleButtons();
     }
@@ -339,7 +340,7 @@ public class GuiView {
             return;
         }
 
-        if (guiController.getPuzzle() == null) {
+        if (Puzzle.getInstance() == null) {
             showErrorDialog("No puzzle has been loaded." + 
                 " Please click \"New Puzzle\" to start a new puzzle. ");
                 return;
@@ -365,7 +366,7 @@ public class GuiView {
      * @param e The ActionEvent from the button click.
      */
     private void randomPuzzleButtonClick(ActionEvent e) {
-        if (guiController.getPuzzle() != null) {
+        if (Puzzle.getInstance() != null) {
             int userChoice = JOptionPane.showConfirmDialog(
                 mainFrame,
                 "There is already a puzzle loaded. " + 
@@ -417,7 +418,7 @@ public class GuiView {
         showMessage(guiController.loadPuzzle(loadFile));
 
         // Refreshes the button and foundwords views.
-        Puzzle p = guiController.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         if (p != null) {
             char[] secondaryLetters = p.getSecondaryLetters();
             char[] allLetters = new char[secondaryLetters.length + 1];
@@ -526,7 +527,7 @@ public class GuiView {
      * created or the puzzle letters are shuffled.
      */
     private void redrawPuzzleButtons() {
-        Puzzle p = guiController.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         if (p != null) {
             char[] secondaryLetters = p.getSecondaryLetters();
             char[] allLetters = new char[secondaryLetters.length + 1];
@@ -559,7 +560,7 @@ public class GuiView {
         String currentRankName = "None";
         int totalPoints = 100;
 
-        Puzzle p = guiController.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         if (p != null) {
             earnedPoints = p.getEarnedPoints();
             currentRankName = p.getRank().getRankName();
@@ -610,7 +611,7 @@ public class GuiView {
      */
     private void drawFoundWords() {
         foundWordsArea.setText("");
-        Puzzle puzzle = guiController.getPuzzle();
+        Puzzle puzzle = Puzzle.getInstance();
         if (puzzle != null && puzzle.getFoundWords() != null) {
             for (String word : puzzle.getFoundWords()) {
                 foundWordsArea.append(word + "\n");

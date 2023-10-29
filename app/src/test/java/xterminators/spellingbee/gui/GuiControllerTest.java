@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -46,6 +47,16 @@ public class GuiControllerTest {
     public void tearDown() {
         view = null;
         controller = null;
+
+        // Sets the singleton instance of Puzzle to null to emulate a fresh
+        // instance of the program.
+        try {
+            Field instance = Puzzle.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void assertValidInitialPuzzle(Puzzle p) {
@@ -62,9 +73,9 @@ public class GuiControllerTest {
             controller.createNewPuzzle("", 'a');
         } catch (Exception e) {}
 
-        assertNotNull(controller.getPuzzle(),
+        assertNotNull(Puzzle.getInstance(),
                         "Puzzle null after createNewPuzzle(\"\", 'a').");
-        assertValidInitialPuzzle(controller.getPuzzle());
+        assertValidInitialPuzzle(Puzzle.getInstance());
     }
 
     @Test
@@ -73,7 +84,7 @@ public class GuiControllerTest {
             controller.createNewPuzzle("violent", 'l');
         } catch (Exception e) {}
 
-        Puzzle p = controller.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
 
         assertNotNull(p, 
                         "Puzzle null after createNewPuzzle(\"violent\", 'l').");
@@ -110,9 +121,9 @@ public class GuiControllerTest {
             controller.createNewPuzzle();
         } catch (Exception e) {}
 
-        assertNotNull(controller.getPuzzle(),
+        assertNotNull(Puzzle.getInstance(),
                         "Puzzle null after createNewPuzzle().");
-        assertValidInitialPuzzle(controller.getPuzzle());
+        assertValidInitialPuzzle(Puzzle.getInstance());
     }
 
     @Test 
@@ -128,7 +139,7 @@ public class GuiControllerTest {
             controller.createNewPuzzle();
         } catch (Exception e) {}
 
-        Puzzle p = controller.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         String original = "";
         for (char c : p.getSecondaryLetters()) {
             original += c;

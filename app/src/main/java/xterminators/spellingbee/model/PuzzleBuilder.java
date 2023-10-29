@@ -166,7 +166,7 @@ public class PuzzleBuilder {
             }
         }
 
-        return new Puzzle(requiredLetter, secondaryLetters, new FileReader(fullDictionary));
+        return new Puzzle(requiredLetter, secondaryLetters, fullDictionary);
     }
 }
 

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -22,6 +24,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * The global instance of the Puzzle Singleton.
+ */
 public class Puzzle {
     /** The minimum length for a word to be considered valid and earn points. */
     public final static int MINIMUM_WORD_LENGTH = 4;
@@ -29,6 +34,9 @@ public class Puzzle {
     public final static int NUMBER_UNIQUE_LETTERS = 7;
     /** The number of bonus points recived for finding a pangram. */
     public final static int PANGRAM_BONUS = 7;
+
+    /** Global instance of the Puzzle Singleton. */
+    private static Puzzle instance;
 
     /** The primary (required) letter of the puzzle. */
     private char primaryLetter;
@@ -132,16 +140,12 @@ public class Puzzle {
             this.secondaryLetters[i] = otherLetters.get(i);
         }
 
-        FileReader dictionaryFileReader = new FileReader(dictionaryFile);
-        BufferedReader dictBuffReader = new BufferedReader(dictionaryFileReader);
-
-        this.validWords = dictBuffReader.lines()
-            .parallel()
-            .filter(this::isValid)
-            .toList();
-
-        dictBuffReader.close();
-        dictionaryFileReader.close();
+        try(Stream<String> words = Files.lines(dictionaryFile.toPath())) {
+            this.validWords = words
+                .parallel()
+                .filter(this::isValid)
+                .toList();
+        }
 
         this.totalPoints = validWords.parallelStream()
             .mapToInt(this::wordValue)
@@ -152,6 +156,8 @@ public class Puzzle {
         this.earnedPoints = this.foundWords.parallelStream()
             .mapToInt(this::wordValue)
             .sum();
+
+        instance = this;
         
         this.helpData = this.calculateHelpData();
     }
@@ -166,32 +172,39 @@ public class Puzzle {
      * @throws IOException if an I/O error occurs.
      */
     protected Puzzle(char primaryLetter, char[] secondaryLetters,
-                  FileReader dictionaryFile) throws IOException {
+                  File dictionaryFile) throws IOException {
         this.primaryLetter = primaryLetter;
-        this.secondaryLetters = Arrays.copyOf(secondaryLetters,
-                                              secondaryLetters.length);
-        this.validWords = new ArrayList<String>();
-        this.foundWords = new ArrayList<String>();
-        this.totalPoints = 0;
-        this.earnedPoints = 0;
+        this.secondaryLetters = Arrays.copyOf(
+            secondaryLetters,
+            secondaryLetters.length
+        );
 
-        BufferedReader bufferedReader = new BufferedReader(dictionaryFile);
-
-        for (String word = bufferedReader.readLine(); word != null; 
-             word = bufferedReader.readLine())
-        {
-            if (!this.isValid(word)) {
-                continue;
-            }
-
-            // To get to this point, the word is valid
-            this.validWords.add(word);
-            this.totalPoints += this.wordValue(word);
+        try(Stream<String> words = Files.lines(dictionaryFile.toPath())) {
+            this.validWords = words
+                .parallel()
+                .filter(this::isValid)
+                .toList();
         }
 
-        bufferedReader.close();
+        this.totalPoints = validWords.parallelStream()
+            .mapToInt(this::wordValue)
+            .sum();
+
+        this.foundWords = new ArrayList<>();
+        this.earnedPoints = 0;
+
+        instance = this;
 
         this.helpData = calculateHelpData();
+    }
+
+    /**
+     * Gets the global instance of the Puzzle Singleton.
+     * 
+     * @return The global instance of the Puzzle Singleton
+     */
+    public static Puzzle getInstance() {
+        return instance;
     }
 
     /**
