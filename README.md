@@ -29,7 +29,7 @@ cd 2023fa-420-Xterminators
 ```
 or run the application with the CLI:
 ```
-./gradlew run --args="--cli"
+./gradlew --console plain run --args="--cli"
 ```
 
 ## 👥 Team Members
