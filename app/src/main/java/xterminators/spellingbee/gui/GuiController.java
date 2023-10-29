@@ -446,42 +446,4 @@ public class GuiController {
         return result;
     }
 
-    /**
-     * Prints all available ranks, along with the current rank.
-     */
-    private void showRanks() {
-        //TODO Make this work with GUI 
-        if (puzzle == null) {
-            return;
-        }
-
-        int totalPoints = puzzle.getTotalPoints();
-        int earnedPoints = puzzle.getEarnedPoints();
-        Rank curRank = puzzle.getRank();
-
-        if (earnedPoints == 1) {
-            System.out.println(
-                "Current Rank: " + curRank.getRankName() + " - " +
-                earnedPoints + " point" + System.lineSeparator()
-            );
-        } else {
-            System.out.println(
-                "Current Rank: " + curRank.getRankName() + " - " +
-                earnedPoints + " points" + System.lineSeparator()
-            );
-        }
-
-        int namePadWidth = 0;
-        int pointPadWidth = 0;
-        for (Rank rank : Rank.values()) {
-            int reqPoints = rank.getRequiredPoints(totalPoints);
-            if (String.valueOf(reqPoints).length() > pointPadWidth) {
-                pointPadWidth = String.valueOf(reqPoints).length();
-            }
-            if (rank.getRankName().length() > namePadWidth) {
-                namePadWidth = rank.getRankName().length();
-            }
-            
-        }
-    }
 }
