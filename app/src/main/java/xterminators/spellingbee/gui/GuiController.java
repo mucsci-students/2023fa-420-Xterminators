@@ -3,9 +3,7 @@ package xterminators.spellingbee.gui;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.FileWriter;
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,36 +15,27 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.Gson;
 
+import com.google.gson.JsonSyntaxException;
+
 import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
-import xterminators.spellingbee.model.PuzzleSave;
+import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 
 public class GuiController {
-
-    private Puzzle puzzle;
+    /** The view that the user interacts with. */
     private GuiView guiView;
+    /** The file pointing to the full dictionary of usable words. */
+    private File dictionaryFile;
+    /** The file pointing to the dictionary of valid root words. */
+    private File rootsDictionaryFile;
+
     private HelpData helpData;
 
-    public GuiController(GuiView guic) {
-        puzzle = null;
-        guiView = guic;
-    }
-
-    // Idealy these two files would just be instance variable and be passed to
-    // a constructor, but they will be hardcoded untill proper constructors are
-    // made.
-    /** The file pointing to the full dictionary of usable words. */
-    public static final File DICTIONARY_FILE = new File(
-        Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
-    );
-    /** The file pointing to the dictionary of valid root words. */
-    public static final File ROOT_DICTIONARY_FILE = new File(
-        Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
-    );
-
-    public Puzzle getPuzzle() {
-        return puzzle;
+    public GuiController(GuiView guic, File dictionaryFile, File rootsDictionaryFile) {
+        this.guiView = guic;
+        this.dictionaryFile = dictionaryFile;
+        this.rootsDictionaryFile = rootsDictionaryFile;
     }
 
     /**
@@ -65,15 +54,37 @@ public class GuiController {
         throws IllegalArgumentException, FileNotFoundException, IOException  {
 
         try {
-            FileReader dictionaryFile = new FileReader(DICTIONARY_FILE);
-            FileReader rootWordsFile = new FileReader(ROOT_DICTIONARY_FILE);
-            if (seedWord != null && !seedWord.equals("")) {
-                puzzle = Puzzle.fromWord(seedWord, requiredLetter, 
-                    rootWordsFile, dictionaryFile, false);
-            } else {
-                // no seedWord provided, assume random puzzle
-                puzzle = Puzzle.randomPuzzle(rootWordsFile, dictionaryFile);
+            PuzzleBuilder builder = new PuzzleBuilder(
+                dictionaryFile,
+                rootsDictionaryFile
+            );
+
+            // If seedWord is empty, a random puzzle will be generated instead.
+            if (seedWord.equals("")) {
+                builder.build();
+                return;
             }
+
+            if (seedWord.length() < Puzzle.NUMBER_UNIQUE_LETTERS) {
+                throw new IllegalArgumentException(
+                    "The seed word must be at least " + Puzzle.NUMBER_UNIQUE_LETTERS +
+                    " characters long."
+                );
+            }
+
+            if (seedWord.indexOf(seedWord) == -1) {
+                throw new IllegalArgumentException(
+                    "The seed word must contain the required letter."
+                );
+            }
+
+            if (!builder.setRootAndRequiredLetter(seedWord, requiredLetter)) {
+                throw new IllegalArgumentException(
+                    "The seed word must be a valid root word and contain the required letter."
+                );
+            }
+
+            builder.build();
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (FileNotFoundException e) {
@@ -87,6 +98,9 @@ public class GuiController {
      * Creates a new puzzle using a random word from the dictionary.
      * The random word will have exactly 7 unique letters but may be 
      * longer than 7 characters.
+     * @throws IllegalArgumentException if the starting word was not valid.
+     * @throws FileNotFoundException if the dictionary file could not be found.
+     * @throws IOException if there was a problem reading the dictionary file.
      */
     public void createNewPuzzle() 
         throws IllegalArgumentException, FileNotFoundException, IOException{
@@ -99,90 +113,38 @@ public class GuiController {
      * Shuffles the letters in the display.
      */
     public void shuffleLetters() {
+        Puzzle puzzle = Puzzle.getInstance();
         puzzle.shuffle();
-    }
-
-    /**
-     * Prints the list of found words.
-     */
-    private void showFoundWords() {
-        if (puzzle == null) {
-            return;
-        }
-
-        String newline = System.lineSeparator();
-        StringBuilder output = new StringBuilder();
-        for (String word : puzzle.getFoundWords()) {
-            output.append(word + newline);
-        }
-        System.out.println("Found Words:");
-        System.out.println(output.toString());
     }
 
     /**
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle() throws IOException{
-        //Create an object of the Gson class
-        Gson saved = new Gson();
+    public String savePuzzle() throws IOException {
+        Puzzle puzzle = Puzzle.getInstance();
 
-        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
-
-        char[] baseWord = new char[7];
-        baseWord[6] = puzzle.getPrimaryLetter();
-        for(int i = 0; i < baseWord.length - 1; i++){
-            baseWord[i] = nonRequiredLetters[i];
+        if (puzzle == null) {
+            return "There is no puzzle in progress. Please try again.";
         }
 
-        String filename = "";
+        StringBuilder filename = new StringBuilder();
 
         //This will create a title for the Json file consisting
         // of the non-required letters followed by the required letter.
-        for (char c : baseWord){
-            filename += c;
+        for (char c : puzzle.getSecondaryLetters()){
+            filename.append(c);
         }
 
-        // Take the necessary attributes and create a puzzleSave object,
-        PuzzleSave testSave = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
-        puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+        filename.append(puzzle.getPrimaryLetter());
 
-        //Converts the current puzzle object to Json
-        String savedJson = saved.toJson (testSave);
+        filename.append(".json");
 
-        //The message that will be displayed as a result of this change.
-        String result = "";
+        File saveLocation = new File(filename.toString());
 
-        //Create the file and populate it with the saved Json
-        try{
-            File savedFile = new File(filename + ".json");
+        puzzle.save(saveLocation);
 
-            //Returns true if a new file is created.
-            if(savedFile.createNewFile ()){
-
-                //Create a file writer to populate the created File
-                FileWriter writing = new FileWriter(savedFile);
-
-                //Insert input
-                writing.write (savedJson);
-                
-                //Close the writer
-                writing.close ();
-                //Notify the user
-                result = "File created: " + filename + ".json";
-
-            } else {
-                result = "A file by that name already exists. Overwriting the file";
-                //Open a writer to replace the information in the file.
-                PrintWriter writer = new PrintWriter(savedFile);
-                writer.print(savedJson);
-                writer.close();
-            }
-        }
-        catch (IOException e) {
-            result = "File could not be saved, an Input/Output error occurred";
-        }        
-        return result;
+        return "File created: " + saveLocation.getAbsolutePath();
     }
 
     /**
@@ -190,52 +152,13 @@ public class GuiController {
      * @param loadFile - the file to be loaded
      */
     public String loadPuzzle(String loadFile) {
-        
-        Gson load = new Gson();
-        String jsonPuzzle = "";
-
         String result = "";
 
         try{
             //Create a file object to read the contents of loadFile
-            File myObj = new File (loadFile);
-            Scanner fileReader = new Scanner (myObj);
+            File savedFile = new File (loadFile);
             
-            //Construct a string by reading the file line by line
-            while (fileReader.hasNextLine()){
-                jsonPuzzle = jsonPuzzle + fileReader.nextLine();
-                
-            }
-            fileReader.close();
-            //Construct a new puzzle based on the loaded file
-            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
-
-            //Initialize the values that will be used by PuzzleSave
-            char[] BaseWord = loading.getPSBase();
-            char RequiredLetter = BaseWord[6];
-
-            char[] newSecondaryLetters = new char[6];
-            for(int i = 0; i < newSecondaryLetters.length; i ++){
-                newSecondaryLetters[i] = BaseWord[i];
-            }
-
-            FileReader dictionaryFile = new FileReader(DICTIONARY_FILE);
-
-            ArrayList<String> newFoundWords = new ArrayList<String>();
-
-            for(String word : loading.getPSFoundWords() ) {
-                newFoundWords.add(word);
-            }
-
-            String work = "";
-            for ( char c : BaseWord) {
-                work = work + c;
-            }
-
-            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters,
-            dictionaryFile, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
-
-            puzzle = LoadedPuzzle;
+            Puzzle LoadedPuzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
             result = "Succesfully loaded " + loadFile + "!";
         }
@@ -244,6 +167,8 @@ public class GuiController {
         }
         catch (IOException e) {
             result = "There was an input or output error";
+        } catch (JsonSyntaxException e) {
+            result = "The file was not properly formatted as a puzzle.";
         }
         return result;
     }
@@ -255,10 +180,17 @@ public class GuiController {
      * @param word The word that's being guessed.
      */
     public String guessWord(String word) {
+        Puzzle puzzle = Puzzle.getInstance();
+
+        if (word == null) {
+            word = "";
+        }
+
         String result = "";
 
         if (puzzle == null) {
             result = "No puzzle is loaded.";
+            return result;
         }
 
         Rank prevRank = puzzle.getRank();
@@ -293,6 +225,7 @@ public class GuiController {
      * @return String - The message that will be displayed in the GUI
      */
     public String hint(){
+        Puzzle puzzle = Puzzle.getInstance();
         String result = "";
         helpData = puzzle.getHelpData();
 

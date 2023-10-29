@@ -52,6 +52,15 @@ public class GuiView {
 
     // Initialization *********************************************************
 
+    public GuiView(File dictionaryFile, File rootsDictionaryFile) {
+        guiController = new GuiController(this, dictionaryFile, rootsDictionaryFile);
+        mainFrame = new JFrame("Spelling Bee");
+        mainPanel = new JPanel();
+        standardFont = new Font("Helvetica", Font.BOLD, 16);
+        smallFont = new Font("Helvetica", Font.BOLD, 13);
+        guessKeyListener = new GuessKeyListener();
+    }
+
     /**
      * This sets up all of the components of the UI.
      * All components are created here, and all event
@@ -61,14 +70,6 @@ public class GuiView {
      * try to avoid them as much as possible.
      */
     public void InitUI() {
-
-        mainFrame = new JFrame("Spelling Bee");
-        mainPanel = new JPanel();
-        standardFont = new Font("Helvetica", Font.BOLD, 16);
-        smallFont = new Font("Helvetica", Font.BOLD, 13);
-        guessKeyListener = new GuessKeyListener();
-        guiController = new GuiController(this);
-
         try {
             Image iconImage = javax.imageio.ImageIO.read(new File(BEE_PATH));
             mainFrame.setIconImage(iconImage);
@@ -317,12 +318,13 @@ public class GuiView {
      * @param e The ActionEvent from the button click.
      */
     private void shufflePuzzleButtonClick(ActionEvent e) {
-        if (guiController.getPuzzle() == null) {
+        Puzzle puzzle = Puzzle.getInstance();
+
+        if (puzzle == null) {
             return;
         }
 
-        Puzzle p = guiController.getPuzzle();
-        p.shuffle();
+        puzzle.shuffle();
 
         redrawPuzzleButtons();
     }
@@ -341,7 +343,7 @@ public class GuiView {
             return;
         }
 
-        if (guiController.getPuzzle() == null) {
+        if (Puzzle.getInstance() == null) {
             showErrorDialog("No puzzle has been loaded." + 
                 " Please click \"New Puzzle\" to start a new puzzle. ");
                 return;
@@ -367,7 +369,7 @@ public class GuiView {
      * @param e The ActionEvent from the button click.
      */
     private void randomPuzzleButtonClick(ActionEvent e) {
-        if (guiController.getPuzzle() != null) {
+        if (Puzzle.getInstance() != null) {
             int userChoice = JOptionPane.showConfirmDialog(
                 mainFrame,
                 "There is already a puzzle loaded. " + 
@@ -392,15 +394,13 @@ public class GuiView {
      * @param e - The button click
      * @throws IOException - If an I/O error occurs.
      */
-    private void savePuzzleButtonClick(ActionEvent e) throws IOException{
+    private void savePuzzleButtonClick(ActionEvent e) throws IOException{        
         try{
-            // Causes a pop up informing the user that their file was saved and where.
-            showMessage(guiController.savePuzzle() + " in the current directory : "
-             + Paths.get("").toAbsolutePath().toString());
+            showMessage(guiController.savePuzzle());
         }
         // Catches I/O errors
         catch ( IOException a){
-            System.out.println("There was an I/O error, please try again.");
+            showErrorDialog("The puzzle could not be saved due to an IO error.");
         }
     }
 
@@ -421,7 +421,7 @@ public class GuiView {
         showMessage(guiController.loadPuzzle(loadFile));
 
         // Refreshes the button and foundwords views.
-        Puzzle p = guiController.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         if (p != null) {
             char[] secondaryLetters = p.getSecondaryLetters();
             char[] allLetters = new char[secondaryLetters.length + 1];
@@ -536,7 +536,7 @@ public class GuiView {
      * created or the puzzle letters are shuffled.
      */
     private void redrawPuzzleButtons() {
-        Puzzle p = guiController.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         if (p != null) {
             char[] secondaryLetters = p.getSecondaryLetters();
             char[] allLetters = new char[secondaryLetters.length + 1];
@@ -569,7 +569,7 @@ public class GuiView {
         String currentRankName = "None";
         int totalPoints = 100;
 
-        Puzzle p = guiController.getPuzzle();
+        Puzzle p = Puzzle.getInstance();
         if (p != null) {
             earnedPoints = p.getEarnedPoints();
             currentRankName = p.getRank().getRankName();
@@ -620,7 +620,7 @@ public class GuiView {
      */
     private void drawFoundWords() {
         foundWordsArea.setText("");
-        Puzzle puzzle = guiController.getPuzzle();
+        Puzzle puzzle = Puzzle.getInstance();
         if (puzzle != null && puzzle.getFoundWords() != null) {
             for (String word : puzzle.getFoundWords()) {
                 foundWordsArea.append(word + "\n");

@@ -9,3 +9,6 @@ app/bin
 
 # Ignore VS Code configuration files
 .vscode
+app/.classpath
+app/.project
+app/.settings
