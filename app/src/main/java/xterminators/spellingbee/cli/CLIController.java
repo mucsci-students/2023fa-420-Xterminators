@@ -87,6 +87,7 @@ public class CLIController {
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
             String partialCommand = "";
+            //in order for tab completion to work, you must end the command with "tab".
             if (input.endsWith("tab")) {
                 if(input.endsWith("tab")){
                     partialCommand = input.substring(0, input.length() - 3);
