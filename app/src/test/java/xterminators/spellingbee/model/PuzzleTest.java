@@ -3,6 +3,7 @@ package xterminators.spellingbee.model;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +24,10 @@ import com.google.gson.JsonSyntaxException;
 public class PuzzleTest {
     private static final File dictionaryFile = Paths.get(
         "src", "main", "resources", "dictionaries", "dictionary_optimized.txt"
+    ).toFile();
+
+    private static final File rootsDictionaryFile = Paths.get(
+        "src", "main", "resources", "dictionaries", "dictionary_roots.txt"
     ).toFile();
 
     @Test
@@ -185,5 +191,48 @@ public class PuzzleTest {
             puzzle.getEarnedPoints(),
             "loadPuzzle should set the earned points correctly."
         );
+    }
+
+    @Test
+    public void testIsPangram_NotPangram() {
+        try {
+            PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
+            builder.setRootAndRequiredLetter("guardian", 'a');
+
+            Puzzle puzzle = builder.build();
+
+            Method isPangram = Puzzle.class.getDeclaredMethod("isPangram", String.class);
+            isPangram.setAccessible(true);
+            assertFalse(
+                (boolean) isPangram.invoke(puzzle, "zipline"),
+                "isPangram should return false if the word is not a pangram."
+            );
+
+            assertFalse(
+                (boolean) isPangram.invoke(puzzle, "guard"),
+                "isPangram should return false if the word is not a pangram."
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testIsPangram_Pangram() {
+        try {
+            PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
+            builder.setRootAndRequiredLetter("guardian", 'a');
+
+            Puzzle puzzle = builder.build();
+
+            Method isPangram = Puzzle.class.getDeclaredMethod("isPangram", String.class);
+            isPangram.setAccessible(true);
+            assertTrue(
+                (boolean) isPangram.invoke(puzzle, "guardian"),
+                "isPangram should return true if the word is a pangram."
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
