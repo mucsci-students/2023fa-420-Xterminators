@@ -1,8 +1,10 @@
 package xterminators.spellingbee.cli;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +13,9 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Map;
 import com.google.gson.Gson;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.InputEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import com.google.gson.JsonSyntaxException;
 
@@ -32,7 +37,7 @@ public class CLIController {
     private File rootsDictionaryFile;
     /** The view which displays output and data to the user. */
     private CLIView view;
-
+    /** The helpdata for the puzzle. */
     private HelpData helpData;
     
     /**
@@ -64,11 +69,46 @@ public class CLIController {
         );
 
         Scanner scanner = new Scanner(System.in);
+        List<String> availableCommands = new ArrayList<>();
+        availableCommands.add("exit");
+        availableCommands.add("found_words");
+        availableCommands.add("guess");
+        availableCommands.add("help");
+        availableCommands.add("load");
+        availableCommands.add("new");
+        availableCommands.add("rank");
+        availableCommands.add("save");
+        availableCommands.add("show");
+        availableCommands.add("shuffle");
+        availableCommands.add("hint");
+        
 
         inputLoop:
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
+            String partialCommand = "";
+            if (input.endsWith("tab")) {
+                if(input.endsWith("tab")){
+                    partialCommand = input.substring(0, input.length() - 3);
+                }
+                else {
+                    while(input == input.substring(0, input.length() - 1) + " "){
+                        input = input.substring(0, input.length() - 1);
+                    }
+                    partialCommand = input;
+                }
+                
 
+                String completedCommand = autoCompleteCommand(partialCommand, availableCommands);
+
+                if (completedCommand != null) {
+                    System.out.println("Invoking " + completedCommand);
+                    input = completedCommand;
+                } else {
+                    System.out.println("No unique command found for " + partialCommand);
+                    continue;
+                }
+            }
             String[] tokens = input.split(" ");
 
             Optional<Command> optCommand = Command.fromString(tokens[0]);
@@ -599,6 +639,18 @@ public class CLIController {
         }
 
         return newline;
+    }
+    private String autoCompleteCommand(String partialCommand, List<String> commands){
+        String completedCommand = null;
+
+        for (String command : commands) {
+            if (command.startsWith(partialCommand)) {
+                if (completedCommand == null){
+                    completedCommand = command;
+                }
+            }
+        }
+        return completedCommand;
     }
 
     /**

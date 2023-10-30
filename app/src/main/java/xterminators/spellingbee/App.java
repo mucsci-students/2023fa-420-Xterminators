@@ -26,8 +26,10 @@ public class App {
         if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
             CLIView cliView = new CLIView();
             CLIController cliController = new CLIController(cliView, dictionaryFile, rootsDictionaryFile);
-
+            
             cliController.run();
+
+            
         } else {
             GuiView ui = new GuiView(dictionaryFile, rootsDictionaryFile);
             ui.InitUI();
