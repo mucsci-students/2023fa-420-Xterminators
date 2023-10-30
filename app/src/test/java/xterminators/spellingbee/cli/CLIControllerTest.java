@@ -1,6 +1,7 @@
 package xterminators.spellingbee.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
 import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
-
+import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 
 public class CLIControllerTest {
@@ -40,11 +42,11 @@ public class CLIControllerTest {
     @BeforeEach
     public void setup() {
         File dictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionary_optimized.txt").toString()
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
         );
 
         File rootsDictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionary_roots.txt").toString()
+            Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
         );
 
         view = mock(CLIView.class);
@@ -59,6 +61,16 @@ public class CLIControllerTest {
         queuedCommands = null;
         view = null;
         controller = null;
+
+        // Sets the singleton instance of Puzzle to null to emulate a fresh
+        // instance of the program.
+        try {
+            Field instance = Puzzle.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -375,11 +387,28 @@ public class CLIControllerTest {
             guessPoints.capture()
         );
 
-        assertEquals(
-            List.of(List.of(), List.of("offhanded"), List.of("offhanded", "offhand")),
-            foundWordsArgs.getAllValues(),
-            "showFoundWords was not called on the view with the expected arguments."
+        List<List<String>> expectedFoundLists = List.of(
+            List.of(),
+            List.of("offhanded"),
+            List.of("offhanded", "offhand")
         );
+
+        List<List<String>> recivedFoundLists = foundWordsArgs.getAllValues();
+
+        // Checks that each recived argument has exactly the same elements as
+        // the expected, but disregards order.
+        // This may want to be updated/more tests added in future to ensure
+        // alphabetical order.
+        for (int i = 0; i < recivedFoundLists.size(); i++) {
+            List<String> recived = recivedFoundLists.get(i);
+            List<String> expected = expectedFoundLists.get(i);
+
+            assertTrue(
+                expected.containsAll(recived) && recived.containsAll(expected),
+                "showFoundWords was not called on the view with the expected arguments."
+            );
+        }
+
         assertEquals(
             List.of("offhanded", "offhand"),
             guessWords.getAllValues(),

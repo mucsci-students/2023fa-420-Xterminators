@@ -2,21 +2,22 @@ package xterminators.spellingbee.cli;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Map;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.tuple.Pair;
+import com.google.gson.JsonSyntaxException;
 
 import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.model.PuzzleSave;
+import xterminators.spellingbee.model.HelpData;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
@@ -29,10 +30,10 @@ public class CLIController {
     private File dictionaryFile;
     /** The full dictionary of valid root words to be used. */
     private File rootsDictionaryFile;
-    /** The puzzle with which the controller interacts. */
-    private Puzzle puzzle;
     /** The view which displays output and data to the user. */
     private CLIView view;
+
+    private HelpData helpData;
     
     /**
      * Constructs a new CLIController which connects to the given CLIView, and
@@ -56,16 +57,16 @@ public class CLIController {
     public void run() {
         System.out.println("Welcome to the Spelling Bee!");
         System.out.printf(
-            "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands.\n",
+            "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
+            + System.lineSeparator(),
             Command.NEW.getCommand(),
             Command.HELP.getCommand()
         );
 
         Scanner scanner = new Scanner(System.in);
 
-        boolean exitFlag = false;
-
-        while (scanner.hasNextLine() && !exitFlag) {
+        inputLoop:
+        while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
 
             String[] tokens = input.split(" ");
@@ -92,7 +93,7 @@ public class CLIController {
 
             switch (curCommand) {
                 case EXIT -> {
-                    exitFlag = true;
+                   break inputLoop;
                 }
                 case FOUND_WORDS -> {
                     foundWords();
@@ -168,6 +169,9 @@ public class CLIController {
                 case SHUFFLE -> {
                     shuffle();
                 }
+                case HINT -> {
+                    hint();
+                }
             }
         }
 
@@ -179,6 +183,8 @@ public class CLIController {
      * be displayed.
      */
     private void foundWords() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle in progress. Please make or load a puzzle and try again."
@@ -199,6 +205,8 @@ public class CLIController {
      * @param word The word to be guessed
      */
     private void guess(String word) {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle in progress. Please make or load a puzzle and try again."
@@ -240,59 +248,23 @@ public class CLIController {
      * @param filePath The path of the save file
      */
     private void load(String filePath){
-        
-        Gson load = new Gson();
-        String jsonPuzzle = "";
+        File savedFile = new File(filePath);
 
-        try{
-            //Create a file object to read the contents of loadFile
-            File myObj = new File (filePath);
-            Scanner fileReader = new Scanner (myObj);
-            
-            //Construct a string by reading the file line by line
-            while (fileReader.hasNextLine()){
-                jsonPuzzle = jsonPuzzle + fileReader.nextLine();
-                
-            }
-            fileReader.close();
-            //Construct a new puzzle based on the loaded file
-            PuzzleSave loading = load.fromJson (jsonPuzzle, PuzzleSave.class);
-
-            //Initialize the values that will be used by PuzzleSave
-            char[] BaseWord = loading.getPSBase();
-            char RequiredLetter = BaseWord[6];
-
-            char[] newSecondaryLetters = new char[6];
-            for(int i = 0; i < newSecondaryLetters.length; i ++){
-                newSecondaryLetters[i] = BaseWord[i];
-            }
-
-            FileReader dictionary = new FileReader(dictionaryFile);
-
-            ArrayList<String> newFoundWords = new ArrayList<String>();
-
-            for(String word : loading.getPSFoundWords() ) {
-                newFoundWords.add(word);
-            }
-
-            String work = "";
-            for ( char c : BaseWord) {
-                work = work + c;
-            }
-
-            Puzzle LoadedPuzzle = new Puzzle(RequiredLetter, newSecondaryLetters, dictionary, loading.getPSPoints(), loading.getPSMaxPoints(), newFoundWords);
-
-            puzzle = LoadedPuzzle;
-            
-            //this.puzzle = LoadedPuzzle;
+        try {
+            Puzzle puzzle = Puzzle.loadPuzzle(savedFile, dictionaryFile);
 
             show();
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("The file cannot be found.");
-        }
-        catch (IOException e) {
-            System.out.println("There was an I/O error");
+        } catch (FileNotFoundException e) {
+            view.showErrorMessage(
+                "The file could not be found. Please try again."
+            );
+        } catch (IOException e) {
+            view.showErrorMessage("There was an IO error.");
+        } catch (JsonSyntaxException e) {
+            view.showErrorMessage(
+                "The file was not a valid json representation of a puzzle. " +
+                "Please try again."
+            );
         }
     }
 
@@ -301,14 +273,11 @@ public class CLIController {
      * words. Sends command to view to display the new puzzle.
      */
     private void newPuzzle() {
-        try {
-            FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
-            FileReader dictionaryReader = new FileReader(dictionaryFile);
+        Puzzle puzzle = Puzzle.getInstance();
 
-            puzzle = Puzzle.randomPuzzle(rootWordsReader, dictionaryReader);
-            
-            rootWordsReader.close();
-            dictionaryReader.close();
+        try {
+            PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
+            puzzle = builder.build();
         } catch (FileNotFoundException e) {
             if (e.getMessage().contains(rootsDictionaryFile.getName())) {
                 view.showErrorMessage(
@@ -318,13 +287,7 @@ public class CLIController {
                 view.showErrorMessage(
                     "Could not find dictionary of valid words. No puzzle created."
                 );
-            } else {
-                view.showErrorMessage(
-                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
-                    e.getLocalizedMessage()
-                );
             }
-
             return;
         } catch (IOException e) {
             view.showErrorMessage(
@@ -339,8 +302,147 @@ public class CLIController {
             puzzle.getRank(),
             puzzle.getEarnedPoints()
         );
+
+    
     }
 
+    public void hint(){
+        Puzzle puzzle = Puzzle.getInstance();
+        helpData = puzzle.getHelpData();
+
+        char[] baseWord = new char[7];
+        baseWord[6] = puzzle.getPrimaryLetter();
+        char [] nonRequiredLetters = puzzle.getSecondaryLetters();
+        for(int i = 0; i < baseWord.length - 1; i++){
+            baseWord[i] = nonRequiredLetters[i];
+        }
+        Map<Pair<Character, Integer>, Long> trying = helpData.startingLetterGrid();
+        
+        int maxWordSize = 0;
+        for(Map.Entry<Pair<Character, Integer>, Long> entry : trying.entrySet()){
+            int wordSize = entry.getKey().getRight();
+            if(wordSize > maxWordSize) maxWordSize = wordSize;
+        }
+        //Initialize the matrix
+        String[][] grid = new String[9][maxWordSize - 1];
+        //Populate the matrix with dashes
+        for(int row = 0; row < 9; row++){
+            for(int col = 0; col < maxWordSize - 1; col ++){
+                grid[row][col] = "-";
+            }
+        }
+        grid[0][0] = " ";
+        grid[8][0] = "\u03A3";
+        grid[0][maxWordSize - 2] = "\u03A3";
+        //Put the puzzle letters into the matrix
+        for(int i = 1; i < 8; i++){
+            grid[i][0] = "" + baseWord[i - 1];
+        }
+        //Puts the word length into the matrix
+        for(int i = 1; i < maxWordSize - 2; i ++){
+            grid[0][i] = (i + 3) + "";
+        }
+        //This for loop maps the number of words to their size and letters
+        //in the grid.
+        for(Map.Entry<Pair<Character, Integer>, Long> work : trying.entrySet()){
+            for(int k = 1; k < 8; k++){
+                if((work.getKey().getLeft()+ "").equals(grid[k][0])){
+                    grid[k][work.getKey().getRight() - 3] = (work.getValue() + "");
+                }
+            }
+        }
+        // This calculates the sum of the words that start with each letter.
+        int sumValLet;
+        for(int row = 1; row < 8; row++){
+            sumValLet = 0;
+            for(int col = 1; col < maxWordSize - 2; col ++){
+                if (!grid[row][col].equals("-")){
+                    sumValLet = sumValLet + Integer.parseInt(grid[row][col]);
+                }
+            }
+            grid[row][maxWordSize - 2] = sumValLet + "";
+        }
+        //Calculate the sum of words of each length
+        int sumValCol;
+        for(int col = 1; col < maxWordSize - 1; col++){
+            sumValCol = 0;
+            for(int row = 1; row < 8; row ++){
+                if (!grid[row][col].equals("-")){
+                    sumValCol = sumValCol + Integer.parseInt(grid[row][col]);
+                }
+            }
+            grid[8][col] = sumValCol + "";
+        }
+
+        //Initialize the two letter list matrix and populate with '-'
+        String [][] twoLetList = new String[7][7];
+        for(int i = 0; i < 7; i++){
+            for(int k = 0; k < 7; k ++){
+                twoLetList[i][k] = "-";
+            }
+        }
+
+        //Places the starting letter pairs into rows based on starting letter
+        for(Map.Entry<String, Long> item : helpData.startingLetterPairs().entrySet()){
+            for(int i = 0; i < 7; i++){
+                if((baseWord[i] + "").equals(item.getKey().charAt(0) + "")){
+                    for(int k = 0; k < 7; k++){
+                        if((baseWord[k] + "").equals(item.getKey().charAt(1) + "")){
+                            twoLetList[i][k] = item + "";
+                        }
+                    }
+                }
+            }
+        }
+
+        //Print everything out
+        System.out.println("Spelling Bee Grid" + System.lineSeparator());
+        System.out.println("Required letter is in" + "\u001B[1m BOLD " 
+        + System.lineSeparator());
+        System.out.print( (baseWord[6] + " ").toUpperCase() + "\u001B[0m");
+        for(int i = 0; i < 6; i++){
+            System.out.print((baseWord[i] + "").toUpperCase() + " ");
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println("WORDS: " + helpData.numWords() 
+        + ", POINTS: " + helpData.totalPoints() + ", PANGRAMS: " +
+         helpData.numPangrams() + " (" + helpData.numPerfectPangrams()
+          + " Perfect)" + System.lineSeparator());
+        //This for loop prints out the matrix
+        for(int row = 0; row < 9; row++){
+            for(int col = 0; col < maxWordSize - 1; col ++){
+                if(row == 0 || col == 0 || row == 8 || col == maxWordSize - 2){
+                    System.out.print("\u001B[1m" + String.format("%-" + 3 +"s", 
+                    grid[row][col].toUpperCase()) + "\u001B[0m");
+                    System.out.print(" ");
+                }
+                else{
+                    System.out.print(String.format("%-" + 3 +"s", 
+                    grid[row][col].toUpperCase()));
+                    System.out.print(" ");
+                }
+            }
+            System.out.println("");
+        }
+
+        //Print out the start of the two letter list section
+        System.out.println(System.lineSeparator() + 
+        "\u001B[1mTwo letter list: \u001B[0m" 
+        + System.lineSeparator());
+        
+        //Prints out the list of two letter starts.
+        for(int i = 0; i < 7; i++){
+            for (int k = 0; k < 6; k++){
+                if(!twoLetList[i][k].equals("-")){
+                    System.out.print(String.format("%-" + 6 + "s", 
+                    twoLetList[i][k].toUpperCase()));
+                }
+            }
+            System.out.println();
+        }
+    }
+    
     /**
      * Creates a new puzzle with the given base word. Sends command to view to
      * display the new puzzle.
@@ -348,17 +450,19 @@ public class CLIController {
      * @param word The base word for the new puzzle
      */
     private void newPuzzle(String word, char requiredLetter) {
-        try {
-            FileReader rootWordsReader = new FileReader(rootsDictionaryFile);
-            FileReader dictionaryReader = new FileReader(dictionaryFile);
+        Puzzle puzzle = Puzzle.getInstance();
 
-            puzzle = Puzzle.fromWord(
-                word,
-                requiredLetter,
-                rootWordsReader,
-                dictionaryReader,
-                false
-            );
+        try {
+            PuzzleBuilder builder = new PuzzleBuilder(dictionaryFile, rootsDictionaryFile);
+
+            if (!builder.setRootAndRequiredLetter(word, requiredLetter)) {
+                view.showErrorMessage(
+                    "Invalid starting word. Please try again."
+                );
+                return;
+            }
+
+            puzzle = builder.build();
         } catch (FileNotFoundException e) {
             if (e.getMessage().contains(rootsDictionaryFile.getName())) {
                 view.showErrorMessage(
@@ -368,18 +472,7 @@ public class CLIController {
                 view.showErrorMessage(
                     "Could not find dictionary of valid words. No puzzle created."
                 );
-            } else {
-                view.showErrorMessage(
-                    "Unknown FileNotFoundException thrown. No puzzle created.\n" +
-                    e.getLocalizedMessage()
-                );
             }
-
-            return;
-        } catch (IllegalArgumentException e) {
-            view.showErrorMessage(
-                "Invalid starting word. Please try again."
-            );
             return;
         } catch (IOException e) {
             view.showErrorMessage(
@@ -400,6 +493,8 @@ public class CLIController {
      * Gets the current rank from the puzzle and sends it to view to be displayed.
      */
     private void ranks() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to show ranks for. Please make or load a puzzle and try again."
@@ -420,121 +515,61 @@ public class CLIController {
      * @param filePath the path to save the puzzle to
      */
     private void save(String filePath) {
-        //Create an object of the Gson class
-        Gson saved = new Gson();
+        Puzzle puzzle = Puzzle.getInstance();
 
-        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
-
-        char[] baseWord = new char[7];
-        baseWord[6] = puzzle.getPrimaryLetter();
-        for(int i = 0; i < baseWord.length - 1; i++){
-            baseWord[i] = nonRequiredLetters[i];
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle to save. Please try again."
+            );
+            return;
         }
 
-        String filename = "";
+        File saveLocation = new File(filePath);
 
-        //This will create a title for the Json file consisting
-        // of the non-required letters followed by the required letter.
-        for (char c : baseWord){
-            filename = filename + c;
+        try {
+            puzzle.save(saveLocation);
+        } catch(IOException e) {
+            view.showErrorMessage(
+                "The file at " + saveLocation.getAbsolutePath() + " could not " +
+                "be created, opened, or written. Please try again."
+            );
         }
-        try{
-
-            // Take the necessary attributes and create a puzzleSave object,
-            PuzzleSave savedPuzzle = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(),
-            puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
-
-            //Converts the current puzzle object to Json
-            String savedJson = saved.toJson (savedPuzzle);
-
-            //Create the file and populate it with the saved Json
-        
-            String pathName = filePath + ".json";
-            File savedFile = new File(pathName);
-            //Returns true if a new file is created.
-                if(savedFile.createNewFile()){
-
-                    //Create a file writer to populate the created File
-                    FileWriter writing = new FileWriter(savedFile);
-                    //Insert input
-                    writing.write (savedJson);
-                    //Close the writer
-                    writing.close ();
-                    //Notify the user
-                    System.out.println("File created: " + filename + ".json");
-                }
-            
-        } catch (IOException e) {
-            System.out.println("An error occurred");
-            }
-        
     }
 
     /**
      * Saves the puzzle to a json file at a default location.
      */
     private void save() {
-        //Create an object of the Gson class
-        Gson saved = new Gson();
+        Puzzle puzzle = Puzzle.getInstance();
 
-        char[] nonRequiredLetters = puzzle.getSecondaryLetters();
-
-        char[] baseWord = new char[7];
-        baseWord[6] = puzzle.getPrimaryLetter();
-        for(int i = 0; i < baseWord.length - 1; i++){
-            baseWord[i] = nonRequiredLetters[i];
+        if (puzzle == null) {
+            view.showErrorMessage(
+                "There is no puzzle to save. Please try again."
+            );
+            return;
         }
 
-        String filename = "";
+        StringBuilder filename = new StringBuilder();
 
         //This will create a title for the Json file consisting
         // of the non-required letters followed by the required letter.
-        for (char c : baseWord){
-            filename = filename + c;
+        for (char c : puzzle.getSecondaryLetters()){
+            filename.append(c);
         }
 
-        
+        filename.append(puzzle.getPrimaryLetter());
 
-        //Create the file and populate it with the saved Json
-        try{
-            // Take the necessary attributes and create a puzzleSave object,
-            PuzzleSave savedPuzzle = PuzzleSave.ToSave(baseWord, puzzle.getFoundWords(), puzzle.getEarnedPoints(), puzzle.getPrimaryLetter(), puzzle.getTotalPoints());
+        filename.append(".json");
 
-            //Converts the current puzzle object to Json
-            String savedJson = saved.toJson (savedPuzzle);
-
-            File savedFile = new File(filename + ".json");
-
-            //Returns true if a new file is created.
-            if(savedFile.createNewFile ()){
-
-                //Create a file writer to populate the created File
-                FileWriter writing = new FileWriter(savedFile);
-                //Insert input
-                writing.write (savedJson);
-                //Close the writer
-                writing.close ();
-                //Notify the user
-                    System.out.println("File created: " + filename + ".json");
-            } else {
-                System.out.println("A file by that name already exists." + getNewLineCharacter() + "Overwriting the file");
-
-                //Open a writer to replace the information in the file.
-                PrintWriter writer = new PrintWriter(savedFile);
-                writer.print(savedJson);
-                writer.close();
-            }
-        }
-        catch (IOException e) {
-            System.out.println("An error occurred");
-        }
-        
+        save(filename.toString());
     }
 
     /**
      * Sends a command to view to display the puzzle.
      */
     private void show() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to show. Please make or load a puzzle and try again."
@@ -571,6 +606,8 @@ public class CLIController {
      * redisplay the puzzle.
      */
     private void shuffle() {
+        Puzzle puzzle = Puzzle.getInstance();
+
         if (puzzle == null) {
             view.showErrorMessage(
                 "There is no puzzle to be shuffled. Please make or load a puzzle and try again."

@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    jacoco
 }
 
 repositories {
@@ -27,6 +28,9 @@ dependencies {
     implementation("com.google.guava:guava:32.1.1-jre")
 
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Needed for Pair tuple
+    implementation("org.apache.commons:commons-lang3:3.13.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -48,4 +52,16 @@ tasks.named<Test>("test") {
 
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+
+    reports {
+        xml.required = true
+        csv.required = false
+    }
 }
