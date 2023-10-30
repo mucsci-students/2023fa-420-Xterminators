@@ -57,7 +57,7 @@ public class Puzzle {
     /**
      * A record for containing all the data in a JSON save of a puzzle.
      */
-    protected record PuzzleData(
+    private record PuzzleData(
         char[] baseWord,
         char requiredLetter,
         List<String> foundWords,
@@ -111,7 +111,7 @@ public class Puzzle {
      * @throws IllegalArgumentException if the puzzle data represents an invalid
      *                                  puzzle
      */
-    protected Puzzle(PuzzleData puzzleData, File dictionaryFile)
+    private Puzzle(PuzzleData puzzleData, File dictionaryFile)
         throws FileNotFoundException, IOException, IllegalArgumentException
     {
         this.primaryLetter = puzzleData.requiredLetter();
@@ -418,14 +418,14 @@ public class Puzzle {
      * @return true if the word is a pangram, false otherwise
      */
     private boolean isPangram(String word) {
+        if (word.indexOf(primaryLetter) == -1) {
+            return false;
+        }
+
         for (char c : secondaryLetters) {
             if (word.indexOf(c) == -1) {
                 return false;
             }
-        }
-
-        if (word.indexOf(primaryLetter) == -1) {
-            return false;
         }
         
         return true;
