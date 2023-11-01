@@ -1,4 +1,4 @@
-package xterminators.spellingbee.controller;
+package xterminators.spellingbee.gui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,11 +9,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.JsonSyntaxException;
 
+import xterminators.spellingbee.controller.Controller;
 import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.view.GuiView;
 
 public class GuiController extends Controller {
     /** The view that the user interacts with. */

@@ -1,10 +1,10 @@
-package xterminators.spellingbee.view;
+package xterminators.spellingbee.cli;
 
 import java.util.Arrays;
 import java.util.List;
 
-import xterminators.spellingbee.cli.Command;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.view.View;
 
 /**
  * The view of the CLI mode of the Spelling Bee game. This class takes

@@ -1,4 +1,4 @@
-package xterminators.spellingbee.controller;
+package xterminators.spellingbee.cli;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,12 +15,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.JsonSyntaxException;
 
-import xterminators.spellingbee.cli.Command;
+import xterminators.spellingbee.controller.Controller;
 import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.view.CLIView;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes

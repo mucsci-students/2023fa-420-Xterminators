@@ -28,11 +28,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
-import xterminators.spellingbee.controller.CLIController;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
-import xterminators.spellingbee.view.CLIView;
 
 public class CLIControllerTest {
     CLIView view;

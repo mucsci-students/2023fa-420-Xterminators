@@ -1,4 +1,4 @@
-package xterminators.spellingbee.view;
+package xterminators.spellingbee.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,11 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import xterminators.spellingbee.controller.GuiController;
-import xterminators.spellingbee.gui.CustomInputDialog;
-import xterminators.spellingbee.gui.GuessKeyListener;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.view.View;
 
 public class GuiView extends View {
     private GuiController guiController;

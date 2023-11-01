@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.view.CLIView;
 
 public class CLIViewTest {
     private CLIView view;
