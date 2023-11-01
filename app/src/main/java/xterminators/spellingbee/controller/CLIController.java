@@ -28,7 +28,7 @@ import xterminators.spellingbee.view.CLIView;
  * controller also interacts with the view (CLIView) to display changes to the
  * user.
  */
-public class CLIController {
+public class CLIController extends Controller {
     /** The full dictionary of valid guess words to be used. */
     private File dictionaryFile;
     /** The full dictionary of valid root words to be used. */
@@ -57,6 +57,7 @@ public class CLIController {
      * controller will read in commands from the user, process them, and sends
      * output to the view to be displayed.
      */
+    @Override
     public void run() {
         System.out.println("Welcome to the Spelling Bee!");
         System.out.printf(

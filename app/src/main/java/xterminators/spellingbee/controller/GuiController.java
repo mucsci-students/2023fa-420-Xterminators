@@ -15,7 +15,7 @@ import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.view.GuiView;
 
-public class GuiController {
+public class GuiController extends Controller {
     /** The view that the user interacts with. */
     private GuiView guiView;
     /** The file pointing to the full dictionary of usable words. */
@@ -29,6 +29,11 @@ public class GuiController {
         this.guiView = guic;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
+    }
+
+    @Override
+    public void run() {
+        guiView.InitUI();
     }
 
     /**
