@@ -1,19 +1,11 @@
 package xterminators.spellingbee.controller;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.File;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
-import java.util.Scanner;
 
 import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.gson.Gson;
 
 import com.google.gson.JsonSyntaxException;
 

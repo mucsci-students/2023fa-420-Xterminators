@@ -17,9 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +28,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
-import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
-import xterminators.spellingbee.view.CLIView;
 import xterminators.spellingbee.controller.CLIController;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
+import xterminators.spellingbee.view.CLIView;
 
 public class CLIControllerTest {
     CLIView view;

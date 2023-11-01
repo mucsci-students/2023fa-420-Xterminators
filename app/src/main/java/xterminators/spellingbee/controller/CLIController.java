@@ -7,19 +7,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.Map;
-import com.google.gson.Gson;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.gson.JsonSyntaxException;
 
+import xterminators.spellingbee.cli.Command;
+import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.view.CLIView;
-import xterminators.spellingbee.cli.Command;
-import xterminators.spellingbee.model.HelpData;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
