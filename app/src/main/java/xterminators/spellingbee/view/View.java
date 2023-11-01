@@ -1,3 +1,3 @@
 package xterminators.spellingbee.view;
 
-public sealed abstract class View permits CLIView, GuiView {}
+public abstract class View {}

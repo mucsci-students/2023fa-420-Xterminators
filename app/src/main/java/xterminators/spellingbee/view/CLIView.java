@@ -10,7 +10,7 @@ import xterminators.spellingbee.model.Rank;
  * The view of the CLI mode of the Spelling Bee game. This class takes
  * instructions and data from the controller and displays output accordingly.
  */
-public final class CLIView extends View {
+public class CLIView extends View {
     public static final String ANSI_BOLD = "\u001B[1m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
