@@ -57,3 +57,7 @@ or run the application with the CLI:
       ever be in progress at any one time.
     - The `Puzzle.getInstance` function was used in the controllers to allow
       them not to store a puzzle themselves.
+- Abstract Factory Pattern
+    - The abstract factory pattern was used in `App` to create and run the UI.
+      If a CLI was requested, a `CLIFactory` was used, and if a GUI was
+      requested, a `GuiFactory` was used.
