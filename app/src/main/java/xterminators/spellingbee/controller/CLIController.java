@@ -1,4 +1,4 @@
-package xterminators.spellingbee.cli;
+package xterminators.spellingbee.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,6 +17,8 @@ import com.google.gson.JsonSyntaxException;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.view.CLIView;
+import xterminators.spellingbee.cli.Command;
 import xterminators.spellingbee.model.HelpData;
 
 /**

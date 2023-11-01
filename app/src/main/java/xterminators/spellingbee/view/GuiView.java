@@ -1,12 +1,14 @@
-package xterminators.spellingbee.gui;
+package xterminators.spellingbee.view;
 
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
 
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.controller.GuiController;
+import xterminators.spellingbee.gui.CustomInputDialog;
+import xterminators.spellingbee.gui.GuessKeyListener;
 import xterminators.spellingbee.model.Puzzle;
-import xterminators.spellingbee.gui.GuiController;
 
 import java.util.ArrayList;
 import java.nio.file.Paths;

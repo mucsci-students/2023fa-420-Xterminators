@@ -1,4 +1,4 @@
-package xterminators.spellingbee.gui;
+package xterminators.spellingbee.controller;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,6 +21,7 @@ import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.view.GuiView;
 
 public class GuiController {
     /** The view that the user interacts with. */

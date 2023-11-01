@@ -1,8 +1,9 @@
-package xterminators.spellingbee.cli;
+package xterminators.spellingbee.view;
 
 import java.util.Arrays;
 import java.util.List;
 
+import xterminators.spellingbee.cli.Command;
 import xterminators.spellingbee.model.Rank;
 
 /**

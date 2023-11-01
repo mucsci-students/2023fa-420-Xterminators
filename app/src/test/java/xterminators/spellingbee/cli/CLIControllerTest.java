@@ -30,6 +30,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
 import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
+import xterminators.spellingbee.view.CLIView;
+import xterminators.spellingbee.controller.CLIController;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 

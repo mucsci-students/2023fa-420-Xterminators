@@ -17,10 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import xterminators.spellingbee.gui.GuiController;
-import xterminators.spellingbee.gui.GuiView;
-
+import xterminators.spellingbee.controller.GuiController;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.view.GuiView;
 import xterminators.spellingbee.model.Puzzle;
 
 
