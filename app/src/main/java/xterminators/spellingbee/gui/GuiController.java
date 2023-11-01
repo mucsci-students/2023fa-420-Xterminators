@@ -37,6 +37,15 @@ public class GuiController extends Controller {
     }
 
     /**
+     * Sets the view that the controller interacts with.
+     * 
+     * @param view the new view
+     */
+    public void setView(GuiView view) {
+        this.guiView = view;
+    }
+
+    /**
      * Creates a new puzzle using the given word and required letter,
      * and then prints it. If no seed word is given, a random puzzle
      * will be generated instead.
