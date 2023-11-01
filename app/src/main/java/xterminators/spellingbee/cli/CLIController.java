@@ -15,11 +15,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.JsonSyntaxException;
 
-import xterminators.spellingbee.abstract_ui.Controller;
 import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.ui.Controller;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes

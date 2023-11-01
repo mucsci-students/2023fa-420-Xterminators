@@ -24,9 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import xterminators.spellingbee.abstract_ui.View;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.ui.View;
 
 public class GuiView extends View {
     private GuiController guiController;

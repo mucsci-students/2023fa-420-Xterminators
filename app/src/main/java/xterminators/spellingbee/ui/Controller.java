@@ -1,4 +1,4 @@
-package xterminators.spellingbee.abstract_ui;
+package xterminators.spellingbee.ui;
 
 /**
  * An abstract controller for a UI of the spelling bee game.
