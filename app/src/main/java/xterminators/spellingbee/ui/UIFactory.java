@@ -14,8 +14,8 @@ public abstract class UIFactory {
     /**
      * Creates a UIFactory with the given dictionaries.
      * 
-     * @param fullDictionary
-     * @param rootsDictionary
+     * @param fullDictionary the full dictionary of valid words
+     * @param rootsDictionary the dictionary of valid root words
      */
     public UIFactory(File fullDictionary, File rootsDictionary) {
         this.fullDictionary = fullDictionary;
