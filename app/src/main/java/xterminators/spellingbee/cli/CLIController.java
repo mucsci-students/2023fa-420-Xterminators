@@ -413,9 +413,16 @@ public class CLIController {
         for(int row = 0; row < 9; row++){
             for(int col = 0; col < maxWordSize - 1; col ++){
                 if(row == 0 || col == 0 || row == 8 || col == maxWordSize - 2){
-                    System.out.print("\u001B[1m" + String.format("%-" + 3 +"s", 
-                    grid[row][col].toUpperCase()) + "\u001B[0m");
-                    System.out.print(" ");
+                    if(col == maxWordSize - 2){
+                        System.out.print("\u001B[1m" + String.format("%" + 3 +"s", 
+                        grid[row][col].toUpperCase()) + "\u001B[0m");
+                        System.out.print(" ");
+                    } else{
+                        System.out.print("\u001B[1m" + String.format("%-" + 3 +"s", 
+                        grid[row][col].toUpperCase()) + "\u001B[0m");
+                        System.out.print(" ");
+                    }
+                    
                 }
                 else{
                     System.out.print(String.format("%-" + 3 +"s", 
