@@ -64,8 +64,12 @@ public class GuiView extends View {
 
     // Initialization *********************************************************
 
-    public GuiView(File dictionaryFile, File rootsDictionaryFile) {
-        guiController = new GuiController(this, dictionaryFile, rootsDictionaryFile);
+    public GuiView(
+        GuiController controller,
+        File dictionaryFile,
+        File rootsDictionaryFile
+    ) {
+        guiController = controller;
         mainFrame = new JFrame("Spelling Bee");
         mainPanel = new JPanel();
         standardFont = new Font("Helvetica", Font.BOLD, 16);
