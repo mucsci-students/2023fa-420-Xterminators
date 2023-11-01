@@ -9,7 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.JsonSyntaxException;
 
-import xterminators.spellingbee.controller.Controller;
+import xterminators.spellingbee.abstract_ui.Controller;
 import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
