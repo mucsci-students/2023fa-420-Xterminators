@@ -30,7 +30,7 @@ import xterminators.spellingbee.gui.GuessKeyListener;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 
-public class GuiView {
+public final class GuiView extends View {
     private GuiController guiController;
     private ArrayList<JButton> letterButtons;
     private GuessKeyListener guessKeyListener;
