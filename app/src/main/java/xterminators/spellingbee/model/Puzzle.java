@@ -309,7 +309,7 @@ public class Puzzle {
      *          the number of points earned if the word is a valid guess
      */
     public int guess(String word) {
-        if (!isValid(word)) {
+        if (!isValid(word) || !validWords.contains(word)) {
             return 0;
         }
 
