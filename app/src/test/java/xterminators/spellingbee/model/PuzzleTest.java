@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import xterminators.spellingbee.model.Puzzle.PuzzleData;
 
@@ -108,6 +110,29 @@ public class PuzzleTest {
             puzzle.getEarnedPoints(),
             validData.playerPoints(),
             "Puzzle constructor should set the earned points correctly."
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = 
+        {"uirdaagn", "rnguaadi", "ngadriua", "iduanrag",
+         "gundraai", "uainagrd", "unidgara", "dnriauga"}
+    )
+    public void testGuess_BadWord(String word) {
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        assertEquals(
+            0,
+            puzzle.guess(word),
+            "Puzzle guess should return 0 if the word is not in the dictionary."
         );
     }
 }
