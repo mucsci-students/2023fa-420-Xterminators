@@ -1,11 +1,9 @@
 package xterminators.spellingbee.gui;
 
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
 
-import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.model.Puzzle;
+
+
+
 import xterminators.spellingbee.gui.GuiController;
 
 import java.awt.Robot;
@@ -13,13 +11,40 @@ import java.util.ArrayList;
 import java.nio.file.Paths;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.awt.event.ActionListener;
+
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
-public class GuiView {
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import xterminators.spellingbee.model.Puzzle;
+import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.ui.View;
+
+
+public class GuiView extends View {
     private GuiController guiController;
     private ArrayList<JButton> letterButtons;
     private GuessKeyListener guessKeyListener;
@@ -60,8 +85,12 @@ public class GuiView {
 
     // Initialization *********************************************************
 
-    public GuiView(File dictionaryFile, File rootsDictionaryFile) {
-        guiController = new GuiController(this, dictionaryFile, rootsDictionaryFile);
+    public GuiView(
+        GuiController controller,
+        File dictionaryFile,
+        File rootsDictionaryFile
+    ) {
+        guiController = controller;
         mainFrame = new JFrame("Spelling Bee");
         mainPanel = new JPanel();
         standardFont = new Font("Helvetica", Font.BOLD, 16);
