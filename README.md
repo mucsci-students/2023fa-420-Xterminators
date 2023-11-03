@@ -63,3 +63,7 @@ or run the application with the CLI:
       map, and collect lists of words. Both `Stream`s are backed by a
       `Spliterator` of the collection they are called on, which is a
       parallelized iterator pattern.
+- Abstract Factory Pattern
+    - The abstract factory pattern was used in `App` to create and run the UI.
+      If a CLI was requested, a `CLIFactory` was used, and if a GUI was
+      requested, a `GuiFactory` was used.
