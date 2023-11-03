@@ -516,7 +516,7 @@ public class GuiView {
                     // Restore frame size
                     mainFrame.setSize(temp, mainFrame.getHeight());
 
-                    //JOptionPane.showMessageDialog(mainFrame, "Puzzle image copied to clipboard.");
+                    JOptionPane.showMessageDialog(mainFrame, "Puzzle image copied to clipboard.");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
