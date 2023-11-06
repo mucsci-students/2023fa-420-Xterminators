@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Map;
@@ -17,12 +18,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.InputEvent;
 import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.gson.JsonSyntaxException;
 
+import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.model.HelpData;
+import xterminators.spellingbee.ui.Controller;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
@@ -30,7 +33,7 @@ import xterminators.spellingbee.model.HelpData;
  * controller also interacts with the view (CLIView) to display changes to the
  * user.
  */
-public class CLIController {
+public class CLIController extends Controller {
     /** The full dictionary of valid guess words to be used. */
     private File dictionaryFile;
     /** The full dictionary of valid root words to be used. */
@@ -59,6 +62,7 @@ public class CLIController {
      * controller will read in commands from the user, process them, and sends
      * output to the view to be displayed.
      */
+    @Override
     public void run() {
         System.out.println("Welcome to the Spelling Bee!");
         System.out.printf(
