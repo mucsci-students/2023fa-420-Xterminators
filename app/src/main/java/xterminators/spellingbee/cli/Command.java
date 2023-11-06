@@ -88,6 +88,14 @@ public enum Command {
         "Shuffles the letters in the puzzle.",
         """
         Shuffles the order of the non-required letters in the display of the puzzle."""
+    ),
+    HINT(
+        "hint",
+        "Displays hints for the current puzzle.",
+        """
+        Takes the puzzle and compiles a grid to show the relationship between words
+        and their length.
+                """
     );
 
     /** The keyword for the command. */

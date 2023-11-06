@@ -4,33 +4,44 @@
 package xterminators.spellingbee;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
 import xterminators.spellingbee.cli.CLIController;
+import xterminators.spellingbee.cli.CLIFactory;
 import xterminators.spellingbee.cli.CLIView;
+import xterminators.spellingbee.gui.GuiFactory;
 import xterminators.spellingbee.gui.GuiView;
+import xterminators.spellingbee.ui.Controller;
+import xterminators.spellingbee.ui.UIFactory;
 
 public class App {
     public static void main(String[] args) {
-        File dictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionaries", "dictionary_optimized.txt").toString()
-        );
+        File dictionaryFile = Paths.get(
+            "src",
+            "main",
+            "resources",
+            "dictionaries",
+            "dictionary_optimized.txt")
+            .toFile();
 
-        File rootsDictionaryFile = new File(
-            Paths.get("src", "main", "resources", "dictionaries", "dictionary_roots.txt").toString()
-        );
+        File rootsDictionaryFile = Paths.get(
+            "src",
+            "main",
+            "resources",
+            "dictionaries",
+            "dictionary_roots.txt")
+            .toFile();
         
-        // Case Insensitive check for --cli in args
+        UIFactory factory = null;
+        
         if (Arrays.asList(args).stream().anyMatch(s -> s.equalsIgnoreCase("--cli"))) {
-            CLIView cliView = new CLIView();
-            CLIController cliController = new CLIController(cliView, dictionaryFile, rootsDictionaryFile);
-
-            cliController.run();
+            factory = new CLIFactory(dictionaryFile, rootsDictionaryFile);
         } else {
-            GuiView ui = new GuiView(dictionaryFile, rootsDictionaryFile);
-            ui.InitUI();
+            factory = new GuiFactory(dictionaryFile, rootsDictionaryFile);
         }
+
+        Controller controller = factory.createController();
+        controller.run();
     }
 }

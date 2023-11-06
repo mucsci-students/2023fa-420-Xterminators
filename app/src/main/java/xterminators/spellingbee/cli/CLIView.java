@@ -4,12 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.ui.View;
 
 /**
  * The view of the CLI mode of the Spelling Bee game. This class takes
  * instructions and data from the controller and displays output accordingly.
  */
-public class CLIView {
+public class CLIView extends View {
     public static final String ANSI_BOLD = "\u001B[1m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
