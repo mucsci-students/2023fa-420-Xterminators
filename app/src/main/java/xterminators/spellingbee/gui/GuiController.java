@@ -226,7 +226,7 @@ public class GuiController {
      */
     public String hint(){
         Puzzle puzzle = Puzzle.getInstance();
-        String result = "";
+        String result = "<html>";
         helpData = puzzle.getHelpData();
 
         //Initialize a baseword array for later printing the matrix
@@ -352,7 +352,7 @@ public class GuiController {
         //This for loop prints out the matrix
         for(int row = 0; row < 9; row++){
             for(int col = 0; col < maxWordSize - 1; col ++){
-                result +=  grid[row][col].toUpperCase() + "  ";
+                result += grid[row][col].toUpperCase() + " ";
                 if(grid[row][col].length() < maxValLen){
                     for(int i = grid[row][col].length(); i < maxValLen + 1; i++){
                         result += " ";
@@ -376,6 +376,7 @@ public class GuiController {
             }
             result += System.lineSeparator();
         }
+        result += "</div></html>";
         return result;
     }
 
