@@ -1,24 +1,23 @@
 package xterminators.spellingbee.gui;
 
-
-
-
-
 import xterminators.spellingbee.gui.GuiController;
 
-import java.awt.Robot;
+import javax.swing.Timer;
 import java.util.ArrayList;
 import java.nio.file.Paths;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Toolkit;
 
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.awt.event.ActionListener;
 
 import java.awt.datatransfer.Clipboard;
