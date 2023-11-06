@@ -260,4 +260,27 @@ public class PuzzleTest {
             "Puzzle guess should return 0 if the word is not in the dictionary."
         );
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = 
+        {"uirdaagn", "rnguaadi", "ngadriua", "iduanrag",
+         "gundraai", "uainagrd", "unidgara", "dnriauga"}
+    )
+    public void testGuess_BadWord(String word) {
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        assertEquals(
+            0,
+            puzzle.guess(word),
+            "Puzzle guess should return 0 if the word is not in the dictionary."
+        );
+    }
 }
