@@ -226,7 +226,7 @@ public class GuiController {
      */
     public String hint(){
         Puzzle puzzle = Puzzle.getInstance();
-        String result = "<html>";
+        String result = "";
         helpData = puzzle.getHelpData();
 
         //Initialize a baseword array for later printing the matrix
@@ -376,7 +376,7 @@ public class GuiController {
             }
             result += System.lineSeparator();
         }
-        result += "</div></html>";
+        
         return result;
     }
 
