@@ -1,13 +1,27 @@
 package xterminators.spellingbee.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import xterminators.spellingbee.gui.GuiController;
+
+import javax.swing.Timer;
+import java.util.ArrayList;
+import java.nio.file.Paths;
+
 import java.awt.Font;
+import java.awt.Color;
 import java.awt.Image;
+import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.awt.event.ActionListener;
+
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -29,6 +43,7 @@ import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.ui.View;
 
+
 public class GuiView extends View {
     private GuiController guiController;
     private ArrayList<JButton> letterButtons;
@@ -42,11 +57,14 @@ public class GuiView extends View {
     private JFrame mainFrame;
     private JPanel mainPanel;
     private JTextField tbGuess;
+    private JButton btnGuess;
     private JButton primaryLetterButton;
     private JTextArea foundWordsArea;
     private JPanel rankImagePanel;
     private JLabel currentPointsLabel;
     private JLabel currentRankLabel;
+    // Used where the guess components are for screen grab
+    private JLabel placeholderLabel;
 
     // File paths
     private static final String BEE_PATH = Paths.get("src", "main", "resources", "bee_icon.png").toString();
@@ -55,13 +73,15 @@ public class GuiView extends View {
     private static final String EMPTY_RANK_MID = Paths.get("src", "main", "resources", "hex_empty.png").toString();
 
     // Constants for component coordinates and sizes
-    private static final int FRAME_WIDTH = 770;
+    private static final int FRAME_WIDTH = 990;
     private static final int FRAME_HEIGHT = 480;
     private static final int PUZZLE_LEFT_X = 50;
     private static final int PUZZLE_TOP_Y = 100;
     private static final int PZL_BTN_WIDTH = 50;
     private static final int PZL_BTN_HEIGHT = 50;
     private static final int PUZZLE_WIDTH = (PZL_BTN_WIDTH * 3) + 60;
+    private static final int ACTION_PANEL_WIDTH = PUZZLE_WIDTH - 20;
+    private static final int HIGH_SCORE_PANEL_WIDTH = PUZZLE_WIDTH;
 
     // Initialization *********************************************************
 
@@ -82,7 +102,7 @@ public class GuiView extends View {
      * This sets up all of the components of the UI.
      * All components are created here, and all event
      * handlers are added here.
-     * This is the only function where magic numbers 
+     * This is the only function where magic numbers
      * are, unfortunately, somewhat unavoidable, but
      * try to avoid them as much as possible.
      */
@@ -97,9 +117,10 @@ public class GuiView extends View {
         initGuessComponents();
         initPuzzleButtons();
         initRankComponents();
+        initHighScoreComponents();
         initActionComponents();
         initFoundWordsComponents();
-        
+
         mainPanel.setBackground(Color.gray);
         mainFrame.setContentPane(mainPanel);
 
@@ -125,7 +146,7 @@ public class GuiView extends View {
         tbGuess.setFont(standardFont);
         tbGuess.addKeyListener(guessKeyListener);
         tbGuess.addActionListener(new ActionListener() {
-            @Override 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 String text = tbGuess.getText();
                 if (text != null && !text.isEmpty()) {
@@ -134,13 +155,13 @@ public class GuiView extends View {
             }
         });
 
-        tbGuess.setBounds(PUZZLE_LEFT_X, PUZZLE_TOP_Y - 60, 
+        tbGuess.setBounds(PUZZLE_LEFT_X, PUZZLE_TOP_Y - 60,
                             PUZZLE_WIDTH - 75, 30);
         mainPanel.add(tbGuess);
 
-        JButton btnGuess = createButton("Guess", 
-                                        PUZZLE_LEFT_X + PUZZLE_WIDTH - 70, 
-                                        PUZZLE_TOP_Y - 60, 75, 30, mainPanel);
+        btnGuess = createButton("Guess",
+                                PUZZLE_LEFT_X + PUZZLE_WIDTH - 70,
+                                PUZZLE_TOP_Y - 60, 75, 30, mainPanel);
         btnGuess.setFont(smallFont);
         btnGuess.addActionListener(this::guessWordButtonClick);
     }
@@ -195,7 +216,7 @@ public class GuiView extends View {
         currentRankLabel.setFont(standardFont);
         currentRankLabel.setBounds(PUZZLE_LEFT_X + 5, FRAME_HEIGHT - 134, PUZZLE_WIDTH * 2, 40);
         mainPanel.add(currentRankLabel);
-        
+
         rankImagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         rankImagePanel.setBounds(PUZZLE_LEFT_X, FRAME_HEIGHT - 94, PUZZLE_WIDTH * 2, 16);
         rankImagePanel.setBackground(Color.gray);
@@ -205,11 +226,28 @@ public class GuiView extends View {
     }
 
     /**
+     * Initializes all components in the high scores panel.
+     */
+    private void initHighScoreComponents() {
+        JLabel highScoresLabel = new JLabel("High Scores");
+        highScoresLabel.setFont(standardFont);
+        highScoresLabel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
+        mainPanel.add(highScoresLabel);
+
+        JPanel highScoresPanel = new JPanel();
+        highScoresPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50,
+                                    PUZZLE_TOP_Y - 65, HIGH_SCORE_PANEL_WIDTH, FRAME_HEIGHT - 150);
+        highScoresPanel.setBackground(Color.gray);
+        mainPanel.add(highScoresPanel);
+
+    }
+
+    /**
      * Initializes all components in the action panel.
      */
     private void initActionComponents() {
         JPanel actionPanel = new JPanel();
-        actionPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH - 20, FRAME_HEIGHT - 105);
+        actionPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + HIGH_SCORE_PANEL_WIDTH + 60, PUZZLE_TOP_Y - 65, ACTION_PANEL_WIDTH, FRAME_HEIGHT - 105);
         actionPanel.setBackground(Color.gray);
         mainPanel.add(actionPanel);
 
@@ -239,6 +277,10 @@ public class GuiView extends View {
         JButton loadPuzzleButton = createButton("Load Puzzle", 0, 0, 50, 12, actionPanel);
         loadPuzzleButton.addActionListener(this::loadPuzzleButtonClick);
 
+        // Screen Grab
+        JButton screenGrabButton = createButton("Get Puzzle Image", 0, 0, 50, 12, actionPanel);
+        screenGrabButton.addActionListener(this::screenGrabButtonClick);
+
         // Hints
         JButton hintButton = createButton("Hint", 0, 0, 50, 12, actionPanel);
         hintButton.addActionListener(this::hintButtonClick);
@@ -253,11 +295,11 @@ public class GuiView extends View {
     private void initFoundWordsComponents() {
         JLabel foundWordsLabel = new JLabel("Found Words");
         foundWordsLabel.setFont(standardFont);
-        foundWordsLabel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 50, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
+        foundWordsLabel.setBounds(PUZZLE_LEFT_X + HIGH_SCORE_PANEL_WIDTH + ACTION_PANEL_WIDTH + PUZZLE_WIDTH + 80, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
         mainPanel.add(foundWordsLabel);
 
         JPanel foundWordsPanel = new JPanel();
-        foundWordsPanel.setBounds(PUZZLE_LEFT_X + (PUZZLE_WIDTH * 2) + 35, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH, FRAME_HEIGHT - 105);
+        foundWordsPanel.setBounds(PUZZLE_LEFT_X + HIGH_SCORE_PANEL_WIDTH + ACTION_PANEL_WIDTH + PUZZLE_WIDTH + 65, PUZZLE_TOP_Y - 65, PUZZLE_WIDTH, FRAME_HEIGHT - 105);
         foundWordsPanel.setBackground(Color.gray);
         mainPanel.add(foundWordsPanel);
 
@@ -278,7 +320,7 @@ public class GuiView extends View {
      * The handler for a letter button click.
      * Adds the letter displayed on the clicked button
      * to tbMain's displayed text.
-     * 
+     *
      * @param e The ActionEvent from the button click.
      */
     private void letterButtonClick(ActionEvent e) {
@@ -293,9 +335,9 @@ public class GuiView extends View {
     /**
      * The handler for the new puzzle button click.
      * Opens a dialog asking the user for a base word
-     * and required letter, and then generates the 
+     * and required letter, and then generates the
      * puzzle based on the user's input.
-     * 
+     *
      * @param e The ActionEvent from the button click.
      */
     private void newPuzzleButtonClick(ActionEvent e) {
@@ -306,8 +348,8 @@ public class GuiView extends View {
             String puzzleWord = inputDialog.getBaseWord();
             String requiredLetterStr = inputDialog.getRequiredLetter();
             char[] requiredLetterArray = (
-                requiredLetterStr == null 
-                ? new char[0] 
+                requiredLetterStr == null
+                ? new char[0]
                 : requiredLetterStr.toCharArray()
             );
             char requiredLetter = '1';
@@ -331,7 +373,7 @@ public class GuiView extends View {
      * If there is a puzzle loaded, the letters
      * will be shuffled and the puzzle letter buttons
      * will be redrawn.
-     * 
+     *
      * @param e The ActionEvent from the button click.
      */
     private void shufflePuzzleButtonClick(ActionEvent e) {
@@ -351,7 +393,7 @@ public class GuiView extends View {
      * Takes the text from tbGuess and passes it
      * to the puzzle's guess function.
      * The result is then displayed in a dialog.
-     * 
+     *
      * @param e The ActionEvent from the button click.
      */
     private void guessWordButtonClick(ActionEvent e) {
@@ -361,7 +403,7 @@ public class GuiView extends View {
         }
 
         if (Puzzle.getInstance() == null) {
-            showErrorDialog("No puzzle has been loaded." + 
+            showErrorDialog("No puzzle has been loaded." +
                 " Please click \"New Puzzle\" to start a new puzzle. ");
                 return;
         }
@@ -377,19 +419,19 @@ public class GuiView extends View {
 
     /**
      * The handler for the random puzzle button click.
-     * If there is a puzzle loaded, the user will be 
+     * If there is a puzzle loaded, the user will be
      * warned and asked for confirmation to load a new
      * puzzle. If there is no puzzle loaded or the user
      * confirms that they want to overwrite the current
      * puzzle, a new puzzle is created.
-     * 
+     *
      * @param e The ActionEvent from the button click.
      */
     private void randomPuzzleButtonClick(ActionEvent e) {
         if (Puzzle.getInstance() != null) {
             int userChoice = JOptionPane.showConfirmDialog(
                 mainFrame,
-                "There is already a puzzle loaded. " + 
+                "There is already a puzzle loaded. " +
                 "Do you want to load a new one anyway?",
                 "Puzzle Already Loaded",
                 JOptionPane.YES_NO_OPTION
@@ -399,7 +441,7 @@ public class GuiView extends View {
                 createRandomPuzzle();
                 refocusGuessTextBox();
             }
-            // No action on NO_OPTION   
+            // No action on NO_OPTION
         } else {
             createRandomPuzzle();
             refocusGuessTextBox();
@@ -411,7 +453,7 @@ public class GuiView extends View {
      * @param e - The button click
      * @throws IOException - If an I/O error occurs.
      */
-    private void savePuzzleButtonClick(ActionEvent e) throws IOException{        
+    private void savePuzzleButtonClick(ActionEvent e) throws IOException{
         try{
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -467,6 +509,68 @@ public class GuiView extends View {
         }
     }
 
+    private void screenGrabButtonClick(ActionEvent e) {
+        try {
+            mainPanel.remove(tbGuess);
+            mainPanel.remove(btnGuess);
+
+            placeholderLabel = new JLabel("Spelling Bee");
+            placeholderLabel.setFont(standardFont);
+            placeholderLabel.setBounds(10, PUZZLE_TOP_Y - 90, tbGuess.getWidth(), tbGuess.getHeight());
+
+            mainPanel.add(placeholderLabel);
+            mainPanel.repaint();
+            mainFrame.repaint();
+            // Shrink frame to exclude action buttons and found words
+            int temp = mainFrame.getWidth();
+            mainFrame.setSize(temp - ACTION_PANEL_WIDTH - PUZZLE_WIDTH - 50, mainFrame.getHeight());
+
+            // This is stupid, but necessary because the frame won't be redrawn
+            // until the event handler ends.
+            Timer timer = new Timer(10, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+
+                    // Action to be performed after 10 ms
+                    System.out.println("Timer fired after 10 ms");
+
+                    Robot robot = new Robot();
+                    Rectangle frameBounds = mainFrame.getBounds();
+                    Rectangle captureBounds = new Rectangle(frameBounds.x + 10, frameBounds.y + 40, frameBounds.width - 18, frameBounds.height - 55);
+                    BufferedImage screenshot = robot.createScreenCapture(captureBounds);
+
+                    Transferable transferable = new TransferableImage(screenshot);
+
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(transferable, null);
+
+                    // Restore guess controls
+                    mainPanel.remove(placeholderLabel);
+                    mainPanel.add(tbGuess);
+                    mainPanel.add(btnGuess);
+
+                    mainPanel.repaint();
+                    mainFrame.repaint();
+
+                    // Restore frame size
+                    mainFrame.setSize(temp, mainFrame.getHeight());
+
+                    JOptionPane.showMessageDialog(mainFrame, "Puzzle image copied to clipboard.");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    ((Timer) e.getSource()).stop();
+                }
+            });
+
+            // Start the timer
+            timer.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private void hintButtonClick(ActionEvent e){
         showMessage(guiController.hint());
     }
@@ -478,26 +582,26 @@ public class GuiView extends View {
 
     /**
      * Displays a dialog box with the given message and an information icon.
-     * 
+     *
      * @param message The message to show in the dialog.
      */
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(
-            mainFrame, 
+            mainFrame,
             message,
             "",
             JOptionPane.INFORMATION_MESSAGE
-        );        
+        );
     }
 
     /**
      * Displays a dialog box with the given message and an error icon.
-     * 
+     *
      * @param errorMessage The message to show in the dialog.
      */
     private void showErrorDialog(String errorMessage) {
         JOptionPane.showMessageDialog(
-            mainFrame, 
+            mainFrame,
             errorMessage,
             "Error",
             JOptionPane.ERROR_MESSAGE
@@ -509,14 +613,14 @@ public class GuiView extends View {
 
     /**
      * Creates a new button and adds it to the given panel.
-     * 
+     *
      * @param text The text that should be on the button.
      * @param x The X coordinate of the button.
      * @param y The Y coordinate of the button.
      * @param buttonWidth How wide the button should be.
      * @param buttonHeight How tall the button should be.
      * @param panel The panel to add the button to.
-     * 
+     *
      * @return The newly created button.
      */
     private JButton createButton(String text, int x, int y, int buttonWidth, int buttonHeight, JPanel panel) {
@@ -616,7 +720,7 @@ public class GuiView extends View {
             // Do this comparison up here so the code is easier to read
             boolean sufficientPoints = allRanks[i].getRequiredPoints(totalPoints) <= earnedPoints;
 
-            ImageIcon icon = new ImageIcon(EMPTY_RANK_MID);                
+            ImageIcon icon = new ImageIcon(EMPTY_RANK_MID);
             if (sufficientPoints) {
                     icon = new ImageIcon(FULL_RANK_MID);
             }
@@ -644,7 +748,7 @@ public class GuiView extends View {
 
     /**
      * Fills the found word box with all found words from the puzzle's
-     * found words list. 
+     * found words list.
      */
     private void drawFoundWords() {
         foundWordsArea.setText("");
