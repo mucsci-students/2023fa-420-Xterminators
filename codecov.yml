@@ -1,4 +1,8 @@
 component_management:
+  default_rules:
+    status:
+      project: off
+      patch: off
   individual_components:
     - component_id: package_model
       name: model
