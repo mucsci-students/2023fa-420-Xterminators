@@ -4,7 +4,7 @@ component_management:
       name: model
       paths: 
         - app/src/main/java/xterminators/spellingbee/model/**
-      flags: no_decrease
       statuses:
         - type: project
           target: 100%
+        - type: patch
