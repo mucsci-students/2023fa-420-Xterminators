@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
@@ -412,10 +413,21 @@ public class GuiView extends View {
      */
     private void savePuzzleButtonClick(ActionEvent e) throws IOException{        
         try{
-            showMessage(guiController.savePuzzle());
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON Files", "json");
+            fileChooser.setFileFilter(filter);
+
+            int returnValue = fileChooser.showSaveDialog(mainFrame);
+
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                
+                showMessage(guiController.savePuzzle(selectedFile.getAbsolutePath()));
+            }
         }
-        // Catches I/O errors
-        catch ( IOException a){
+        catch (IOException a){
             showErrorDialog("The puzzle could not be saved due to an IO error.");
         }
     }

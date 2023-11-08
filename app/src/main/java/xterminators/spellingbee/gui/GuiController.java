@@ -128,7 +128,7 @@ public class GuiController extends Controller {
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle() throws IOException {
+    public String savePuzzle(String saveFilepath) throws IOException {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -139,15 +139,20 @@ public class GuiController extends Controller {
 
         //This will create a title for the Json file consisting
         // of the non-required letters followed by the required letter.
-        for (char c : puzzle.getSecondaryLetters()){
+        for (char c : puzzle.getSecondaryLetters()) {
             filename.append(c);
         }
 
-        filename.append(puzzle.getPrimaryLetter());
+        File saveLocation = null;
+        if (saveFilepath == null || saveFilepath.isEmpty()) {
+            filename.append(puzzle.getPrimaryLetter());
 
-        filename.append(".json");
+            filename.append(".json");
 
-        File saveLocation = new File(filename.toString());
+            saveLocation = new File(filename.toString());
+        } else {
+            saveLocation = new File(saveFilepath);
+        }
 
         puzzle.save(saveLocation);
 
