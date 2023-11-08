@@ -1,10 +1,8 @@
+coverage:
+  status:
+    project: off
+    patch: off
 component_management:
-  default_rules:
-    statuses:
-      - type: project
-        target: off
-      - type: patch
-        target: off
   individual_components:
     - component_id: package_model
       name: model
