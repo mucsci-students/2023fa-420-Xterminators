@@ -124,6 +124,21 @@ public class GuiController extends Controller {
         puzzle.shuffle();
     }
 
+    public String savePuzzle() throws IOException {
+        Puzzle puzzle = Puzzle.getInstance();
+        StringBuilder filename = new StringBuilder();
+
+        //This will create a title for the Json file consisting
+        // of the non-required letters followed by the required letter.
+        for (char c : puzzle.getSecondaryLetters()) {
+            filename.append(c);
+        }
+        filename.append(puzzle.getPrimaryLetter());
+        filename.append(".json");
+
+        return savePuzzle(filename.toString());
+    }
+
     /**
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
@@ -135,25 +150,7 @@ public class GuiController extends Controller {
             return "There is no puzzle in progress. Please try again.";
         }
 
-        StringBuilder filename = new StringBuilder();
-
-        //This will create a title for the Json file consisting
-        // of the non-required letters followed by the required letter.
-        for (char c : puzzle.getSecondaryLetters()) {
-            filename.append(c);
-        }
-
-        File saveLocation = null;
-        if (saveFilepath == null || saveFilepath.isEmpty()) {
-            filename.append(puzzle.getPrimaryLetter());
-
-            filename.append(".json");
-
-            saveLocation = new File(filename.toString());
-        } else {
-            saveLocation = new File(saveFilepath);
-        }
-
+        File saveLocation = new File(saveFilepath);
         puzzle.save(saveLocation);
 
         return "File created: " + saveLocation.getAbsolutePath();
