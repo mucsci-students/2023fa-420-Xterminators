@@ -439,11 +439,15 @@ public class GuiView extends View {
 
             if (userChoice == JOptionPane.YES_OPTION) {
                 createRandomPuzzle();
+                drawFoundWords();
+                redrawRank();
                 refocusGuessTextBox();
             }
             // No action on NO_OPTION
         } else {
             createRandomPuzzle();
+            drawFoundWords();
+            redrawRank();
             refocusGuessTextBox();
         }
     }
