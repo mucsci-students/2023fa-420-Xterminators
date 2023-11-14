@@ -1,14 +1,16 @@
 package xterminators.spellingbee.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class EncryptedPuzzleSave extends PuzzleSave {
     private List<byte[]> encryptedValidWords;
-
-    @Expose(serialize = false, deserialize = false)
-    private String password;
 
     /**
      * Creates a new EncryptedPuzzleSave.
@@ -21,18 +23,43 @@ public class EncryptedPuzzleSave extends PuzzleSave {
      * @param maxPoints the maximum points of the puzzle
      * @param password the password to encrypt the valid words with
      */
-    public EncryptedPuzzleSave(char[] baseWord, char requiredLetter, List<String> foundWords, int playerPoints, List<String> validWords, int maxPoints, String password) {
+    public EncryptedPuzzleSave(
+        char[] baseWord,
+        char requiredLetter,
+        List<String> foundWords,
+        int playerPoints,
+        List<String> validWords,
+        int maxPoints)
+    {
         super(baseWord, requiredLetter, foundWords, playerPoints, maxPoints);
-
-        this.password = password;
         
-        this.encryptedValidWords = encryptWords(validWords);
+        this.encryptedValidWords = new ArrayList<>();
+        encryptWords(validWords);
     }
 
     @Override
     public List<String> validWords() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Decryption not implemented");
+        byte[] key = "Xterminators\0\0\0\0".getBytes();
+        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+
+        byte[] iv = "InitializaVector".getBytes();
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+        List<String> validWords = new ArrayList<>();
+
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+
+            for (byte[] encryptedWord : encryptedValidWords) {
+                byte[] decryptedWord = cipher.doFinal(encryptedWord);
+                validWords.add(new String(decryptedWord));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return validWords;
     }
 
     /**
@@ -41,8 +68,23 @@ public class EncryptedPuzzleSave extends PuzzleSave {
      * @param words the list of words to encrypt
      * @return the encrypted list of words
      */
-    private List<byte[]> encryptWords(List<String> words) {
-        // TODO: Implement encryption
-        throw new UnsupportedOperationException("Encryption not implemented");
+    private void encryptWords(List<String> words) {
+        byte[] key = "Xterminators\0\0\0\0".getBytes();
+        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+
+        byte[] iv = "InitializaVector".getBytes();
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+
+            for (String word : words) {
+                byte[] encryptedWord = cipher.doFinal(word.getBytes());
+                encryptedValidWords.add(encryptedWord);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
