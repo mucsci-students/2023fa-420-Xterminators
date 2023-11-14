@@ -70,5 +70,5 @@ public abstract class PuzzleSave {
      *
      * @return the list of valid words of the save
      */
-    public abstract List<String> validWords();
+    public abstract List<String> validWords() throws Exception;
 }
