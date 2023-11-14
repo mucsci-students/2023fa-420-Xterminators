@@ -6,7 +6,7 @@ import java.util.List;
  * A PuzzleSave class for storing a puzzle with an unencrypted word list.
  */
 public class UnencryptedPuzzleSave extends PuzzleSave {
-    private List<String> validWords;
+    private List<String> wordList;
 
     /**
      * Constructs a new UnencryptedPuzzleSave.
@@ -27,11 +27,11 @@ public class UnencryptedPuzzleSave extends PuzzleSave {
         int maxPoints
     ) {
         super(baseWord, requiredLetter, foundWords, playerPoints, maxPoints);
-        this.validWords = validWords;
+        this.wordList = validWords;
     }
 
     @Override
     public List<String> validWords() {
-        return validWords;
+        return wordList;
     }
 }

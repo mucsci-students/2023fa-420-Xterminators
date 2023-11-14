@@ -11,6 +11,7 @@ public abstract class PuzzleSave {
     private List<String> foundWords;
     private int playerPoints;
     private int maxPoints;
+    private final String author = "Xterminators";
 
     public PuzzleSave(char[] baseWord, char requiredLetter, List<String> foundWords, int playerPoints, int maxPoints) {
         this.baseWord = baseWord;

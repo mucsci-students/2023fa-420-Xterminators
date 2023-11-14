@@ -17,7 +17,7 @@ public class EncryptedPuzzleSave extends PuzzleSave {
     private final static byte[] key = "Xterminators\0\0\0\0".getBytes();
     private final static byte[] iv = "InitializaVector".getBytes();
 
-    private List<byte[]> encryptedValidWords;
+    private List<byte[]> secretWordList;
 
     /**
      * Creates a new EncryptedPuzzleSave.
@@ -49,7 +49,7 @@ public class EncryptedPuzzleSave extends PuzzleSave {
     {
         super(baseWord, requiredLetter, foundWords, playerPoints, maxPoints);
         
-        this.encryptedValidWords = new ArrayList<>();
+        this.secretWordList = new ArrayList<>();
         encryptWords(validWords);
     }
 
@@ -67,7 +67,7 @@ public class EncryptedPuzzleSave extends PuzzleSave {
         Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
 
-        for (byte[] encryptedWord : encryptedValidWords) {
+        for (byte[] encryptedWord : secretWordList) {
             byte[] decryptedWord = cipher.doFinal(encryptedWord);
             validWords.add(new String(decryptedWord));
         }
@@ -100,7 +100,7 @@ public class EncryptedPuzzleSave extends PuzzleSave {
 
         for (String word : words) {
             byte[] encryptedWord = cipher.doFinal(word.getBytes());
-            encryptedValidWords.add(encryptedWord);
+            secretWordList.add(encryptedWord);
         }
     }
 }
