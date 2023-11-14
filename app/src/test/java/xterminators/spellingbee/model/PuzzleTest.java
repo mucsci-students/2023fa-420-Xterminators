@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -193,6 +194,55 @@ public class PuzzleTest {
             puzzle.getEarnedPoints(),
             "loadPuzzle should set the earned points correctly."
         );
+
+        File validData2 = new File(tempDir, "valid_data2.json");
+
+        try (FileWriter writer = new FileWriter(validData2)) {
+            writer.write("{\n");
+            writer.write("\t\"baseWord\": [\"g\", \"g\",\"u\",\"r\",\"d\",\"i\",\"n\",\"a\"],\n");
+            writer.write("\t\"requiredLetter\": \'a\',\n");
+            writer.write("\t\"foundWords\": [\"guard\",\"guardian\"],\n");
+            writer.write("\t\"playerPoints\": 20,\n");
+            writer.write("\t\"maxPoints\": 2243\n");
+            writer.write("}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Puzzle puzzle2 = assertDoesNotThrow(
+            () -> Puzzle.loadPuzzle(validData2, dictionaryFile),
+            "loadPuzzle should not throw an exception if the puzzle data is" +
+            " valid."
+        );
+
+        assertEquals(
+            'a',
+            puzzle2.getPrimaryLetter(),
+            "loadPuzzle should set the primary letter correctly."
+        );
+
+        char[] sortedSecondaryLetters2 = puzzle2.getSecondaryLetters();
+        Arrays.sort(sortedSecondaryLetters2);
+
+        char[] expectedSecondaryLetters2 = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
+
+        assertArrayEquals(
+            expectedSecondaryLetters2,
+            sortedSecondaryLetters2,
+            "loadPuzzle should set the secondary letters correctly."
+        );
+
+        assertEquals(
+            List.of("guard", "guardian"),
+            puzzle2.getFoundWords(),
+            "loadPuzzle should set the found words correctly."
+        );
+
+        assertEquals(
+            20,
+            puzzle2.getEarnedPoints(),
+            "loadPuzzle should set the earned points correctly."
+        );
     }
 
     @Test
@@ -258,6 +308,61 @@ public class PuzzleTest {
             0,
             puzzle.guess(word),
             "Puzzle guess should return 0 if the word is not in the dictionary."
+        );
+    }
+
+    @Test
+    public void testGetHelpData() {
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        HelpData helpData = puzzle.getHelpData();
+
+        assertNotNull(
+            helpData,
+            "Puzzle getHelpData should return a non-null HelpData object."
+        );
+
+        assertTrue(
+            helpData.numWords() >= 0,
+            "HelpData numWords should be non-negative."
+        );
+
+        assertTrue(
+            helpData.numPangrams() >= 0,
+            "HelpData numPangrams should be non-negative."
+        );
+
+        assertTrue(
+            helpData.numPerfectPangrams() >= 0,
+            "HelpData numPerfectPangrams should be non-negative."
+        );
+
+        assertNotNull(
+            helpData.startingLetterGrid(),
+            "HelpData startingLetterGrid should be non-null."
+        );
+
+        assertFalse(
+            helpData.startingLetterGrid().isEmpty(),
+            "HelpData startingLetterGrid should not be empty."
+        );
+
+        assertNotNull(
+            helpData.startingLetterPairs(),
+            "HelpData startingLetterPairs should be non-null."
+        );
+
+        assertFalse(
+            helpData.startingLetterPairs().isEmpty(),
+            "HelpData startingLetterPairs should not be empty."
         );
     }
 }
