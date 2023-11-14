@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -258,6 +259,61 @@ public class PuzzleTest {
             0,
             puzzle.guess(word),
             "Puzzle guess should return 0 if the word is not in the dictionary."
+        );
+    }
+
+    @Test
+    public void testGetHelpData() {
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        HelpData helpData = puzzle.getHelpData();
+
+        assertNotNull(
+            helpData,
+            "Puzzle getHelpData should return a non-null HelpData object."
+        );
+
+        assertTrue(
+            helpData.numWords() >= 0,
+            "HelpData numWords should be non-negative."
+        );
+
+        assertTrue(
+            helpData.numPangrams() >= 0,
+            "HelpData numPangrams should be non-negative."
+        );
+
+        assertTrue(
+            helpData.numPerfectPangrams() >= 0,
+            "HelpData numPerfectPangrams should be non-negative."
+        );
+
+        assertNotNull(
+            helpData.startingLetterGrid(),
+            "HelpData startingLetterGrid should be non-null."
+        );
+
+        assertFalse(
+            helpData.startingLetterGrid().isEmpty(),
+            "HelpData startingLetterGrid should not be empty."
+        );
+
+        assertNotNull(
+            helpData.startingLetterPairs(),
+            "HelpData startingLetterPairs should be non-null."
+        );
+
+        assertFalse(
+            helpData.startingLetterPairs().isEmpty(),
+            "HelpData startingLetterPairs should not be empty."
         );
     }
 }
