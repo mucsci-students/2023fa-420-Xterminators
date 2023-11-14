@@ -14,43 +14,55 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class EncryptedPuzzleSave extends PuzzleSave {
-    private final static byte[] key = "Xterminators\0\0\0\0".getBytes();
-    private final static byte[] iv = "InitializaVector".getBytes();
+    private final byte[] key;
+    private final byte[] iv;
 
     private List<byte[]> secretWordList;
 
-    /**
-     * Creates a new EncryptedPuzzleSave.
-     * 
-     * @param baseWord an array containing all the letters of the puzzle
-     * @param requiredLetter the required letter of the puzzle
-     * @param foundWords the player's found words
-     * @param playerPoints the player's earned points
-     * @param validWords the list of valid words
-     * @param maxPoints the maximum points of the puzzle
-     * @param password the password to encrypt the valid words with
-     * @throws BadPaddingException
-     * @throws IllegalBlockSizeException
-     * @throws InvalidAlgorithmParameterException
-     * @throws NoSuchPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
-     */
-    public EncryptedPuzzleSave(
+    public static EncryptedPuzzleSave fromKeyIV(
         char[] baseWord,
         char requiredLetter,
         List<String> foundWords,
         int playerPoints,
         List<String> validWords,
-        int maxPoints
-    ) throws InvalidKeyException, NoSuchAlgorithmException,
-        NoSuchPaddingException, InvalidAlgorithmParameterException,
-        IllegalBlockSizeException, BadPaddingException
+        int maxPoints,
+        byte[] key,
+        byte[] iv)
     {
-        super(baseWord, requiredLetter, foundWords, playerPoints, maxPoints);
-        
-        this.secretWordList = new ArrayList<>();
-        encryptWords(validWords);
+        try {
+            return new EncryptedPuzzleSave(
+                baseWord,
+                requiredLetter,
+                foundWords,
+                playerPoints,
+                validWords,
+                maxPoints,
+                key,
+                iv
+            );
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static EncryptedPuzzleSave fromDefaults(
+        char[] baseWord,
+        char requiredLetter,
+        List<String> foundWords,
+        int playerPoints,
+        List<String> validWords,
+        int maxPoints)
+    {
+        return fromKeyIV(
+            baseWord,
+            requiredLetter,
+            foundWords,
+            playerPoints,
+            validWords,
+            maxPoints,
+            "Xterminators\0\0\0\0".getBytes(),
+            "InitializaVector".getBytes()
+        );
     }
 
     @Override
@@ -102,5 +114,25 @@ public class EncryptedPuzzleSave extends PuzzleSave {
             byte[] encryptedWord = cipher.doFinal(word.getBytes());
             secretWordList.add(encryptedWord);
         }
+    }
+
+    private EncryptedPuzzleSave(
+        char[] baseWord,
+        char requiredLetter,
+        List<String> foundWords,
+        int playerPoints,
+        List<String> validWords,
+        int maxPoints,
+        byte[] key,
+        byte[] iv
+    ) throws NoSuchAlgorithmException, NoSuchPaddingException,
+        InvalidKeyException, InvalidAlgorithmParameterException,
+        IllegalBlockSizeException, BadPaddingException
+    {
+        super(baseWord, requiredLetter, foundWords, playerPoints, maxPoints);
+        this.key = key;
+        this.iv = iv;
+        this.secretWordList = new ArrayList<>();
+        encryptWords(validWords);
     }
 }

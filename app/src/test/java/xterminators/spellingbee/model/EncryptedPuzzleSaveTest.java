@@ -3,6 +3,9 @@ package xterminators.spellingbee.model;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -15,16 +18,18 @@ public class EncryptedPuzzleSaveTest {
 
     @BeforeEach
     public void setUp() {
-        puzzleSave = assertDoesNotThrow(
-            () -> new EncryptedPuzzleSave(
-                new char[] {'g', 'u', 'a', 'r', 'd', 'i', 'n'},
-                'a',
-                List.of("guard","guardian"),
-                20,
-                List.of("guard","guardian","raid","rain","raining"),
-                29
-            ),
-            "EncryptedPuzzleSave constructor should not throw an exception"
+        puzzleSave = EncryptedPuzzleSave.fromDefaults(
+            new char[] {'g', 'u', 'a', 'r', 'd', 'i', 'n'},
+            'a',
+            List.of("guard","guardian"),
+            20,
+            List.of("guard","guardian","raid","rain","raining"),
+            29
+        );
+
+        assertNotNull(
+            puzzleSave,
+            "EncryptedPuzzleSave.fromDefaults() should not return null"
         );
     }
 
@@ -104,6 +109,27 @@ public class EncryptedPuzzleSaveTest {
             maxPoints,
             "EncryptedPuzzleSave.maxPoints() should return the correct max"
             + "points"
+        );
+    }
+
+    @Test
+    public void testBadKeyIVThrows() {
+        byte[] badKey = "badKey".getBytes();
+        byte[] badIV = "badIV".getBytes();
+
+        assertNull(
+            EncryptedPuzzleSave.fromKeyIV(
+                new char[] {'g', 'u', 'a', 'r', 'd', 'i', 'n'},
+                'a',
+                List.of("guard","guardian"),
+                20,
+                List.of("guard","guardian","raid","rain","raining"),
+                29,
+                badKey,
+                badIV
+            ),
+            "EncryptedPuzzleSave.fromKeyIV() should return null if the key and"
+            + "IV are invalid"
         );
     }
 }
