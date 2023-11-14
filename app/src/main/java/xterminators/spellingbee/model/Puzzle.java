@@ -1,9 +1,7 @@
 package xterminators.spellingbee.model;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,7 +55,7 @@ public class Puzzle {
     /**
      * A record for containing all the data in a JSON save of a puzzle.
      */
-    protected record PuzzleData(
+    private record PuzzleData(
         char[] baseWord,
         char requiredLetter,
         List<String> foundWords,
@@ -111,7 +109,7 @@ public class Puzzle {
      * @throws IllegalArgumentException if the puzzle data represents an invalid
      *                                  puzzle
      */
-    protected Puzzle(PuzzleData puzzleData, File dictionaryFile)
+    private Puzzle(PuzzleData puzzleData, File dictionaryFile)
         throws FileNotFoundException, IOException, IllegalArgumentException
     {
         this.primaryLetter = puzzleData.requiredLetter();
@@ -309,7 +307,7 @@ public class Puzzle {
      *          the number of points earned if the word is a valid guess
      */
     public int guess(String word) {
-        if (!isValid(word)) {
+        if (!isValid(word) || !validWords.contains(word)) {
             return 0;
         }
 
@@ -418,14 +416,14 @@ public class Puzzle {
      * @return true if the word is a pangram, false otherwise
      */
     private boolean isPangram(String word) {
+        if (word.indexOf(primaryLetter) == -1) {
+            return false;
+        }
+
         for (char c : secondaryLetters) {
             if (word.indexOf(c) == -1) {
                 return false;
             }
-        }
-
-        if (word.indexOf(primaryLetter) == -1) {
-            return false;
         }
         
         return true;
