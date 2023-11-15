@@ -11,4 +11,5 @@ component_management:
       statuses:
         - type: project
           target: 100%
-        - type: patch
+        - type: project
+          target: auto
