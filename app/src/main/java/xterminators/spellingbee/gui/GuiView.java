@@ -472,7 +472,7 @@ public class GuiView extends View {
                 File selectedFile = fileChooser.getSelectedFile();
                 
                 int result = JOptionPane.showConfirmDialog(
-                    null,
+                    mainFrame,
                     "Do you want to save the word list in an encrypted format?",
                     "Save Encrypted?",
                     JOptionPane.YES_NO_OPTION
