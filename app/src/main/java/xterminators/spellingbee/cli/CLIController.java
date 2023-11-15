@@ -19,6 +19,7 @@ import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
 import xterminators.spellingbee.ui.Controller;
 
 /**
@@ -530,7 +531,7 @@ public class CLIController extends Controller {
         File saveLocation = new File(filePath);
 
         try {
-            puzzle.save(saveLocation);
+            puzzle.save(saveLocation, SaveMode.ENCRYPTED);
         } catch(IOException e) {
             view.showErrorMessage(
                 "The file at " + saveLocation.getAbsolutePath() + " could not " +

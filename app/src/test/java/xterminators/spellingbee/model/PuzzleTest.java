@@ -8,12 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +25,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 public class PuzzleTest {
@@ -39,7 +44,7 @@ public class PuzzleTest {
 
         assertThrows(
             FileNotFoundException.class,
-            () -> Puzzle.loadPuzzle(tempDir, emptyFile),
+            () -> Puzzle.loadPuzzle(emptyFile, dictionaryFile),
             "loadPuzzle should throw an exception if the puzzle file is empty."
         );
     }
@@ -145,17 +150,26 @@ public class PuzzleTest {
     }
 
     @Test
-    public void testLoadPuzzle_ValidData(@TempDir File tempDir) {
+    public void testLoadPuzzle_ValidEncryptedData(@TempDir File tempDir) {
         File validData = new File(tempDir, "valid_data.json");
 
-        try (FileWriter writer = new FileWriter(validData)) {
-            writer.write("{\n");
-            writer.write("\t\"baseWord\": [\"g\",\"u\",\"r\",\"d\",\"i\",\"n\",\"a\"],\n");
-            writer.write("\t\"requiredLetter\": \'a\',\n");
-            writer.write("\t\"foundWords\": [\"guard\",\"guardian\"],\n");
-            writer.write("\t\"playerPoints\": 20,\n");
-            writer.write("\t\"maxPoints\": 2243\n");
-            writer.write("}");
+        try(BufferedWriter writer = Files.newBufferedWriter(
+                validData.toPath(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        ))
+        {
+            PuzzleSave save = EncryptedPuzzleSave.fromDefaults(
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+                'a',
+                List.of("guard", "guardian"),
+                20,
+                List.of("guard", "guardian", "rain", "raining"),
+                2243
+            );
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(save, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -197,14 +211,142 @@ public class PuzzleTest {
 
         File validData2 = new File(tempDir, "valid_data2.json");
 
-        try (FileWriter writer = new FileWriter(validData2)) {
-            writer.write("{\n");
-            writer.write("\t\"baseWord\": [\"g\", \"g\",\"u\",\"r\",\"d\",\"i\",\"n\",\"a\"],\n");
-            writer.write("\t\"requiredLetter\": \'a\',\n");
-            writer.write("\t\"foundWords\": [\"guard\",\"guardian\"],\n");
-            writer.write("\t\"playerPoints\": 20,\n");
-            writer.write("\t\"maxPoints\": 2243\n");
-            writer.write("}");
+        try(BufferedWriter writer = Files.newBufferedWriter(
+                validData2.toPath(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        ))
+        {
+            PuzzleSave save = EncryptedPuzzleSave.fromDefaults(
+                new char[] {'g', 'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+                'a',
+                List.of("guard", "guardian"),
+                20,
+                List.of("guard", "guardian", "rain", "raining"),
+                2243
+            );
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(save, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Puzzle puzzle2 = assertDoesNotThrow(
+            () -> Puzzle.loadPuzzle(validData2, dictionaryFile),
+            "loadPuzzle should not throw an exception if the puzzle data is" +
+            " valid."
+        );
+
+        assertEquals(
+            'a',
+            puzzle2.getPrimaryLetter(),
+            "loadPuzzle should set the primary letter correctly."
+        );
+
+        char[] sortedSecondaryLetters2 = puzzle2.getSecondaryLetters();
+        Arrays.sort(sortedSecondaryLetters2);
+
+        char[] expectedSecondaryLetters2 = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
+
+        assertArrayEquals(
+            expectedSecondaryLetters2,
+            sortedSecondaryLetters2,
+            "loadPuzzle should set the secondary letters correctly."
+        );
+
+        assertEquals(
+            List.of("guard", "guardian"),
+            puzzle2.getFoundWords(),
+            "loadPuzzle should set the found words correctly."
+        );
+
+        assertEquals(
+            20,
+            puzzle2.getEarnedPoints(),
+            "loadPuzzle should set the earned points correctly."
+        );
+    }
+
+    @Test
+    public void testLoadPuzzle_ValidUnencryptedData(@TempDir File tempDir) {
+        File validData = new File(tempDir, "valid_data.json");
+
+        try(BufferedWriter writer = Files.newBufferedWriter(
+                validData.toPath(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        ))
+        {
+            PuzzleSave save = new UnencryptedPuzzleSave(
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+                'a',
+                List.of("guard", "guardian"),
+                20,
+                List.of("guard", "guardian", "rain", "raining"),
+                2243
+            );
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(save, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> Puzzle.loadPuzzle(validData, dictionaryFile),
+            "loadPuzzle should not throw an exception if the puzzle data is" +
+            " valid."
+        );
+
+        assertEquals(
+            'a',
+            puzzle.getPrimaryLetter(),
+            "loadPuzzle should set the primary letter correctly."
+        );
+
+        char[] sortedSecondaryLetters = puzzle.getSecondaryLetters();
+        Arrays.sort(sortedSecondaryLetters);
+
+        char[] expectedSecondaryLetters = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
+
+        assertArrayEquals(
+            expectedSecondaryLetters,
+            sortedSecondaryLetters,
+            "loadPuzzle should set the secondary letters correctly."
+        );
+
+        assertEquals(
+            List.of("guard", "guardian"),
+            puzzle.getFoundWords(),
+            "loadPuzzle should set the found words correctly."
+        );
+
+        assertEquals(
+            20,
+            puzzle.getEarnedPoints(),
+            "loadPuzzle should set the earned points correctly."
+        );
+
+        File validData2 = new File(tempDir, "valid_data2.json");
+
+        try(BufferedWriter writer = Files.newBufferedWriter(
+                validData2.toPath(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        ))
+        {
+            PuzzleSave save = new UnencryptedPuzzleSave(
+                new char[] {'g', 'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+                'a',
+                List.of("guard", "guardian"),
+                20,
+                List.of("guard", "guardian", "rain", "raining"),
+                2243
+            );
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(save, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }

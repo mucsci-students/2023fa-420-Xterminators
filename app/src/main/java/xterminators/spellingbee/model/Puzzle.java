@@ -1,10 +1,15 @@
 package xterminators.spellingbee.model;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +25,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -82,40 +88,52 @@ public class Puzzle {
         throws FileNotFoundException, IOException, JsonSyntaxException,
                IllegalArgumentException
     {
-        Scanner reader = new Scanner(savedPuzzle);
-
-        StringBuilder json = new StringBuilder();
-
-        while(reader.hasNextLine()) {
-            json.append(reader.nextLine());
+        if (!savedPuzzle.exists()) {
+            throw new FileNotFoundException(
+                "The save file does not exist"
+            );
         }
 
-        reader.close();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        PuzzleSave save = null;
 
-        Gson gson = new Gson();
+        for (Class<?> saveType : PuzzleSave.class.getPermittedSubclasses()) {
+            try(BufferedReader reader
+                    = Files.newBufferedReader(savedPuzzle.toPath())
+            )
+            {
+                save = (PuzzleSave) gson.fromJson(reader, saveType);
+                break;
+            } catch (JsonSyntaxException e) {
+                // If the save file is not of this type, try the next type
+                continue;
+            }
+        }
 
-        PuzzleData saveData = gson.fromJson(json.toString(), PuzzleData.class);
+        if (save == null) {
+            throw new JsonSyntaxException("Invalid save file format");
+        }
 
-        return new Puzzle(saveData, dictionaryFile);
+        return new Puzzle(save, dictionaryFile);
     }
 
     /**
      * Constructs a Puzzle object from the given puzzle data.
      * 
-     * @param puzzleData the puzzle data to construct into a Puzzle
+     * @param save the puzzle data to construct into a Puzzle
      * @param dictionaryFile the dictionary of words to parse
      * @throws FileNotFoundException if the dictionary file is not found
      * @throws IOException
      * @throws IllegalArgumentException if the puzzle data represents an invalid
      *                                  puzzle
      */
-    private Puzzle(PuzzleData puzzleData, File dictionaryFile)
+    private Puzzle(PuzzleSave save, File dictionaryFile)
         throws FileNotFoundException, IOException, IllegalArgumentException
     {
-        this.primaryLetter = puzzleData.requiredLetter();
+        this.primaryLetter = save.requiredLetter();
 
         List<Character> otherLetters = new ArrayList<>();
-        for (char c : puzzleData.baseWord()) {
+        for (char c : save.baseWord()) {
             if (c != primaryLetter && !otherLetters.contains(c)) {
                 otherLetters.add(Character.valueOf(c));
             }
@@ -138,22 +156,19 @@ public class Puzzle {
             this.secondaryLetters[i] = otherLetters.get(i);
         }
 
-        try(Stream<String> words = Files.lines(dictionaryFile.toPath())) {
-            this.validWords = words
-                .parallel()
-                .filter(this::isValid)
-                .toList();
+        try {
+            this.validWords = save.validWords();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                "Could not get valid words from save file."
+            );
         }
 
-        this.totalPoints = validWords.parallelStream()
-            .mapToInt(this::wordValue)
-            .sum();
+        this.totalPoints = save.maxPoints();
         
-        this.foundWords = new ArrayList<>(puzzleData.foundWords());
+        this.foundWords = save.foundWords();
 
-        this.earnedPoints = this.foundWords.parallelStream()
-            .mapToInt(this::wordValue)
-            .sum();
+        this.earnedPoints = save.playerPoints();
 
         instance = this;
         
@@ -210,28 +225,40 @@ public class Puzzle {
      * 
      * @param saveLocation the file at which to save the puzzle
      */
-    public void save(File saveLocation) throws IOException {
+    public void save(File saveLocation, SaveMode saveMode) throws IOException {
         char[] baseWord
             = Arrays.copyOf(secondaryLetters, secondaryLetters.length + 1);
         
         baseWord[secondaryLetters.length] = primaryLetter;
 
-        PuzzleData saveData = new PuzzleData(
-            baseWord,
-            primaryLetter,
-            foundWords,
-            earnedPoints,
-            totalPoints
-        );
+        PuzzleSave save = switch(saveMode) {
+            case ENCRYPTED -> EncryptedPuzzleSave.fromDefaults(
+                baseWord,
+                primaryLetter,
+                foundWords,
+                earnedPoints,
+                validWords,
+                totalPoints
+            );
+            case UNENCRYPTED -> new UnencryptedPuzzleSave(
+                baseWord,
+                primaryLetter,
+                foundWords,
+                earnedPoints,
+                validWords,
+                totalPoints
+            );
+        };
 
-        Gson gson = new Gson();
-        String json = gson.toJson(saveData);
-
-        FileWriter writer = new FileWriter(saveLocation);
-
-        writer.write(json);
-
-        writer.close();
+        try(BufferedWriter writer = Files.newBufferedWriter(
+                saveLocation.toPath(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        ))
+        {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(save, writer);
+        }
     }
 
     /**

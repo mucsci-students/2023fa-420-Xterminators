@@ -13,6 +13,7 @@ import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
 import xterminators.spellingbee.ui.Controller;
 
 public class GuiController extends Controller {
@@ -151,7 +152,7 @@ public class GuiController extends Controller {
         }
 
         File saveLocation = new File(saveFilepath);
-        puzzle.save(saveLocation);
+        puzzle.save(saveLocation, SaveMode.ENCRYPTED);
 
         return "File created: " + saveLocation.getAbsolutePath();
     }
