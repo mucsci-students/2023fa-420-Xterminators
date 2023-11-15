@@ -137,14 +137,14 @@ public class GuiController extends Controller {
         filename.append(puzzle.getPrimaryLetter());
         filename.append(".json");
 
-        return savePuzzle(filename.toString());
+        return savePuzzle(filename.toString(), SaveMode.ENCRYPTED);
     }
 
     /**
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle(String saveFilepath) throws IOException {
+    public String savePuzzle(String saveFilepath, SaveMode saveMode) throws IOException {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -152,7 +152,7 @@ public class GuiController extends Controller {
         }
 
         File saveLocation = new File(saveFilepath);
-        puzzle.save(saveLocation, SaveMode.ENCRYPTED);
+        puzzle.save(saveLocation, saveMode);
 
         return "File created: " + saveLocation.getAbsolutePath();
     }

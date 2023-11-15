@@ -41,6 +41,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
 import xterminators.spellingbee.ui.View;
 
 
@@ -466,11 +467,27 @@ public class GuiView extends View {
             fileChooser.setFileFilter(filter);
 
             int returnValue = fileChooser.showSaveDialog(mainFrame);
-
+ 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 
-                showMessage(guiController.savePuzzle(selectedFile.getAbsolutePath()));
+                int result = JOptionPane.showConfirmDialog(
+                    null,
+                    "Do you want to save the word list in an encrypted format?",
+                    "Save Encrypted?",
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                String saveResult;
+                if (result == JOptionPane.YES_OPTION) {
+                    saveResult = 
+                        guiController.savePuzzle(selectedFile.getAbsolutePath(), SaveMode.ENCRYPTED);
+                } else {
+                    saveResult = 
+                        guiController.savePuzzle(selectedFile.getAbsolutePath(), SaveMode.UNENCRYPTED);
+                }
+                
+                showMessage(saveResult);
             }
         }
         catch (IOException a){
