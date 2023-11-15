@@ -13,7 +13,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class EncryptedPuzzleSave extends PuzzleSave {
+public final class EncryptedPuzzleSave extends PuzzleSave {
     private final byte[] key;
     private final byte[] iv;
 

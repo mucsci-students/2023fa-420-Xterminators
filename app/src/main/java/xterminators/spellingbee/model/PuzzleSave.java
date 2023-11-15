@@ -5,7 +5,9 @@ import java.util.List;
 /**
  * A PuzzleSave represents the state of a puzzle that can be saved and loaded.
  */
-public abstract class PuzzleSave {
+sealed public abstract class PuzzleSave 
+    permits EncryptedPuzzleSave, UnencryptedPuzzleSave
+{
     private char[] baseWord;
     private char requiredLetter;
     private List<String> foundWords;

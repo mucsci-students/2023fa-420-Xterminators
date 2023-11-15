@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * A PuzzleSave class for storing a puzzle with an unencrypted word list.
  */
-public class UnencryptedPuzzleSave extends PuzzleSave {
+public final class UnencryptedPuzzleSave extends PuzzleSave {
     private List<String> wordList;
 
     /**
