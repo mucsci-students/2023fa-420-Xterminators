@@ -21,8 +21,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -219,14 +221,17 @@ public class Puzzle {
      * 
      * @param saveLocation the file at which to save the puzzle
      */
-    public void save(File saveLocation, SaveMode saveMode) throws IOException {
+    public void save(File saveLocation, SaveMode saveMode) 
+        throws IOException, IllegalArgumentException
+    {
         char[] baseWord
             = Arrays.copyOf(secondaryLetters, secondaryLetters.length + 1);
         
         baseWord[secondaryLetters.length] = primaryLetter;
 
-        PuzzleSave save = switch(saveMode) {
-            case ENCRYPTED -> EncryptedPuzzleSave.fromDefaults(
+        PuzzleSave save = null;
+        if (saveMode == SaveMode.UNENCRYPTED) {
+            save = new UnencryptedPuzzleSave(
                 baseWord,
                 primaryLetter,
                 foundWords,
@@ -234,7 +239,8 @@ public class Puzzle {
                 validWords,
                 totalPoints
             );
-            case UNENCRYPTED -> new UnencryptedPuzzleSave(
+        } else if (saveMode == SaveMode.ENCRYPTED) {
+            save = EncryptedPuzzleSave.fromDefaults(
                 baseWord,
                 primaryLetter,
                 foundWords,
@@ -242,7 +248,11 @@ public class Puzzle {
                 validWords,
                 totalPoints
             );
-        };
+        } else {
+            throw new IllegalArgumentException(
+                "saveMode must not be null"
+            );
+        }
 
         try(BufferedWriter writer = Files.newBufferedWriter(
                 saveLocation.toPath(),

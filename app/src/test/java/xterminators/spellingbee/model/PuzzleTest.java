@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -505,6 +506,177 @@ public class PuzzleTest {
         assertFalse(
             helpData.startingLetterPairs().isEmpty(),
             "HelpData startingLetterPairs should not be empty."
+        );
+    }
+
+    @Test
+    public void testSave_NullMode(@TempDir File tempDir) {
+        File saveFile = new File(tempDir, "save.json");
+
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> puzzle.save(saveFile, null),
+            "Puzzle save should throw an exception if the mode is null."
+        );
+    }
+
+    @Test
+    public void testSave_UnencryptedMode(@TempDir File tempDir) {
+        File saveFile = new File(tempDir, "save.json");
+
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        assertDoesNotThrow(
+            () -> puzzle.save(saveFile, SaveMode.UNENCRYPTED),
+            "Puzzle save should not throw an exception if the mode is" +
+            " UNENCRYPTED."
+        );
+
+        assertTrue(
+            saveFile.exists(),
+            "Puzzle save should create a file if the mode is UNENCRYPTED."
+        );
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        PuzzleSave save = assertDoesNotThrow(
+            () -> {
+                try (BufferedReader reader = Files.newBufferedReader(
+                        saveFile.toPath()
+                )) {
+                    return gson.fromJson(reader, UnencryptedPuzzleSave.class);
+                } catch (IOException e) {
+                    return null;
+                }
+            },
+            "Puzzle save should create a valid JSON file if the mode is" +
+            " UNENCRYPTED."
+        );
+
+        assertNotNull(
+            save,
+            "Puzzle save should create a valid JSON file if the mode is" +
+            " UNENCRYPTED."
+        );
+
+        assertEquals(
+            'a',
+            save.requiredLetter(),
+            "Puzzle save should save the required letter correctly if the" +
+            " mode is UNENCRYPTED."
+        );
+
+        assertArrayEquals(
+            new char[] {'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+            save.baseWord(),
+            "Puzzle save should save the base word correctly if the mode is" +
+            " UNENCRYPTED."
+        );
+
+        assertEquals(
+            List.of(),
+            save.foundWords(),
+            "Puzzle save should save the found words correctly if the mode is" +
+            " UNENCRYPTED."
+        );
+
+        assertEquals(
+            0,
+            save.playerPoints(),
+            "Puzzle save should save the player points correctly if the mode" +
+            " is UNENCRYPTED."
+        );
+    }
+
+    @Test
+    public void testSave_EncryptedMode(@TempDir File tempDir) {
+        File saveFile = new File(tempDir, "save.json");
+
+        Puzzle puzzle = assertDoesNotThrow(
+            () -> new Puzzle(
+                'a',
+                new char[] {'g', 'u', 'r', 'd', 'i', 'n'},
+                dictionaryFile
+            ),
+            "Puzzle constructor should not throw an exception if the puzzle" +
+            " data is valid."
+        );
+
+        assertDoesNotThrow(
+            () -> puzzle.save(saveFile, SaveMode.ENCRYPTED),
+            "Puzzle save should not throw an exception if the mode is" +
+            " ENCRYPTED."
+        );
+
+        assertTrue(
+            saveFile.exists(),
+            "Puzzle save should create a file if the mode is ENCRYPTED."
+        );
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        PuzzleSave save = assertDoesNotThrow(
+            () -> {
+                try (BufferedReader reader = Files.newBufferedReader(
+                        saveFile.toPath()
+                )) {
+                    return gson.fromJson(reader, EncryptedPuzzleSave.class);
+                } catch (IOException e) {
+                    return null;
+                }
+            },
+            "Puzzle save should create a valid JSON file if the mode is" +
+            " ENCRYPTED."
+        );
+
+        assertNotNull(
+            save,
+            "Puzzle save should create a valid JSON file if the mode is" +
+            " ENCRYPTED."
+        );
+
+        assertEquals(
+            'a',
+            save.requiredLetter(),
+            "Puzzle save should save the required letter correctly if the" +
+            " mode is ENCRYPTED."
+        );
+
+        assertArrayEquals(
+            new char[] {'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+            save.baseWord(),
+            "Puzzle save should save the base word correctly if the mode is" +
+            " ENCRYPTED."
+        );
+
+        assertEquals(
+            List.of(),
+            save.foundWords(),
+            "Puzzle save should save the found words correctly if the mode is" +
+            " ENCRYPTED."
+        );
+
+        assertEquals(
+            0,
+            save.playerPoints(),
+            "Puzzle save should save the player points correctly if the mode" +
+            " is ENCRYPTED."
         );
     }
 }
