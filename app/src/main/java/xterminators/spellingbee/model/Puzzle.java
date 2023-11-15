@@ -94,24 +94,29 @@ public class Puzzle {
             );
         }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        PuzzleSave save = null;
-
-        for (Class<?> saveType : PuzzleSave.class.getPermittedSubclasses()) {
-            try(BufferedReader reader
-                    = Files.newBufferedReader(savedPuzzle.toPath())
-            )
-            {
-                save = (PuzzleSave) gson.fromJson(reader, saveType);
-                break;
-            } catch (JsonSyntaxException e) {
-                // If the save file is not of this type, try the next type
-                continue;
-            }
+        boolean isEncrypted = false;
+        try (Stream<String> lines = Files.lines(savedPuzzle.toPath())) {
+            isEncrypted = lines
+                .parallel()
+                .anyMatch(s -> s.contains("secretWordList"));
         }
 
-        if (save == null) {
-            throw new JsonSyntaxException("Invalid save file format");
+        PuzzleSave save = null;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        if (isEncrypted) {
+            try (BufferedReader reader = Files.newBufferedReader(
+                    savedPuzzle.toPath()
+            ))
+            {
+                save = gson.fromJson(reader, EncryptedPuzzleSave.class);
+            }
+        } else {
+            try (BufferedReader reader = Files.newBufferedReader(
+                    savedPuzzle.toPath()
+            ))
+            {
+                save = gson.fromJson(reader, UnencryptedPuzzleSave.class);
+            }
         }
 
         return new Puzzle(save, dictionaryFile);
