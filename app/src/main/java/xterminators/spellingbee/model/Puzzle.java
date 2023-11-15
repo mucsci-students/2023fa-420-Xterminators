@@ -59,17 +59,6 @@ public class Puzzle {
     private HelpData helpData;
 
     /**
-     * A record for containing all the data in a JSON save of a puzzle.
-     */
-    private record PuzzleData(
-        char[] baseWord,
-        char requiredLetter,
-        List<String> foundWords,
-        int playerPoints,
-        int maxPoints
-    ) {}
-
-    /**
      * Loads a saved puzzle json into a Puzzle object.
      * 
      * @param savedPuzzle the file where a puzzle is saved
