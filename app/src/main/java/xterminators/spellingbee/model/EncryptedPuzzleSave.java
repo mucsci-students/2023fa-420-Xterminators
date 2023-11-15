@@ -13,14 +13,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.google.gson.annotations.Expose;
-
 public final class EncryptedPuzzleSave extends PuzzleSave {
-    @Expose(serialize = false, deserialize = false)
-    private final byte[] key;
-
-    @Expose(serialize = false, deserialize = false)
-    private final byte[] iv;
+    private transient final byte[] key;
+    private transient final byte[] iv;
 
     private List<byte[]> secretWordList;
 
