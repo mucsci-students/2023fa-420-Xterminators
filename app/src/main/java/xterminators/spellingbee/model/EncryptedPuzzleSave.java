@@ -14,8 +14,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class EncryptedPuzzleSave extends PuzzleSave {
-    private transient final byte[] key;
-    private transient final byte[] iv;
+    private transient byte[] key;
+    private transient byte[] iv;
 
     private List<byte[]> secretWordList;
 
@@ -71,6 +71,10 @@ public final class EncryptedPuzzleSave extends PuzzleSave {
             InvalidKeyException, InvalidAlgorithmParameterException,
             IllegalBlockSizeException, BadPaddingException
     {
+        if (key == null) {
+            key = "Xterminators\0\0\0\0".getBytes();
+            iv = "InitializaVector".getBytes();
+        }
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
