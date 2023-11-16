@@ -212,6 +212,8 @@ public class PuzzleTest {
             "loadPuzzle should set the earned points correctly."
         );
 
+        validData.delete();
+
         File validData2 = new File(tempDir, "valid_data2.json");
 
         try(BufferedWriter writer = Files.newBufferedWriter(
@@ -269,6 +271,8 @@ public class PuzzleTest {
             puzzle2.getEarnedPoints(),
             "loadPuzzle should set the earned points correctly."
         );
+
+        validData2.delete();
     }
 
     @Test
