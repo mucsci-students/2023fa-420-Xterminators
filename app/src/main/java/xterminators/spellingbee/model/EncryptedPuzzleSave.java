@@ -128,8 +128,8 @@ public final class EncryptedPuzzleSave extends PuzzleSave {
         {
             objectOStream.writeObject(words);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // This excption is impossible as no real IO is done. Everything is
+            // written to a byte array.
         }
 
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
