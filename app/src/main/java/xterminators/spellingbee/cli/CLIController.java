@@ -160,13 +160,13 @@ public class CLIController extends Controller {
                 }
                 case SAVE -> {
                     if (arguments.isEmpty()) {
-                        save();
+                        save(SaveMode.ENCRYPTED);
                     } else if (arguments.size() > 1) {
                         view.showErrorMessage(
                             "Too many arguments for save. Please try again."
                         );
                     } else {
-                        save(arguments.get(0));
+                        save(arguments.get(0), SaveMode.ENCRYPTED);
                     }
                 }
                 case SHOW -> {
@@ -520,7 +520,7 @@ public class CLIController extends Controller {
      * 
      * @param filePath the path to save the puzzle to
      */
-    private void save(String filePath) {
+    private void save(String filePath, SaveMode saveMode) {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -533,7 +533,7 @@ public class CLIController extends Controller {
         File saveLocation = new File(filePath);
 
         try {
-            puzzle.save(saveLocation, SaveMode.ENCRYPTED);
+            puzzle.save(saveLocation, saveMode);
         } catch(IOException e) {
             view.showErrorMessage(
                 "The file at " + saveLocation.getAbsolutePath() + " could not " +
@@ -545,7 +545,7 @@ public class CLIController extends Controller {
     /**
      * Saves the puzzle to a json file at a default location.
      */
-    private void save() {
+    private void save(SaveMode saveMode) {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -567,7 +567,7 @@ public class CLIController extends Controller {
 
         filename.append(".json");
 
-        save(filename.toString());
+        save(filename.toString(), saveMode);
     }
 
     /**
