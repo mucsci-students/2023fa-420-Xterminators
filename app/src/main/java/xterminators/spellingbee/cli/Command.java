@@ -69,8 +69,14 @@ public enum Command {
         "save",
         "Saves the puzzle to a file.",
         """
-        Saves the puzzle to a file. Requires one argument that is the path of
-        where to save the puzzle."""
+        Saves the puzzle to a file. If the first argument is either "encrypted"
+        or "unencrypted", the puzzle will be saved in the corresponding format
+        in a default location. If the first argument is a path, the puzzle will
+        be saved to that path. If no second argument is given, the puzzle will
+        be encrypted. If the second argument is "encrypted" or "unencrypted",
+        the puzzle will be saved in the corresponding format. If no arguments
+        are given, the puzzle will be saved in the default location in an
+        encrypted format."""
     ),
     /** The command to display the puzzle. */
     SHOW(

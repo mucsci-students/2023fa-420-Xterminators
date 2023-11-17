@@ -159,15 +159,7 @@ public class CLIController extends Controller {
                     ranks();
                 }
                 case SAVE -> {
-                    if (arguments.isEmpty()) {
-                        save(SaveMode.ENCRYPTED);
-                    } else if (arguments.size() > 1) {
-                        view.showErrorMessage(
-                            "Too many arguments for save. Please try again."
-                        );
-                    } else {
-                        save(arguments.get(0), SaveMode.ENCRYPTED);
-                    }
+                    save(arguments);
                 }
                 case SHOW -> {
                     show();
@@ -513,6 +505,33 @@ public class CLIController extends Controller {
         int totalPoints = puzzle.getTotalPoints();
 
         view.showRanks(curRank, earnedPoints, totalPoints);
+    }
+
+    private void save(List<String> arguments) {
+        switch (arguments.size()) {
+            case 0 -> save(SaveMode.ENCRYPTED);
+            case 1 -> {
+                switch (arguments.get(0)) {
+                    case "encrypted" -> save(SaveMode.ENCRYPTED);
+                    case "unencrypted" -> save(SaveMode.UNENCRYPTED);
+                    default -> save(arguments.get(0), SaveMode.ENCRYPTED);
+                }
+            }
+            case 2 -> {
+                switch (arguments.get(1)) {
+                    case "encrypted"
+                        -> save(arguments.get(0), SaveMode.ENCRYPTED);
+                    case "unencrypted" 
+                        -> save(arguments.get(0), SaveMode.UNENCRYPTED);
+                    default -> view.showErrorMessage(
+                        "Invalid save mode. Please try again."
+                    );
+                }
+            }
+            default -> view.showErrorMessage(
+                "Too many arguments for save. Please try again."
+            );
+        }
     }
 
     /**
