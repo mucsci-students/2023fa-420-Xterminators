@@ -96,7 +96,7 @@ public class CLIControllerTest {
     @ParameterizedTest
     @EnumSource
     public void testHelp(Command command) {
-        queueCommand("help " + command.getCommand());
+        queueCommand("help " + command.keyword);
         loadCommands();
 
         runCLI();
@@ -432,9 +432,9 @@ public class CLIControllerTest {
         String introCommands = String.format(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
             + " Use \"%s\" followed by words to guess them.",
-            Command.NEW.getCommand(),
-            Command.HELP.getCommand(),
-            Command.GUESS.getCommand()
+            Command.NEW.keyword,
+            Command.HELP.keyword,
+            Command.GUESS.keyword
         );
         verify(view).showMessage(introCommands);
     }

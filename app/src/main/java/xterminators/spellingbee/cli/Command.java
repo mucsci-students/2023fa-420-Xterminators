@@ -105,11 +105,11 @@ public enum Command {
     );
 
     /** The keyword for the command. */
-    private String command;
+    public final String keyword;
     /** A short description of the command. */
-    private String shortHelp;
+    public final String shortHelp;
     /** The full description of the command and how to use it. */
-    private String longHelp;
+    public final String longHelp;
 
     /**
      * Initilizes a Command object.
@@ -118,44 +118,15 @@ public enum Command {
      * @param shortHelp The short help for the command
      * @param longHelp The long help for the command
      */
-    Command(String command, String shortHelp, String longHelp) {
-        this.command = command;
+    Command(String keyword, String shortHelp, String longHelp) {
+        this.keyword = keyword;
         this.shortHelp = shortHelp;
         this.longHelp = longHelp;
     }
 
-    /**
-     * Gets keyword to invoke the command.
-     * 
-     * @return The keyword to invoke the command
-     */
-    public String getCommand() {
-        return command;
-    }
-
-    /**
-     * Gets the short help for the command. Gives only basic information on how
-     * to use the command.
-     * 
-     * @return The short help of the command
-     */
-    public String getShortHelp() {
-        return shortHelp;
-    }
-
-    /**
-     * Gets the long help for the command. Gives full description of the command 
-     * and how to use it.
-     * 
-     * @return The long help of the command
-     */
-    public String getLongHelp() {
-        return longHelp;
-    }
-
     public static Optional<Command> fromString(String string) {
         for (Command command : values()) {
-            if (command.getCommand().equals(string)) {
+            if (command.keyword.equals(string)) {
                 return Optional.of(command);
             }
         }

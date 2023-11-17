@@ -63,9 +63,9 @@ public class CLIController extends Controller {
         String introCommands = String.format(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
             + " Use \"%s\" followed by words to guess them.",
-            Command.NEW.getCommand(),
-            Command.HELP.getCommand(),
-            Command.GUESS.getCommand()
+            Command.NEW.keyword,
+            Command.HELP.keyword,
+            Command.GUESS.keyword
         );
         view.showMessage(introCommands);
 
@@ -82,7 +82,7 @@ public class CLIController extends Controller {
             if (optCommand.isEmpty()) {
                 view.showErrorMessage(
                     "The command entered is invalid. Please consult \'" +
-                    Command.HELP.getCommand() + "\' for valid commands."
+                    Command.HELP.keyword + "\' for valid commands."
                 );
                 continue;
             }

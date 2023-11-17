@@ -59,7 +59,7 @@ public class CLIView extends View {
      */
     public void showHelp() {
         for (Command c : Command.values()) {
-            System.out.println(c.getCommand() + ": " + c.getShortHelp());
+            System.out.println(c.keyword + ": " + c.shortHelp);
         }
     }
 
@@ -69,7 +69,7 @@ public class CLIView extends View {
      * @param command The command to display help for
      */
     public void showHelp(Command command) {
-        System.out.println(command.getLongHelp());
+        System.out.println(command.longHelp);
     }
 
     /**
