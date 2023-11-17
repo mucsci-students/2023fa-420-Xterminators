@@ -79,13 +79,12 @@ public class CLIControllerTest {
 
         runCLI();
 
-        verifyNoInteractions(view);
+        verifyNoMoreInteractions(view);
     }
 
     @Test
     public void testHelp_General() {
         queueCommand("help");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -98,7 +97,6 @@ public class CLIControllerTest {
     @EnumSource
     public void testHelp(Command command) {
         queueCommand("help " + command.getCommand());
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -110,7 +108,6 @@ public class CLIControllerTest {
     @RepeatedTest(5)
     public void testNewRandom() {
         queueCommand("new");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -128,7 +125,6 @@ public class CLIControllerTest {
     public void testNew_TooFewArgs() {
         queueCommand("new offhanded");
         queueCommand("new o");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -142,7 +138,6 @@ public class CLIControllerTest {
     @Test
     public void testNew_BadOrder() {
         queueCommand("new o offhanded");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -156,7 +151,6 @@ public class CLIControllerTest {
     @Test
     public void testNew_NotWord() {
         queueCommand("new ofhande o");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -171,7 +165,6 @@ public class CLIControllerTest {
     public void testNew_NotPangram() {
         queueCommand("new open o");
         queueCommand("new guardians n");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -185,7 +178,6 @@ public class CLIControllerTest {
     @Test
     public void testNew_ValidWord() {
         queueCommand("new offhanded o");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -203,7 +195,6 @@ public class CLIControllerTest {
     public void testShow_PuzzleExists() {
         queueCommand("new offhanded o");
         queueCommand("show");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -220,7 +211,6 @@ public class CLIControllerTest {
     @Test
     public void testShow_NoPuzzle() {
         queueCommand("show");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -234,7 +224,6 @@ public class CLIControllerTest {
     @Test
     public void testRank_NoPuzzle() {
         queueCommand("rank");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -249,7 +238,6 @@ public class CLIControllerTest {
     public void testRank_NewPuzzle() {
         queueCommand("new offhanded o");
         queueCommand("rank");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -272,7 +260,6 @@ public class CLIControllerTest {
     @Test
     public void testShuffle_NoPuzzle() {
         queueCommand("shuffle");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -287,7 +274,6 @@ public class CLIControllerTest {
     public void testShuffle_PuzzleExists() {
         queueCommand("new offhanded o");
         queueCommand("shuffle");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -305,7 +291,6 @@ public class CLIControllerTest {
     public void testGuess_NoPuzzle() {
         queueCommand("guess gradle");
         queueCommand("guess bad");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -323,7 +308,6 @@ public class CLIControllerTest {
         queueCommand("guess off");
         queueCommand("guess hand");
         queueCommand("guess offhanded");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -344,7 +328,6 @@ public class CLIControllerTest {
     @Test
     public void testFound_NoPuzzle() {
         queueCommand("found");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
@@ -363,7 +346,6 @@ public class CLIControllerTest {
         queueCommand("found");
         queueCommand("guess offhand");
         queueCommand("found");
-        queueCommand("exit");
         loadCommands();
 
         runCLI();
