@@ -59,13 +59,15 @@ public class CLIController extends Controller {
      */
     @Override
     public void run() {
-        System.out.println("Welcome to the Spelling Bee!");
-        System.out.printf(
+        view.showMessage("Welcome to the Spelling Bee!");
+        String introCommands = String.format(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
-            + System.lineSeparator(),
+            + " Use \"%s\" followed by words to guess them.",
             Command.NEW.getCommand(),
-            Command.HELP.getCommand()
+            Command.HELP.getCommand(),
+            Command.GUESS.getCommand()
         );
+        view.showMessage(introCommands);
 
         Scanner scanner = new Scanner(System.in);
 
