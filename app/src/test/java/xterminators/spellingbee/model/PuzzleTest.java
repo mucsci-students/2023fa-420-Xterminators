@@ -177,6 +177,7 @@ public class PuzzleTest {
                 gson.toJson(save, writer);
             } catch (IOException e) {
                 e.printStackTrace();
+                throw e;
             }
 
             Puzzle puzzle = assertDoesNotThrow(
