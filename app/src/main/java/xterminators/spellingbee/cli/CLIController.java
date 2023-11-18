@@ -3,10 +3,12 @@ package xterminators.spellingbee.cli;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
@@ -20,6 +22,7 @@ import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.SaveMode;
+import xterminators.spellingbee.model.HighScores;
 import xterminators.spellingbee.ui.Controller;
 
 /**
@@ -37,6 +40,8 @@ public class CLIController extends Controller {
     private CLIView view;
 
     private HelpData helpData;
+
+    private HighScores highScores;
     
     /**
      * Constructs a new CLIController which connects to the given CLIView, and
@@ -50,6 +55,7 @@ public class CLIController extends Controller {
         this.view = view;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
+        highScores = new HighScores();
     }
 
     /**
@@ -175,6 +181,16 @@ public class CLIController extends Controller {
                 }
                 case HINT -> {
                     hint();
+                }
+                case SAVESCORE -> {
+                    if (arguments.isEmpty()) {
+                        view.showErrorMessage("A name must be provided for the high score.");
+                    } else {
+                        saveScore(arguments.get(0));
+                    }
+                }
+                case VIEWSCORES -> {
+                    viewScores();
                 }
             }
         }
@@ -627,5 +643,41 @@ public class CLIController extends Controller {
         int earnedPoints = puzzle.getEarnedPoints();
 
         view.showPuzzle(primaryLetter, secondaryLetters, curRank, earnedPoints);
+    }
+
+    /**
+     * Saves the given high score with the given username
+     * and then prints the saved high scores.
+     * 
+     * @param userName The username to save the high score with.
+     */
+    private void saveScore(String userName) {
+        if (userName == null || userName.isEmpty()) {
+            view.showErrorMessage("No username provided.");
+            return;
+        }
+
+        Puzzle p = Puzzle.getInstance();
+        int score = p.getEarnedPoints();
+
+        if (!highScores.isHighScore(score)) {
+            view.showErrorMessage("Your score is not high enough to be a high score.");
+            return;
+        }
+
+        highScores.saveScore(userName, score);
+        viewScores();
+    }
+
+    /**
+     * Shows the current high scores.
+     */
+    private void viewScores() {
+        TreeMap<String, Integer> scores = highScores.getScores();
+        if (scores == null || scores.size() == 0) {
+            view.showErrorMessage("No high scores saved currently.");
+        }
+
+        view.showHighScores(scores);
     }
 }
