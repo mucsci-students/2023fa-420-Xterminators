@@ -3,7 +3,9 @@ package xterminators.spellingbee.gui;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -14,6 +16,7 @@ import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.SaveMode;
+import xterminators.spellingbee.model.HighScores;
 import xterminators.spellingbee.ui.Controller;
 
 public class GuiController extends Controller {
@@ -26,10 +29,13 @@ public class GuiController extends Controller {
 
     private HelpData helpData;
 
+    private HighScores highScores;
+
     public GuiController(GuiView guic, File dictionaryFile, File rootsDictionaryFile) {
         this.guiView = guic;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
+        this.highScores = new HighScores();
     }
 
     @Override
@@ -387,6 +393,34 @@ public class GuiController extends Controller {
             result += System.lineSeparator();
         }
         return result;
+    }
+
+    /**
+     * Gets the high scores from the HighScores class.
+     */
+    public TreeMap<String, Integer> getHighScores() {
+        return highScores.getScores();
+    }
+
+    /**
+     * Saves a high score using the given user name
+     * and the current score in the puzzle.
+     * 
+     * @param userName The user's name that they gave.
+     */
+    public boolean saveHighScore(String userName) {
+        Puzzle puzzle = Puzzle.getInstance();
+        return highScores.saveScore(userName, puzzle.getEarnedPoints());
+    }
+
+    /**
+     * Checks if the puzzle's score is worthy of being a high score.
+     * If the score given is greater than or equal to the lowest 
+     * high score, this returns true.
+     */
+    public boolean isHighScore() {
+        Puzzle puzzle = Puzzle.getInstance();
+        return highScores.isHighScore(puzzle.getEarnedPoints());
     }
 
 }
