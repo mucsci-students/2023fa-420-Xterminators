@@ -1,9 +1,14 @@
 package xterminators.spellingbee.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -17,7 +22,7 @@ public final class EncryptedPuzzleSave extends PuzzleSave {
     private transient byte[] key;
     private transient byte[] iv;
 
-    private List<byte[]> secretWordList;
+    private String secretWordList;
 
     public static EncryptedPuzzleSave fromKeyIV(
         char[] baseWord,
@@ -67,28 +72,37 @@ public final class EncryptedPuzzleSave extends PuzzleSave {
 
     @Override
     public List<String> validWords() 
-        throws NoSuchAlgorithmException, NoSuchPaddingException,
-            InvalidKeyException, InvalidAlgorithmParameterException,
-            IllegalBlockSizeException, BadPaddingException
+        throws Exception
     {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+            Base64.getDecoder().decode(secretWordList)
+        );
+
         if (key == null) {
             key = "Xterminators\0\0\0\0".getBytes();
             iv = "InitializaVector".getBytes();
         }
+
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-
-        List<String> validWords = new ArrayList<>();
 
         Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
 
-        for (byte[] encryptedWord : secretWordList) {
-            byte[] decryptedWord = cipher.doFinal(encryptedWord);
-            validWords.add(new String(decryptedWord));
+        byte[] decryptedWordsBytes = cipher.doFinal(inputStream.readAllBytes());
+
+        ByteArrayInputStream decryptedInputStream = new ByteArrayInputStream(
+            decryptedWordsBytes
+        );
+
+        List<String> decryptedWords = null;
+        try (ObjectInputStream objectInputStream
+                = new ObjectInputStream(decryptedInputStream))
+        {
+            decryptedWords = (List<String>) objectInputStream.readObject();
         }
 
-        return validWords;
+        return decryptedWords;
     }
 
     /**
@@ -108,16 +122,26 @@ public final class EncryptedPuzzleSave extends PuzzleSave {
             InvalidKeyException, InvalidAlgorithmParameterException,
             IllegalBlockSizeException, BadPaddingException
     {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ObjectOutputStream objectOStream
+                = new ObjectOutputStream(outputStream))
+        {
+            objectOStream.writeObject(words);
+        } catch (IOException e) {
+            // This excption is impossible as no real IO is done. Everything is
+            // written to a byte array.
+        }
+
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
         Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
 
-        for (String word : words) {
-            byte[] encryptedWord = cipher.doFinal(word.getBytes());
-            secretWordList.add(encryptedWord);
-        }
+        byte[] encryptedWords = cipher.doFinal(outputStream.toByteArray());
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        secretWordList = encoder.encodeToString(encryptedWords);
     }
 
     private EncryptedPuzzleSave(
@@ -136,7 +160,6 @@ public final class EncryptedPuzzleSave extends PuzzleSave {
         super(baseWord, requiredLetter, foundWords, playerPoints, maxPoints);
         this.key = key;
         this.iv = iv;
-        this.secretWordList = new ArrayList<>();
         encryptWords(validWords);
     }
 }
