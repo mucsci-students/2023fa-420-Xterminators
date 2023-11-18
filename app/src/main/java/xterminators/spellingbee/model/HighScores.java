@@ -27,7 +27,7 @@ public class HighScores {
     private static final String FILE_NAME = "HighScores.json";
 
     public HighScores() {
-        scores = new TreeMap<>();
+        scores = new TreeMap<>(new ValueComparator());
         lowestHighScore = Integer.MAX_VALUE;
         loadScores();
     }
@@ -37,9 +37,11 @@ public class HighScores {
     }
 
     public static void loadScores() {
-        File scoreFile = new File(System.getProperty("user.home"));
+        File scoreFile = new File(System.getProperty("user.home") + 
+            File.separator + FILE_NAME);
 
         if (!scoreFile.exists()) {
+            System.out.println("score file doesn't exist");
             return;
         }
 
@@ -56,7 +58,18 @@ public class HighScores {
 
             Gson gson = new Gson();
             Type type = new TypeToken<TreeMap<String, Integer>>() {}.getType();
-            scores = gson.fromJson(json.toString(), type);
+            TreeMap<String, Integer> unsortedScores = 
+                gson.fromJson(json.toString(), type);
+
+            scores = 
+                new TreeMap<>(new ValueComparator(unsortedScores));
+            scores.putAll(unsortedScores);
+
+            if (scores.size() > MAX_STORED_SCORES) {
+                for (int i = MAX_STORED_SCORES; i < scores.size(); ++i) {
+                    scores.pollLastEntry();
+                }
+            }
 
             for (Integer value : scores.values()) {
                 if (value < lowestHighScore)

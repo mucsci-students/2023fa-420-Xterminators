@@ -24,7 +24,7 @@ public class CustomInputDialog extends JDialog {
     public CustomInputDialog(Frame parent, String header, String field1Label, String field2Label) {
         super(parent, header, true);
         
-        if (field2.isEmpty()) {
+        if (field2Label.isEmpty()) {
             setLayout(new GridLayout(2, 2));
         } else {
             setLayout(new GridLayout(3, 2));
@@ -66,7 +66,7 @@ public class CustomInputDialog extends JDialog {
 
         add(new JLabel(field1Label + ":"));
         add(tbWord);
-        if (!field2.isEmpty()) {
+        if (!field2Label.isEmpty()) {
             add(new JLabel(field2Label + ":"));
             add(tbRequiredLetter);
         }

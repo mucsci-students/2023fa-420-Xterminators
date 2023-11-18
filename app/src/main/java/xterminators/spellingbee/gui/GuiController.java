@@ -399,6 +399,7 @@ public class GuiController extends Controller {
      * Gets the high scores from the HighScores class.
      */
     public TreeMap<String, Integer> getHighScores() {
+        highScores.loadScores();
         return highScores.getScores();
     }
 
@@ -410,7 +411,9 @@ public class GuiController extends Controller {
      */
     public boolean saveHighScore(String userName) {
         Puzzle puzzle = Puzzle.getInstance();
-        return highScores.saveScore(userName, puzzle.getEarnedPoints());
+        boolean result = highScores.saveScore(userName, puzzle.getEarnedPoints());
+        highScores.loadScores();
+        return result;
     }
 
     /**
