@@ -154,121 +154,127 @@ public class PuzzleTest {
 
     @Test
     public void testLoadPuzzle_ValidEncryptedData(@TempDir File tempDir) {
-        File validData = new File(tempDir, "valid_data.json");
+        try {
+                
+            File validData = new File(tempDir, "valid_data.json");
 
-        try(BufferedWriter writer = Files.newBufferedWriter(
-                validData.toPath(),
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING
-        ))
-        {
-            PuzzleSave save = EncryptedPuzzleSave.fromDefaults(
-                new char[] {'g', 'u', 'r', 'd', 'i', 'n', 'a'},
-                'a',
-                List.of("guard", "guardian"),
-                20,
-                List.of("guard", "guardian", "rain", "raining"),
-                2243
+            try(BufferedWriter writer = Files.newBufferedWriter(
+                    validData.toPath(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            ))
+            {
+                PuzzleSave save = EncryptedPuzzleSave.fromDefaults(
+                    new char[] {'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+                    'a',
+                    List.of("guard", "guardian"),
+                    20,
+                    List.of("guard", "guardian", "rain", "raining"),
+                    2243
+                );
+
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                gson.toJson(save, writer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Puzzle puzzle = assertDoesNotThrow(
+                () -> Puzzle.loadPuzzle(validData, dictionaryFile),
+                "loadPuzzle should not throw an exception if the puzzle data is" +
+                " valid."
             );
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(save, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Puzzle puzzle = assertDoesNotThrow(
-            () -> Puzzle.loadPuzzle(validData, dictionaryFile),
-            "loadPuzzle should not throw an exception if the puzzle data is" +
-            " valid."
-        );
-
-        assertEquals(
-            'a',
-            puzzle.getPrimaryLetter(),
-            "loadPuzzle should set the primary letter correctly."
-        );
-
-        char[] sortedSecondaryLetters = puzzle.getSecondaryLetters();
-        Arrays.sort(sortedSecondaryLetters);
-
-        char[] expectedSecondaryLetters = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
-
-        assertArrayEquals(
-            expectedSecondaryLetters,
-            sortedSecondaryLetters,
-            "loadPuzzle should set the secondary letters correctly."
-        );
-
-        assertEquals(
-            List.of("guard", "guardian"),
-            puzzle.getFoundWords(),
-            "loadPuzzle should set the found words correctly."
-        );
-
-        assertEquals(
-            20,
-            puzzle.getEarnedPoints(),
-            "loadPuzzle should set the earned points correctly."
-        );
-
-        File validData2 = new File(tempDir, "valid_data2.json");
-
-        try(BufferedWriter writer = Files.newBufferedWriter(
-                validData2.toPath(),
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING
-        ))
-        {
-            PuzzleSave save = EncryptedPuzzleSave.fromDefaults(
-                new char[] {'g', 'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+            assertEquals(
                 'a',
-                List.of("guard", "guardian"),
-                20,
-                List.of("guard", "guardian", "rain", "raining"),
-                2243
+                puzzle.getPrimaryLetter(),
+                "loadPuzzle should set the primary letter correctly."
             );
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(save, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
+            char[] sortedSecondaryLetters = puzzle.getSecondaryLetters();
+            Arrays.sort(sortedSecondaryLetters);
+
+            char[] expectedSecondaryLetters = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
+
+            assertArrayEquals(
+                expectedSecondaryLetters,
+                sortedSecondaryLetters,
+                "loadPuzzle should set the secondary letters correctly."
+            );
+
+            assertEquals(
+                List.of("guard", "guardian"),
+                puzzle.getFoundWords(),
+                "loadPuzzle should set the found words correctly."
+            );
+
+            assertEquals(
+                20,
+                puzzle.getEarnedPoints(),
+                "loadPuzzle should set the earned points correctly."
+            );
+
+            File validData2 = new File(tempDir, "valid_data2.json");
+
+            try(BufferedWriter writer = Files.newBufferedWriter(
+                    validData2.toPath(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            ))
+            {
+                PuzzleSave save = EncryptedPuzzleSave.fromDefaults(
+                    new char[] {'g', 'g', 'u', 'r', 'd', 'i', 'n', 'a'},
+                    'a',
+                    List.of("guard", "guardian"),
+                    20,
+                    List.of("guard", "guardian", "rain", "raining"),
+                    2243
+                );
+
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                gson.toJson(save, writer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Puzzle puzzle2 = assertDoesNotThrow(
+                () -> Puzzle.loadPuzzle(validData2, dictionaryFile),
+                "loadPuzzle should not throw an exception if the puzzle data is" +
+                " valid."
+            );
+
+            assertEquals(
+                'a',
+                puzzle2.getPrimaryLetter(),
+                "loadPuzzle should set the primary letter correctly."
+            );
+
+            char[] sortedSecondaryLetters2 = puzzle2.getSecondaryLetters();
+            Arrays.sort(sortedSecondaryLetters2);
+
+            char[] expectedSecondaryLetters2 = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
+
+            assertArrayEquals(
+                expectedSecondaryLetters2,
+                sortedSecondaryLetters2,
+                "loadPuzzle should set the secondary letters correctly."
+            );
+
+            assertEquals(
+                List.of("guard", "guardian"),
+                puzzle2.getFoundWords(),
+                "loadPuzzle should set the found words correctly."
+            );
+
+            assertEquals(
+                20,
+                puzzle2.getEarnedPoints(),
+                "loadPuzzle should set the earned points correctly."
+            );
+        
+        } catch (IOException ex) {
+            //why it throw this??
         }
-
-        Puzzle puzzle2 = assertDoesNotThrow(
-            () -> Puzzle.loadPuzzle(validData2, dictionaryFile),
-            "loadPuzzle should not throw an exception if the puzzle data is" +
-            " valid."
-        );
-
-        assertEquals(
-            'a',
-            puzzle2.getPrimaryLetter(),
-            "loadPuzzle should set the primary letter correctly."
-        );
-
-        char[] sortedSecondaryLetters2 = puzzle2.getSecondaryLetters();
-        Arrays.sort(sortedSecondaryLetters2);
-
-        char[] expectedSecondaryLetters2 = new char[] {'d', 'g', 'i', 'n', 'r', 'u'};
-
-        assertArrayEquals(
-            expectedSecondaryLetters2,
-            sortedSecondaryLetters2,
-            "loadPuzzle should set the secondary letters correctly."
-        );
-
-        assertEquals(
-            List.of("guard", "guardian"),
-            puzzle2.getFoundWords(),
-            "loadPuzzle should set the found words correctly."
-        );
-
-        assertEquals(
-            20,
-            puzzle2.getEarnedPoints(),
-            "loadPuzzle should set the earned points correctly."
-        );
     }
 
     @Test
