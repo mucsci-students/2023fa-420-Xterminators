@@ -32,10 +32,16 @@ public class HighScores {
         loadScores();
     }
 
+    /**
+     * Returns the current high scores.
+     */
     public TreeMap<String, Integer> getScores() {
         return scores;
     }
 
+    /**
+     * Loads the current high scores from the HighScores.json file.
+     */
     public static void loadScores() {
         File scoreFile = new File(System.getProperty("user.home") + 
             File.separator + FILE_NAME);
@@ -89,6 +95,9 @@ public class HighScores {
         }
     }
 
+    /**
+     * Saves the current scores to the HighScores.json file.
+     */
     public boolean saveScores() {
         try {
             String userHome = System.getProperty("user.home");
@@ -107,14 +116,32 @@ public class HighScores {
         return true;
     }
 
+    /**
+     * Adds a high score with the given username and score
+     * to the high scores list, and then saves the high scores
+     * list to the high scores file.
+     * 
+     * @param userName The username to save the high score with.
+     * @param score The score of the high score.
+     */
     public boolean saveScore(String userName, int score) {
-        if (scores.size() >= MAX_STORED_SCORES) {
-
+        if (userName == null || userName.isEmpty()) {
+            return false;
         }
         scores.put(userName, score);
+        if (score < lowestHighScore) {
+            lowestHighScore = score;
+        }
         return saveScores();
     }
 
+    /**
+     * Checks if the given score is greater than or equal to
+     * the lowest high score, or if the high score list isn't full.
+     * 
+     * If it is greater than the lowest high score, or the score list
+     * is not full, this will return true.
+     */
     public boolean isHighScore(int score) {
         return score >= lowestHighScore || scores.size() < MAX_STORED_SCORES;
     }
