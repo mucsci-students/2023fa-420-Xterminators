@@ -67,3 +67,8 @@ or run the application with the CLI:
     - The abstract factory pattern was used in `App` to create and run the UI.
       If a CLI was requested, a `CLIFactory` was used, and if a GUI was
       requested, a `GuiFactory` was used.
+- Factory Method Pattern
+    - The factory method pattern was used in `EncryptedPuzzleSave` as the
+      methods, `fromDefaults` and `fromKeyIV` which wrapped the private
+      constructor with default values and error handling, reducing complexity in
+      calling code.
