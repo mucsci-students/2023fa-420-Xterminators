@@ -25,6 +25,7 @@ import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
 import xterminators.spellingbee.ui.Controller;
 
 /**
@@ -64,13 +65,15 @@ public class CLIController extends Controller {
      */
     @Override
     public void run() {
-        System.out.println("Welcome to the Spelling Bee!");
-        System.out.printf(
+        view.showMessage("Welcome to the Spelling Bee!");
+        String introCommands = String.format(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
-            + System.lineSeparator(),
-            Command.NEW.getCommand(),
-            Command.HELP.getCommand()
+            + " Use \"%s\" followed by words to guess them.",
+            Command.NEW.keyword,
+            Command.HELP.keyword,
+            Command.GUESS.keyword
         );
+        view.showMessage(introCommands);
 
         Scanner scanner = new Scanner(System.in);
         List<String> availableCommands = new ArrayList<>();
@@ -121,7 +124,7 @@ public class CLIController extends Controller {
             if (optCommand.isEmpty()) {
                 view.showErrorMessage(
                     "The command entered is invalid. Please consult \'" +
-                    Command.HELP.getCommand() + "\' for valid commands."
+                    Command.HELP.keyword + "\' for valid commands."
                 );
                 continue;
             }
@@ -198,15 +201,7 @@ public class CLIController extends Controller {
                     ranks();
                 }
                 case SAVE -> {
-                    if (arguments.isEmpty()) {
-                        save();
-                    } else if (arguments.size() > 1) {
-                        view.showErrorMessage(
-                            "Too many arguments for save. Please try again."
-                        );
-                    } else {
-                        save(arguments.get(0));
-                    }
+                    save(arguments);
                 }
                 case SHOW -> {
                     show();
@@ -554,12 +549,39 @@ public class CLIController extends Controller {
         view.showRanks(curRank, earnedPoints, totalPoints);
     }
 
+    private void save(List<String> arguments) {
+        switch (arguments.size()) {
+            case 0 -> save(SaveMode.ENCRYPTED);
+            case 1 -> {
+                switch (arguments.get(0)) {
+                    case "encrypted" -> save(SaveMode.ENCRYPTED);
+                    case "unencrypted" -> save(SaveMode.UNENCRYPTED);
+                    default -> save(arguments.get(0), SaveMode.ENCRYPTED);
+                }
+            }
+            case 2 -> {
+                switch (arguments.get(1)) {
+                    case "encrypted"
+                        -> save(arguments.get(0), SaveMode.ENCRYPTED);
+                    case "unencrypted" 
+                        -> save(arguments.get(0), SaveMode.UNENCRYPTED);
+                    default -> view.showErrorMessage(
+                        "Invalid save mode. Please try again."
+                    );
+                }
+            }
+            default -> view.showErrorMessage(
+                "Too many arguments for save. Please try again."
+            );
+        }
+    }
+
     /**
      * Saves the puzzle to a json file at the given file path.
      * 
      * @param filePath the path to save the puzzle to
      */
-    private void save(String filePath) {
+    private void save(String filePath, SaveMode saveMode) {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -572,7 +594,7 @@ public class CLIController extends Controller {
         File saveLocation = new File(filePath);
 
         try {
-            puzzle.save(saveLocation);
+            puzzle.save(saveLocation, saveMode);
         } catch(IOException e) {
             view.showErrorMessage(
                 "The file at " + saveLocation.getAbsolutePath() + " could not " +
@@ -584,7 +606,7 @@ public class CLIController extends Controller {
     /**
      * Saves the puzzle to a json file at a default location.
      */
-    private void save() {
+    private void save(SaveMode saveMode) {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -606,7 +628,7 @@ public class CLIController extends Controller {
 
         filename.append(".json");
 
-        save(filename.toString());
+        save(filename.toString(), saveMode);
     }
 
     /**

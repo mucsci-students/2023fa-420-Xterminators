@@ -111,9 +111,9 @@ public class CLIViewTest {
 
         StringBuilder expectedOut = new StringBuilder();
         for (Command command : Command.values()) {
-            expectedOut.append(command.getCommand());
+            expectedOut.append(command.keyword);
             expectedOut.append(": ");
-            expectedOut.append(command.getShortHelp());
+            expectedOut.append(command.shortHelp);
             expectedOut.append(System.lineSeparator());
         }
 
@@ -129,7 +129,7 @@ public class CLIViewTest {
         view.showHelp(command);
 
         assertEquals(
-            command.getLongHelp() + System.lineSeparator(),
+            command.longHelp + System.lineSeparator(),
             outContent.toString()
         );
     }

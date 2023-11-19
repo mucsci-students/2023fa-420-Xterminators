@@ -37,9 +37,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
 import xterminators.spellingbee.ui.View;
 
 
@@ -438,11 +440,15 @@ public class GuiView extends View {
 
             if (userChoice == JOptionPane.YES_OPTION) {
                 createRandomPuzzle();
+                drawFoundWords();
+                redrawRank();
                 refocusGuessTextBox();
             }
             // No action on NO_OPTION
         } else {
             createRandomPuzzle();
+            drawFoundWords();
+            redrawRank();
             refocusGuessTextBox();
         }
     }
@@ -454,10 +460,37 @@ public class GuiView extends View {
      */
     private void savePuzzleButtonClick(ActionEvent e) throws IOException{
         try{
-            showMessage(guiController.savePuzzle());
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON Files", "json");
+            fileChooser.setFileFilter(filter);
+
+            int returnValue = fileChooser.showSaveDialog(mainFrame);
+ 
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                
+                int result = JOptionPane.showConfirmDialog(
+                    mainFrame,
+                    "Do you want to save the word list in an encrypted format?",
+                    "Save Encrypted?",
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                String saveResult;
+                if (result == JOptionPane.YES_OPTION) {
+                    saveResult = 
+                        guiController.savePuzzle(selectedFile.getAbsolutePath(), SaveMode.ENCRYPTED);
+                } else {
+                    saveResult = 
+                        guiController.savePuzzle(selectedFile.getAbsolutePath(), SaveMode.UNENCRYPTED);
+                }
+                
+                showMessage(saveResult);
+            }
         }
-        // Catches I/O errors
-        catch ( IOException a){
+        catch (IOException a){
             showErrorDialog("The puzzle could not be saved due to an IO error.");
         }
     }

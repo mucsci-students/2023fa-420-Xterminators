@@ -13,6 +13,7 @@ import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
 import xterminators.spellingbee.ui.Controller;
 
 public class GuiController extends Controller {
@@ -124,32 +125,34 @@ public class GuiController extends Controller {
         puzzle.shuffle();
     }
 
+    public String savePuzzle() throws IOException {
+        Puzzle puzzle = Puzzle.getInstance();
+        StringBuilder filename = new StringBuilder();
+
+        //This will create a title for the Json file consisting
+        // of the non-required letters followed by the required letter.
+        for (char c : puzzle.getSecondaryLetters()) {
+            filename.append(c);
+        }
+        filename.append(puzzle.getPrimaryLetter());
+        filename.append(".json");
+
+        return savePuzzle(filename.toString(), SaveMode.ENCRYPTED);
+    }
+
     /**
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle() throws IOException {
+    public String savePuzzle(String saveFilepath, SaveMode saveMode) throws IOException {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
             return "There is no puzzle in progress. Please try again.";
         }
 
-        StringBuilder filename = new StringBuilder();
-
-        //This will create a title for the Json file consisting
-        // of the non-required letters followed by the required letter.
-        for (char c : puzzle.getSecondaryLetters()){
-            filename.append(c);
-        }
-
-        filename.append(puzzle.getPrimaryLetter());
-
-        filename.append(".json");
-
-        File saveLocation = new File(filename.toString());
-
-        puzzle.save(saveLocation);
+        File saveLocation = new File(saveFilepath);
+        puzzle.save(saveLocation, saveMode);
 
         return "File created: " + saveLocation.getAbsolutePath();
     }
