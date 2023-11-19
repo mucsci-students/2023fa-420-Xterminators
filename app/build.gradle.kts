@@ -31,6 +31,8 @@ dependencies {
 
     // Needed for Pair tuple
     implementation("org.apache.commons:commons-lang3:3.13.0")
+
+    implementation("org.jline:jline:3.22.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

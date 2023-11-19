@@ -645,6 +645,7 @@ public class CLIController extends Controller {
 
         return newline;
     }
+    
     private String autoCompleteCommand(String partialCommand, List<String> commands){
         String completedCommand = null;
 
