@@ -1,5 +1,7 @@
 package xterminators.spellingbee.cli;
 
+import java.util.TreeMap;
+import java.util.Map;
 import java.util.Arrays;
 import java.util.List;
 
@@ -168,6 +170,17 @@ public class CLIView extends View {
                 (reqPoints == 1 ? "" : "s") + " minimum"
             );
         }               
+    }
+
+    public void showHighScores(TreeMap<String, Integer> scores) {
+        System.out.println("Current High Scores");
+
+        int rank = 1;
+        for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+            System.out.println(padLeft(rank + "", 2) + ". " + 
+                entry.getKey() + ": " + entry.getValue());
+            rank++;
+        }
     }
 
     /**

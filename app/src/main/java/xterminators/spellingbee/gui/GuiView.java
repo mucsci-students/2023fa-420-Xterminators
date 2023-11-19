@@ -3,6 +3,8 @@ package xterminators.spellingbee.gui;
 import xterminators.spellingbee.gui.GuiController;
 
 import javax.swing.Timer;
+import javax.swing.BoxLayout;
+
 import java.util.ArrayList;
 import java.nio.file.Paths;
 
@@ -19,13 +21,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.awt.event.ActionListener;
-
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
+
 import java.io.File;
 import java.io.IOException;
+
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -55,15 +61,17 @@ public class GuiView extends View {
     private Font smallFont;
 
     // Global GUI Components
-    private JFrame mainFrame;
-    private JPanel mainPanel;
-    private JTextField tbGuess;
     private JButton btnGuess;
     private JButton primaryLetterButton;
-    private JTextArea foundWordsArea;
-    private JPanel rankImagePanel;
+    private JButton saveHighScoreButton;
+    private JFrame mainFrame;
     private JLabel currentPointsLabel;
     private JLabel currentRankLabel;
+    private JPanel highScoresPanel;
+    private JPanel mainPanel;
+    private JPanel rankImagePanel;
+    private JTextArea foundWordsArea;
+    private JTextField tbGuess;
     // Used where the guess components are for screen grab
     private JLabel placeholderLabel;
 
@@ -235,12 +243,15 @@ public class GuiView extends View {
         highScoresLabel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50, PUZZLE_TOP_Y - 85, PUZZLE_WIDTH, 20);
         mainPanel.add(highScoresLabel);
 
-        JPanel highScoresPanel = new JPanel();
+        highScoresPanel = new JPanel();
+        highScoresPanel.setLayout(new BoxLayout(highScoresPanel, BoxLayout.Y_AXIS));
         highScoresPanel.setBounds(PUZZLE_LEFT_X + PUZZLE_WIDTH + 50,
                                     PUZZLE_TOP_Y - 65, HIGH_SCORE_PANEL_WIDTH, FRAME_HEIGHT - 150);
         highScoresPanel.setBackground(Color.gray);
-        mainPanel.add(highScoresPanel);
 
+        redrawHighScores();
+
+        mainPanel.add(highScoresPanel);
     }
 
     /**
@@ -285,9 +296,17 @@ public class GuiView extends View {
         // Hints
         JButton hintButton = createButton("Hint", 0, 0, 50, 12, actionPanel);
         hintButton.addActionListener(this::hintButtonClick);
+
         //
-        // Add subsequent action buttons to actionPanel here (i.e. save, load, shuffle)
+        // Add subsequent action buttons to actionPanel here
+        // unless they are invisible by default, then put them 
+        // at the bottom of the class.
         //
+
+        // Save High Score
+        saveHighScoreButton = createButton("Save High Score", 0, 0, 50, 12, actionPanel);
+        saveHighScoreButton.addActionListener(this::saveHighScoreButtonClick);
+        saveHighScoreButton.setVisible(false);
     }
 
     /**
@@ -342,12 +361,12 @@ public class GuiView extends View {
      * @param e The ActionEvent from the button click.
      */
     private void newPuzzleButtonClick(ActionEvent e) {
-        CustomInputDialog inputDialog = new CustomInputDialog(mainFrame);
+        CustomInputDialog inputDialog = new CustomInputDialog(mainFrame, "Get Starting Word", "Base Word", "Required Letter");
         inputDialog.setVisible(true);
 
         if (!inputDialog.isCanceled()) {
-            String puzzleWord = inputDialog.getBaseWord();
-            String requiredLetterStr = inputDialog.getRequiredLetter();
+            String puzzleWord = inputDialog.getField1();
+            String requiredLetterStr = inputDialog.getField2();
             char[] requiredLetterArray = (
                 requiredLetterStr == null
                 ? new char[0]
@@ -364,7 +383,7 @@ public class GuiView extends View {
                 createRandomPuzzle();
             }
             redrawRank();
-            drawFoundWords();
+            redrawFoundWords();
             refocusGuessTextBox();
         }
     }
@@ -411,9 +430,12 @@ public class GuiView extends View {
 
         String result = guiController.guessWord(tbGuess.getText());
         if (!result.isEmpty()) {
-            drawFoundWords();
+            redrawFoundWords();
             redrawRank();
             showMessage(result);
+        }
+        if (guiController.isHighScore()) {
+            saveHighScoreButton.setVisible(true);
         }
         refocusGuessTextBox();
     }
@@ -440,14 +462,14 @@ public class GuiView extends View {
 
             if (userChoice == JOptionPane.YES_OPTION) {
                 createRandomPuzzle();
-                drawFoundWords();
+                redrawFoundWords();
                 redrawRank();
                 refocusGuessTextBox();
             }
             // No action on NO_OPTION
         } else {
             createRandomPuzzle();
-            drawFoundWords();
+            redrawFoundWords();
             redrawRank();
             refocusGuessTextBox();
         }
@@ -526,7 +548,7 @@ public class GuiView extends View {
 
             allLetters[allLetters.length - 1] = p.getPrimaryLetter();
             guessKeyListener.setAllowedLetters(allLetters);
-            drawFoundWords();
+            redrawFoundWords();
         }
     }
 
@@ -596,7 +618,21 @@ public class GuiView extends View {
         showMessage(guiController.hint());
     }
 
+    private void saveHighScoreButtonClick(ActionEvent e) {
+        CustomInputDialog inputDialog = new CustomInputDialog(mainFrame, "Save High Score", "Name", "");
+        inputDialog.setVisible(true);
 
+        if (!inputDialog.isCanceled()) {
+            String userName = inputDialog.getField1();
+            if (userName == null || userName.isEmpty()) {
+                showMessage("The name you gave was empty! No high score saved.");
+                return;
+            }
+
+            guiController.saveHighScore(userName);
+            redrawHighScores();
+        }
+    }   
 
     // End Button Event Handlers **********************************************
     // Dialogs ****************************************************************
@@ -767,11 +803,28 @@ public class GuiView extends View {
         rankImagePanel.repaint();
     }
 
+    private void redrawHighScores() {
+        int currentY = 0;
+        TreeMap<String, Integer> scores = guiController.getHighScores();
+        highScoresPanel.removeAll();
+
+        int labelHeight = 20;
+        for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+            JLabel scoreLabel = new JLabel(entry.getKey() + ": " + entry.getValue());
+            scoreLabel.setFont(standardFont);
+            //scoreLabel.setBounds(0, currentY, highScoresPanel.getWidth() - 20, labelHeight);
+            highScoresPanel.add(scoreLabel);
+            currentY += labelHeight;
+        }
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
     /**
      * Fills the found word box with all found words from the puzzle's
      * found words list.
      */
-    private void drawFoundWords() {
+    private void redrawFoundWords() {
         foundWordsArea.setText("");
         Puzzle puzzle = Puzzle.getInstance();
         if (puzzle != null && puzzle.getFoundWords() != null) {
