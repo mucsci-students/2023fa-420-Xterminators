@@ -129,20 +129,21 @@ public class HighScores {
             return false;
         }
         
+        boolean foundKey = false;
         if (scores.size() > 0 ) {
-            boolean foundKey = true;
-            while (foundKey) {
-                foundKey = false;
-                for (Map.Entry<String, Integer> e : scores.entrySet()) {
-                    if (e.getKey().equals(userName)) {
-                        userName += "1";
-                        foundKey = true;
-                    }
+            for (Map.Entry<String, Integer> e : scores.entrySet()) {
+                if (e.getKey().equals(userName) && e.getValue() < score) {
+                    e.setValue(score);
+                    foundKey = true;
+                    break;
                 }
             }
         }
 
-        scores.put(userName, score);
+        if (!foundKey) {
+            scores.put(userName, score);
+        }
+
         if (score < lowestHighScore) {
             lowestHighScore = score;
         }
