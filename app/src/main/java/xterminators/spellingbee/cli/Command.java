@@ -102,6 +102,19 @@ public enum Command {
         Takes the puzzle and compiles a grid to show the relationship between words
         and their length.
                 """
+    ),
+    SAVESCORE(
+        "saveScore",
+        "Saves the current score as a high score with the given username.",
+        """
+        Saves the current score as a high score with the given username.
+        If no username is given, an error message will be displayed.
+        """
+    ),
+    VIEWSCORES(
+        "viewScores",
+        "Displays the current high scores.",
+        "Displays the current high scores."
     );
 
     /** The keyword for the command. */
