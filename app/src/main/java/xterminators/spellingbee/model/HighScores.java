@@ -128,16 +128,7 @@ public class HighScores {
         if (userName == null || userName.isEmpty()) {
             return false;
         }
-
         
-        System.out.println("Scores contains key " + userName + "? " + (scores.containsKey(userName)));
-        if (scores.containsKey(userName)) {
-            while (scores.containsKey(userName)) {
-                userName += "1";
-                System.out.println("userName: " + userName);
-            }
-        }
-        System.out.println("scores size: " + scores.size());
         if (scores.size() > 0 ) {
             boolean foundKey = true;
             while (foundKey) {
@@ -151,7 +142,7 @@ public class HighScores {
             }
         }
 
-        scores.putIfAbsent(userName, score);
+        scores.put(userName, score);
         if (score < lowestHighScore) {
             lowestHighScore = score;
         }
