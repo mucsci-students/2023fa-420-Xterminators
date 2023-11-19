@@ -47,7 +47,6 @@ public class HighScores {
             File.separator + FILE_NAME);
 
         if (!scoreFile.exists()) {
-            System.out.println("score file doesn't exist");
             return;
         }
 
@@ -110,6 +109,7 @@ public class HighScores {
             FileWriter writer = new FileWriter(saveLocation);
             writer.write(json);
             writer.close();
+            loadScores();
         } catch (Exception ex) {
             return false;
         }
@@ -128,7 +128,30 @@ public class HighScores {
         if (userName == null || userName.isEmpty()) {
             return false;
         }
-        scores.put(userName, score);
+
+        
+        System.out.println("Scores contains key " + userName + "? " + (scores.containsKey(userName)));
+        if (scores.containsKey(userName)) {
+            while (scores.containsKey(userName)) {
+                userName += "1";
+                System.out.println("userName: " + userName);
+            }
+        }
+        System.out.println("scores size: " + scores.size());
+        if (scores.size() > 0 ) {
+            boolean foundKey = true;
+            while (foundKey) {
+                foundKey = false;
+                for (Map.Entry<String, Integer> e : scores.entrySet()) {
+                    if (e.getKey().equals(userName)) {
+                        userName += "1";
+                        foundKey = true;
+                    }
+                }
+            }
+        }
+
+        scores.putIfAbsent(userName, score);
         if (score < lowestHighScore) {
             lowestHighScore = score;
         }
