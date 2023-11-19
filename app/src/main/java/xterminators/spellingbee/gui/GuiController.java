@@ -411,6 +411,8 @@ public class GuiController extends Controller {
      */
     public boolean saveHighScore(String userName) {
         Puzzle puzzle = Puzzle.getInstance();
+        if (puzzle == null) return false;
+        
         boolean result = highScores.saveScore(userName, puzzle.getEarnedPoints());
         highScores.loadScores();
         return result;
