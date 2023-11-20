@@ -87,7 +87,7 @@ public class CLIController extends Controller {
             Command.HELP.keyword,
             Command.GUESS.keyword
         );
-        view.showMessage(introCommands);
+        //view.showMessage(introCommands);
 
         try {
             Terminal terminal = TerminalBuilder.builder().dumb(true).
@@ -97,7 +97,7 @@ public class CLIController extends Controller {
 
             inputLoop:
             while(true){
-                System.out.print("\u001B[33m" + ">" + "\u001B[0m");
+                try {
                 String input = lineReader.readLine();
 
                 input = input.trim();
@@ -183,13 +183,13 @@ public class CLIController extends Controller {
                     }
                     case RANK -> {
                         ranks();
-                }
-                case SAVE -> {
-                    save(arguments);
-                }
-                case SHOW -> {
-                    show();
-                }
+                    }
+                    case SAVE -> {
+                        save(arguments);
+                    }
+                    case SHOW -> {
+                        show();
+                    }
                     case SHUFFLE -> {
                         shuffle();
                     }
@@ -207,150 +207,15 @@ public class CLIController extends Controller {
                         viewScores();
                     }
                 }
+            } catch (EndOfFileException e){
+                break inputLoop;
             }
+        }
             
         } catch (IOException e){
             System.out.println("I dont know what i am doing");
-        }
+        } 
     }
-
-        // inputLoop:
-        // while (scanner.hasNextLine()) {
-        //     String input = scanner.nextLine();
-            // String partialCommand = "";
-            // //in order for tab completion to work, you must end the command with "tab".
-            // if (input.endsWith("tab")) {
-            //     if(input.endsWith("tab")){
-            //         partialCommand = input.substring(0, input.length() - 3);
-            //     }
-            //     else {
-            //         while(input == input.substring(0, input.length() - 1) + " "){
-            //             input = input.substring(0, input.length() - 1);
-            //         }
-            //         partialCommand = input;
-            //     }
-                
-
-            //     String completedCommand = autoCompleteCommand(partialCommand, availableCommands);
-
-            //     if (completedCommand != null) {
-            //         System.out.println("Invoking " + completedCommand);
-            //         input = completedCommand;
-            //     } else {
-            //         System.out.println("No unique command found for " + partialCommand);
-            //         continue;
-            //     }
-            // }
-    //         String[] tokens = input.split(" ");
-
-    //         Optional<Command> optCommand = Command.fromString(tokens[0]);
-
-    //         if (optCommand.isEmpty()) {
-    //             view.showErrorMessage(
-    //                 "The command entered is invalid. Please consult \'" +
-    //                 Command.HELP.keyword + "\' for valid commands."
-    //             );
-    //             continue;
-    //         }
-
-    //         Command curCommand = optCommand.orElseThrow();
-
-    //         List<String> arguments;
-
-    //         if (tokens.length > 1) {
-    //             arguments = List.of(Arrays.copyOfRange(tokens, 1, tokens.length));
-    //         } else {
-    //             arguments = Collections.emptyList();
-    //         }
-
-    //         switch (curCommand) {
-    //             case EXIT -> {
-    //                break inputLoop;
-    //             }
-    //             case FOUND_WORDS -> {
-    //                 foundWords();
-    //             }
-    //             case GUESS -> {
-    //                 if (arguments.isEmpty()) {
-    //                     view.showErrorMessage(
-    //                         "You must enter a word to guess. Please try again."
-    //                     );
-    //                 } else {
-    //                     arguments.forEach(this::guess);
-    //                 }
-    //             }
-    //             case HELP -> {
-    //                 if (arguments.isEmpty()) {
-    //                     help();
-    //                 } else {
-    //                     help(arguments.get(0));
-    //                 }
-    //             }
-    //             case LOAD -> {
-    //                 if (arguments.isEmpty()) {
-    //                     view.showErrorMessage(
-    //                         "You must include a file to load the save from. " +
-    //                         "Please try again."
-    //                     );
-    //                 } else if (arguments.size() > 1) {
-    //                     view.showErrorMessage(
-    //                         "Too many arguments for load. Please try again."
-    //                     );
-    //                 } else {
-    //                     load(arguments.get(0));
-    //                 }
-    //             }
-    //             case NEW -> {
-    //                 if (arguments.isEmpty()) {
-    //                     newPuzzle();
-    //                 } else if (arguments.size() == 1) {
-    //                     view.showErrorMessage(
-    //                         "Too Few Arguments for New. Please try again."
-    //                     );
-    //                 } else if (arguments.size() > 2) {
-    //                     view.showErrorMessage(
-    //                         "Too many arguments for new puzzle. Please try again."
-    //                     );
-    //                 } else if (arguments.get(0).length() == 1
-    //                            || arguments.get(1).length() != 1)
-    //                 {
-    //                     view.showErrorMessage(
-    //                         "New Arguments are in the wrong order. Please try again."
-    //                     );
-    //                 } else {
-    //                     newPuzzle(arguments.get(0), arguments.get(1).charAt(0));
-    //                 }
-    //             }
-    //             case RANK -> {
-    //                 ranks();
-    //             }
-    //             case SAVE -> {
-    //                 save(arguments);
-    //             }
-    //             case SHOW -> {
-    //                 show();
-    //             }
-    //             case SHUFFLE -> {
-    //                 shuffle();
-    //             }
-    //             case HINT -> {
-    //                 hint();
-    //             }
-    //             case SAVESCORE -> {
-    //                 if (arguments.isEmpty()) {
-    //                     view.showErrorMessage("A name must be provided for the high score.");
-    //                 } else {
-    //                     saveScore(arguments.get(0));
-    //                 }
-    //             }
-    //             case VIEWSCORES -> {
-    //                 viewScores();
-    //             }
-    //         }
-    //     }
-
-    //     scanner.close();
-    // }
 
     /**
      * Get the list of found words from the puzzle and sends it to the view to

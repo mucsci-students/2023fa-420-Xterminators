@@ -14,7 +14,7 @@ public class CLITabCompleter implements Completer {
     @Override
     public void complete(LineReader reader, ParsedLine partialCommand, List<Candidate> candidate){
         List<String> availableCommands = List.of("exit", "found_words", "guess",
-        "help", "load", "new", "rank", "save", "show", "shuffle", "hint");
+        "help", "load", "new", "rank", "save", "show", "shuffle", "hint", "savescore", "viewscore");
         
 
         List<String> matchingCommands = new ArrayList<>();
