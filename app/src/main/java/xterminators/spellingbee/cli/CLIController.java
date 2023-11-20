@@ -23,6 +23,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.gson.JsonSyntaxException;
 
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+import org.jline.reader.*;
+
 import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
@@ -49,6 +53,8 @@ public class CLIController extends Controller {
 
     private HighScores highScores;
     
+    private LineReader lineReader;
+
     /**
      * Constructs a new CLIController which connects to the given CLIView, and
      * use the given dictionary files for Puzzle construction.
@@ -71,6 +77,8 @@ public class CLIController extends Controller {
      */
     @Override
     public void run() {
+        System.setProperty("org.jline.terminal.dumb", "true");
+
         view.showMessage("Welcome to the Spelling Bee!");
         String introCommands = String.format(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
@@ -81,130 +89,100 @@ public class CLIController extends Controller {
         );
         view.showMessage(introCommands);
 
-        Scanner scanner = new Scanner(System.in);
-        List<String> availableCommands = new ArrayList<>();
-        availableCommands.add("exit");
-        availableCommands.add("found_words");
-        availableCommands.add("guess");
-        availableCommands.add("help");
-        availableCommands.add("load");
-        availableCommands.add("new");
-        availableCommands.add("rank");
-        availableCommands.add("save");
-        availableCommands.add("show");
-        availableCommands.add("shuffle");
-        availableCommands.add("hint");
-        
+        try {
+            Terminal terminal = TerminalBuilder.builder().dumb(true).
+            system(true).build();
+            lineReader = LineReaderBuilder.builder().terminal(terminal)
+            .completer(new CLITabCompleter()).build();
 
-        inputLoop:
-        while (scanner.hasNextLine()) {
-            String input = scanner.nextLine();
-            String partialCommand = "";
-            //in order for tab completion to work, you must end the command with "tab".
-            if (input.endsWith("tab")) {
-                if(input.endsWith("tab")){
-                    partialCommand = input.substring(0, input.length() - 3);
-                }
-                else {
-                    while(input == input.substring(0, input.length() - 1) + " "){
-                        input = input.substring(0, input.length() - 1);
-                    }
-                    partialCommand = input;
-                }
-                
+            inputLoop:
+            while(true){
+                System.out.print("\u001B[33m" + ">" + "\u001B[0m");
+                String input = lineReader.readLine();
 
-                String completedCommand = autoCompleteCommand(partialCommand, availableCommands);
+                input = input.trim();
 
-                if (completedCommand != null) {
-                    System.out.println("Invoking " + completedCommand);
-                    input = completedCommand;
-                } else {
-                    System.out.println("No unique command found for " + partialCommand);
+                String[] tokens = input.split(" ");
+
+                Optional<Command> optCommand = Command.fromString(tokens[0]);
+
+                if (optCommand.isEmpty()) {
+                    view.showErrorMessage(
+                        "The command entered is invalid. Please consult \'" +
+                        Command.HELP.keyword + "\' for valid commands."
+                    );
                     continue;
                 }
-            }
-            String[] tokens = input.split(" ");
 
-            Optional<Command> optCommand = Command.fromString(tokens[0]);
+                Command curCommand = optCommand.orElseThrow();
 
-            if (optCommand.isEmpty()) {
-                view.showErrorMessage(
-                    "The command entered is invalid. Please consult \'" +
-                    Command.HELP.keyword + "\' for valid commands."
-                );
-                continue;
-            }
+                List<String> arguments;
 
-            Command curCommand = optCommand.orElseThrow();
-
-            List<String> arguments;
-
-            if (tokens.length > 1) {
-                arguments = List.of(Arrays.copyOfRange(tokens, 1, tokens.length));
-            } else {
-                arguments = Collections.emptyList();
-            }
-
-            switch (curCommand) {
-                case EXIT -> {
-                   break inputLoop;
+                if (tokens.length > 1) {
+                    arguments = List.of(Arrays.copyOfRange(tokens, 1, tokens.length));
+                } else {
+                    arguments = Collections.emptyList();
                 }
-                case FOUND_WORDS -> {
-                    foundWords();
-                }
-                case GUESS -> {
-                    if (arguments.isEmpty()) {
-                        view.showErrorMessage(
-                            "You must enter a word to guess. Please try again."
-                        );
-                    } else {
-                        arguments.forEach(this::guess);
+
+                switch (curCommand) {
+                    case EXIT -> {
+                        break inputLoop;
                     }
-                }
-                case HELP -> {
-                    if (arguments.isEmpty()) {
-                        help();
-                    } else {
-                        help(arguments.get(0));
+                    case FOUND_WORDS -> {
+                        foundWords();
                     }
-                }
-                case LOAD -> {
-                    if (arguments.isEmpty()) {
-                        view.showErrorMessage(
-                            "You must include a file to load the save from. " +
-                            "Please try again."
-                        );
-                    } else if (arguments.size() > 1) {
-                        view.showErrorMessage(
-                            "Too many arguments for load. Please try again."
-                        );
-                    } else {
-                        load(arguments.get(0));
+                    case GUESS -> {
+                        if (arguments.isEmpty()) {
+                            view.showErrorMessage(
+                                "You must enter a word to guess. Please try again."
+                            );
+                        } else {
+                            arguments.forEach(this::guess);
+                        }
                     }
-                }
-                case NEW -> {
-                    if (arguments.isEmpty()) {
-                        newPuzzle();
-                    } else if (arguments.size() == 1) {
-                        view.showErrorMessage(
+                    case HELP -> {
+                        if (arguments.isEmpty()) {
+                            help();
+                        } else {
+                            help(arguments.get(0));
+                        }
+                    }
+                    case LOAD -> {
+                        if (arguments.isEmpty()) {
+                            view.showErrorMessage(
+                                "You must include a file to load the save from. " +
+                                "Please try again."
+                            );
+                        } else if (arguments.size() > 1) {
+                            view.showErrorMessage(
+                                "Too many arguments for load. Please try again."
+                            );
+                        } else {
+                            load(arguments.get(0));
+                        }
+                    }
+                    case NEW -> {
+                        if (arguments.isEmpty()) {
+                            newPuzzle();
+                        } else if (arguments.size() == 1) {
+                            view.showErrorMessage(
                             "Too Few Arguments for New. Please try again."
-                        );
-                    } else if (arguments.size() > 2) {
-                        view.showErrorMessage(
-                            "Too many arguments for new puzzle. Please try again."
-                        );
-                    } else if (arguments.get(0).length() == 1
-                               || arguments.get(1).length() != 1)
-                    {
-                        view.showErrorMessage(
+                            );
+                        } else if (arguments.size() > 2) {
+                            view.showErrorMessage(
+                                "Too many arguments for new puzzle. Please try again."
+                            );
+                        } else if (arguments.get(0).length() == 1
+                            || arguments.get(1).length() != 1){
+                            view.showErrorMessage(
                             "New Arguments are in the wrong order. Please try again."
-                        );
-                    } else {
-                        newPuzzle(arguments.get(0), arguments.get(1).charAt(0));
+                            );
+                        } else {
+                            newPuzzle(arguments.get(0), arguments.get(1).charAt(0));
+                        }
                     }
-                }
-                case RANK -> {
-                    ranks();
+                    case RANK -> {
+                        ranks();
                 }
                 case SAVE -> {
                     save(arguments);
@@ -212,27 +190,167 @@ public class CLIController extends Controller {
                 case SHOW -> {
                     show();
                 }
-                case SHUFFLE -> {
-                    shuffle();
-                }
-                case HINT -> {
-                    hint();
-                }
-                case SAVESCORE -> {
-                    if (arguments.isEmpty()) {
-                        view.showErrorMessage("A name must be provided for the high score.");
-                    } else {
-                        saveScore(arguments.get(0));
+                    case SHUFFLE -> {
+                        shuffle();
+                    }
+                    case HINT -> {
+                        hint();
+                    }
+                    case SAVESCORE -> {
+                        if (arguments.isEmpty()) {
+                            view.showErrorMessage("A name must be provided for the high score.");
+                        } else {
+                            saveScore(arguments.get(0));
+                        }
+                    }
+                    case VIEWSCORES -> {
+                        viewScores();
                     }
                 }
-                case VIEWSCORES -> {
-                    viewScores();
-                }
             }
+            
+        } catch (IOException e){
+            System.out.println("I dont know what i am doing");
         }
-
-        scanner.close();
     }
+
+        // inputLoop:
+        // while (scanner.hasNextLine()) {
+        //     String input = scanner.nextLine();
+            // String partialCommand = "";
+            // //in order for tab completion to work, you must end the command with "tab".
+            // if (input.endsWith("tab")) {
+            //     if(input.endsWith("tab")){
+            //         partialCommand = input.substring(0, input.length() - 3);
+            //     }
+            //     else {
+            //         while(input == input.substring(0, input.length() - 1) + " "){
+            //             input = input.substring(0, input.length() - 1);
+            //         }
+            //         partialCommand = input;
+            //     }
+                
+
+            //     String completedCommand = autoCompleteCommand(partialCommand, availableCommands);
+
+            //     if (completedCommand != null) {
+            //         System.out.println("Invoking " + completedCommand);
+            //         input = completedCommand;
+            //     } else {
+            //         System.out.println("No unique command found for " + partialCommand);
+            //         continue;
+            //     }
+            // }
+    //         String[] tokens = input.split(" ");
+
+    //         Optional<Command> optCommand = Command.fromString(tokens[0]);
+
+    //         if (optCommand.isEmpty()) {
+    //             view.showErrorMessage(
+    //                 "The command entered is invalid. Please consult \'" +
+    //                 Command.HELP.keyword + "\' for valid commands."
+    //             );
+    //             continue;
+    //         }
+
+    //         Command curCommand = optCommand.orElseThrow();
+
+    //         List<String> arguments;
+
+    //         if (tokens.length > 1) {
+    //             arguments = List.of(Arrays.copyOfRange(tokens, 1, tokens.length));
+    //         } else {
+    //             arguments = Collections.emptyList();
+    //         }
+
+    //         switch (curCommand) {
+    //             case EXIT -> {
+    //                break inputLoop;
+    //             }
+    //             case FOUND_WORDS -> {
+    //                 foundWords();
+    //             }
+    //             case GUESS -> {
+    //                 if (arguments.isEmpty()) {
+    //                     view.showErrorMessage(
+    //                         "You must enter a word to guess. Please try again."
+    //                     );
+    //                 } else {
+    //                     arguments.forEach(this::guess);
+    //                 }
+    //             }
+    //             case HELP -> {
+    //                 if (arguments.isEmpty()) {
+    //                     help();
+    //                 } else {
+    //                     help(arguments.get(0));
+    //                 }
+    //             }
+    //             case LOAD -> {
+    //                 if (arguments.isEmpty()) {
+    //                     view.showErrorMessage(
+    //                         "You must include a file to load the save from. " +
+    //                         "Please try again."
+    //                     );
+    //                 } else if (arguments.size() > 1) {
+    //                     view.showErrorMessage(
+    //                         "Too many arguments for load. Please try again."
+    //                     );
+    //                 } else {
+    //                     load(arguments.get(0));
+    //                 }
+    //             }
+    //             case NEW -> {
+    //                 if (arguments.isEmpty()) {
+    //                     newPuzzle();
+    //                 } else if (arguments.size() == 1) {
+    //                     view.showErrorMessage(
+    //                         "Too Few Arguments for New. Please try again."
+    //                     );
+    //                 } else if (arguments.size() > 2) {
+    //                     view.showErrorMessage(
+    //                         "Too many arguments for new puzzle. Please try again."
+    //                     );
+    //                 } else if (arguments.get(0).length() == 1
+    //                            || arguments.get(1).length() != 1)
+    //                 {
+    //                     view.showErrorMessage(
+    //                         "New Arguments are in the wrong order. Please try again."
+    //                     );
+    //                 } else {
+    //                     newPuzzle(arguments.get(0), arguments.get(1).charAt(0));
+    //                 }
+    //             }
+    //             case RANK -> {
+    //                 ranks();
+    //             }
+    //             case SAVE -> {
+    //                 save(arguments);
+    //             }
+    //             case SHOW -> {
+    //                 show();
+    //             }
+    //             case SHUFFLE -> {
+    //                 shuffle();
+    //             }
+    //             case HINT -> {
+    //                 hint();
+    //             }
+    //             case SAVESCORE -> {
+    //                 if (arguments.isEmpty()) {
+    //                     view.showErrorMessage("A name must be provided for the high score.");
+    //                 } else {
+    //                     saveScore(arguments.get(0));
+    //                 }
+    //             }
+    //             case VIEWSCORES -> {
+    //                 viewScores();
+    //             }
+    //         }
+    //     }
+
+    //     scanner.close();
+    // }
 
     /**
      * Get the list of found words from the puzzle and sends it to the view to

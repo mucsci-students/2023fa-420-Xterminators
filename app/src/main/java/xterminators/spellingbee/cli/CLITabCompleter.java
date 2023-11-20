@@ -20,20 +20,17 @@ public class CLITabCompleter implements Completer {
         List<String> matchingCommands = new ArrayList<>();
 
         for(String command : availableCommands){
-            if(command.startsWith(partialCommand.toString())){
-                matchingCommands.add(partialCommand.toString());
+            if(command.startsWith(partialCommand.word())){
+                matchingCommands.add(command);
             }
         }
 
         if(matchingCommands.size() == 1){
-            candidate.add(new Candidate(AttributedString.stripAnsi(matchingCommands.get(0)), matchingCommands.get(0), null, null, null, null, true));
+            candidate.add(new Candidate(AttributedString.stripAnsi
+            (matchingCommands.get(0)), matchingCommands.get(0), null, null,
+             null, null, true));
         }
 
 
     }
-
-    
-
-    
-    
 }
