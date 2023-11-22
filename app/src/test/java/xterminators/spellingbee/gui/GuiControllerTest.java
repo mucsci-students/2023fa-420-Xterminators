@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -17,12 +19,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import xterminators.spellingbee.gui.GuiController;
-import xterminators.spellingbee.gui.GuiView;
-
 import xterminators.spellingbee.model.Rank;
 import xterminators.spellingbee.model.Puzzle;
 
+import java.util.TreeMap;
+import java.util.Map;
 
 public class GuiControllerTest {
     GuiView view;
@@ -39,7 +40,7 @@ public class GuiControllerTest {
         );
 
         view = mock(GuiView.class);
-
+        deleteScoreFile();
         controller = new GuiController(view, dictionaryFile, rootsDictionaryFile);
     }
 
@@ -47,6 +48,7 @@ public class GuiControllerTest {
     public void tearDown() {
         view = null;
         controller = null;
+        deleteScoreFile();
 
         // Sets the singleton instance of Puzzle to null to emulate a fresh
         // instance of the program.
@@ -264,5 +266,64 @@ public class GuiControllerTest {
                     "Good job! Your word was worth 6 points." + 
                     "You reached a new rank! Your rank is now " +
                     "Good Start.");
+    }
+
+    private void deleteScoreFile() {
+        String userHome = System.getProperty("user.home");
+        String filePath = userHome + File.separator + "HighScores.json";
+
+        File scoreFile = new File(filePath);
+
+        if (scoreFile.exists()) {
+            scoreFile.delete();
+        }
+    }
+
+    @Test 
+    public void testGetHighScoresNoHighScores() {
+        TreeMap<String, Integer> scores = controller.getHighScores();
+
+        assertNotNull(scores);
+        if (scores.size() > 0) {
+            Map.Entry<String, Integer> firstEntry = scores.firstEntry();
+            assertEquals(firstEntry.getKey(), "x");
+            assertEquals(firstEntry.getValue(), 4);
+        }
+        assertEquals(0, scores.size());
+    }
+
+    @Test 
+    public void testSaveHighScoreNoPuzzle() {
+        assertFalse(controller.saveHighScore("xterminator"));
+    }
+
+    @Test 
+    public void testSaveHighScore() {
+        try {
+            controller.createNewPuzzle("violent", 'l');
+        } catch (Exception e) {}
+        controller.guessWord("violent");
+        controller.guessWord("liven");
+        controller.guessWord("novel");
+        controller.guessWord("little");
+
+        assertTrue(controller.saveHighScore("xterminator"));
+    }
+
+    @Test 
+    public void testGetHighScores() {
+        try {
+            controller.createNewPuzzle("violent", 'l');
+        } catch (Exception e) {}
+        controller.guessWord("little");
+
+        controller.saveHighScore("xterminator");
+
+        TreeMap<String, Integer> scores = controller.getHighScores();
+
+        assertEquals(scores.size(), 1);
+        Map.Entry<String, Integer> firstEntry = scores.firstEntry();
+        assertEquals(firstEntry.getKey(), "xterminator");
+        assertEquals(firstEntry.getValue(), 6);  
     }
 }

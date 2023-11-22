@@ -17,9 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +28,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 
-import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.utils.CharArrayOrderlessMatcher;
 
 public class CLIControllerTest {
     CLIView view;
@@ -78,18 +77,17 @@ public class CLIControllerTest {
         queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
-        verifyNoInteractions(view);
+        verifyNoMoreInteractions(view);
     }
 
     @Test
     public void testHelp_General() {
         queueCommand("help");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showHelp();
         verifyNoMoreInteractions(view);
@@ -98,11 +96,10 @@ public class CLIControllerTest {
     @ParameterizedTest
     @EnumSource
     public void testHelp(Command command) {
-        queueCommand("help " + command.getCommand());
-        queueCommand("exit");
+        queueCommand("help " + command.keyword);
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showHelp(command);
         verifyNoMoreInteractions(view);
@@ -111,10 +108,9 @@ public class CLIControllerTest {
     @RepeatedTest(5)
     public void testNewRandom() {
         queueCommand("new");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showPuzzle(
             anyChar(),
@@ -129,10 +125,9 @@ public class CLIControllerTest {
     public void testNew_TooFewArgs() {
         queueCommand("new offhanded");
         queueCommand("new o");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view, times(2)).showErrorMessage(
             "Too Few Arguments for New. Please try again."
@@ -143,10 +138,9 @@ public class CLIControllerTest {
     @Test
     public void testNew_BadOrder() {
         queueCommand("new o offhanded");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showErrorMessage(
             "New Arguments are in the wrong order. Please try again."
@@ -157,10 +151,9 @@ public class CLIControllerTest {
     @Test
     public void testNew_NotWord() {
         queueCommand("new ofhande o");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showErrorMessage(
             "Invalid starting word. Please try again."
@@ -172,10 +165,9 @@ public class CLIControllerTest {
     public void testNew_NotPangram() {
         queueCommand("new open o");
         queueCommand("new guardians n");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view, times(2)).showErrorMessage(
             "Invalid starting word. Please try again."
@@ -186,10 +178,9 @@ public class CLIControllerTest {
     @Test
     public void testNew_ValidWord() {
         queueCommand("new offhanded o");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showPuzzle(
             eq('o'),
@@ -204,10 +195,9 @@ public class CLIControllerTest {
     public void testShow_PuzzleExists() {
         queueCommand("new offhanded o");
         queueCommand("show");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view, times(2)).showPuzzle(
             eq('o'), 
@@ -221,10 +211,9 @@ public class CLIControllerTest {
     @Test
     public void testShow_NoPuzzle() {
         queueCommand("show");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showErrorMessage(
             "There is no puzzle to show. Please make or load a puzzle and try again."
@@ -235,10 +224,9 @@ public class CLIControllerTest {
     @Test
     public void testRank_NoPuzzle() {
         queueCommand("rank");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showErrorMessage(
             "There is no puzzle to show ranks for. Please make or load a puzzle and try again."
@@ -250,10 +238,9 @@ public class CLIControllerTest {
     public void testRank_NewPuzzle() {
         queueCommand("new offhanded o");
         queueCommand("rank");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showPuzzle(
             eq('o'), 
@@ -273,10 +260,9 @@ public class CLIControllerTest {
     @Test
     public void testShuffle_NoPuzzle() {
         queueCommand("shuffle");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showErrorMessage(
             "There is no puzzle to be shuffled. Please make or load a puzzle and try again."
@@ -288,10 +274,9 @@ public class CLIControllerTest {
     public void testShuffle_PuzzleExists() {
         queueCommand("new offhanded o");
         queueCommand("shuffle");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view, times(2)).showPuzzle(
             eq('o'), 
@@ -306,10 +291,9 @@ public class CLIControllerTest {
     public void testGuess_NoPuzzle() {
         queueCommand("guess gradle");
         queueCommand("guess bad");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view, times(2)).showErrorMessage(
             "There is no puzzle in progress. Please make or load a puzzle and try again."
@@ -324,10 +308,9 @@ public class CLIControllerTest {
         queueCommand("guess off");
         queueCommand("guess hand");
         queueCommand("guess offhanded");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showPuzzle(
             eq('o'), 
@@ -345,10 +328,9 @@ public class CLIControllerTest {
     @Test
     public void testFound_NoPuzzle() {
         queueCommand("found");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         verify(view).showErrorMessage(
             "There is no puzzle in progress. Please make or load a puzzle and try again."
@@ -364,10 +346,9 @@ public class CLIControllerTest {
         queueCommand("found");
         queueCommand("guess offhand");
         queueCommand("found");
-        queueCommand("exit");
         loadCommands();
 
-        controller.run();
+        runCLI();
 
         ArgumentCaptor<List<String>> foundWordsArgs = ArgumentCaptor.forClass((Class) List.class);
 
@@ -442,5 +423,19 @@ public class CLIControllerTest {
         queuedCommands.stream().forEach(s -> commands.append(s).append('\n'));
         ByteArrayInputStream testIn = new ByteArrayInputStream(commands.toString().getBytes());
         System.setIn(testIn);
+    }
+
+    void runCLI() {
+        controller.run();
+
+        verify(view).showMessage("Welcome to the Spelling Bee!");
+        String introCommands = String.format(
+            "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
+            + " Use \"%s\" followed by words to guess them.",
+            Command.NEW.keyword,
+            Command.HELP.keyword,
+            Command.GUESS.keyword
+        );
+        verify(view).showMessage(introCommands);
     }
 }
