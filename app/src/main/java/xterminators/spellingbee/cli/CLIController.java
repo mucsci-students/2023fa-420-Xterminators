@@ -3,21 +3,27 @@ package xterminators.spellingbee.cli;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.Map;
-import com.google.gson.Gson;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.gson.JsonSyntaxException;
 
+import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
-import xterminators.spellingbee.model.HelpData;
+import xterminators.spellingbee.model.SaveMode;
+import xterminators.spellingbee.model.HighScores;
+import xterminators.spellingbee.ui.Controller;
 
 /**
  * The controller of the CLI mode of the Spelling Bee game. This class takes
@@ -25,7 +31,7 @@ import xterminators.spellingbee.model.HelpData;
  * controller also interacts with the view (CLIView) to display changes to the
  * user.
  */
-public class CLIController {
+public class CLIController extends Controller {
     /** The full dictionary of valid guess words to be used. */
     private File dictionaryFile;
     /** The full dictionary of valid root words to be used. */
@@ -34,6 +40,8 @@ public class CLIController {
     private CLIView view;
 
     private HelpData helpData;
+
+    private HighScores highScores;
     
     /**
      * Constructs a new CLIController which connects to the given CLIView, and
@@ -47,6 +55,7 @@ public class CLIController {
         this.view = view;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
+        highScores = new HighScores();
     }
 
     /**
@@ -54,14 +63,17 @@ public class CLIController {
      * controller will read in commands from the user, process them, and sends
      * output to the view to be displayed.
      */
+    @Override
     public void run() {
-        System.out.println("Welcome to the Spelling Bee!");
-        System.out.printf(
+        view.showMessage("Welcome to the Spelling Bee!");
+        String introCommands = String.format(
             "Type \"%s\" to create a new puzzle, or \"%s\" to see all commands."
-            + System.lineSeparator(),
-            Command.NEW.getCommand(),
-            Command.HELP.getCommand()
+            + " Use \"%s\" followed by words to guess them.",
+            Command.NEW.keyword,
+            Command.HELP.keyword,
+            Command.GUESS.keyword
         );
+        view.showMessage(introCommands);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -76,7 +88,7 @@ public class CLIController {
             if (optCommand.isEmpty()) {
                 view.showErrorMessage(
                     "The command entered is invalid. Please consult \'" +
-                    Command.HELP.getCommand() + "\' for valid commands."
+                    Command.HELP.keyword + "\' for valid commands."
                 );
                 continue;
             }
@@ -153,15 +165,7 @@ public class CLIController {
                     ranks();
                 }
                 case SAVE -> {
-                    if (arguments.isEmpty()) {
-                        save();
-                    } else if (arguments.size() > 1) {
-                        view.showErrorMessage(
-                            "Too many arguments for save. Please try again."
-                        );
-                    } else {
-                        save(arguments.get(0));
-                    }
+                    save(arguments);
                 }
                 case SHOW -> {
                     show();
@@ -171,6 +175,16 @@ public class CLIController {
                 }
                 case HINT -> {
                     hint();
+                }
+                case SAVESCORE -> {
+                    if (arguments.isEmpty()) {
+                        view.showErrorMessage("A name must be provided for the high score.");
+                    } else {
+                        saveScore(arguments.get(0));
+                    }
+                }
+                case VIEWSCORES -> {
+                    viewScores();
                 }
             }
         }
@@ -516,12 +530,39 @@ public class CLIController {
         view.showRanks(curRank, earnedPoints, totalPoints);
     }
 
+    private void save(List<String> arguments) {
+        switch (arguments.size()) {
+            case 0 -> save(SaveMode.ENCRYPTED);
+            case 1 -> {
+                switch (arguments.get(0)) {
+                    case "encrypted" -> save(SaveMode.ENCRYPTED);
+                    case "unencrypted" -> save(SaveMode.UNENCRYPTED);
+                    default -> save(arguments.get(0), SaveMode.ENCRYPTED);
+                }
+            }
+            case 2 -> {
+                switch (arguments.get(1)) {
+                    case "encrypted"
+                        -> save(arguments.get(0), SaveMode.ENCRYPTED);
+                    case "unencrypted" 
+                        -> save(arguments.get(0), SaveMode.UNENCRYPTED);
+                    default -> view.showErrorMessage(
+                        "Invalid save mode. Please try again."
+                    );
+                }
+            }
+            default -> view.showErrorMessage(
+                "Too many arguments for save. Please try again."
+            );
+        }
+    }
+
     /**
      * Saves the puzzle to a json file at the given file path.
      * 
      * @param filePath the path to save the puzzle to
      */
-    private void save(String filePath) {
+    private void save(String filePath, SaveMode saveMode) {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -534,7 +575,7 @@ public class CLIController {
         File saveLocation = new File(filePath);
 
         try {
-            puzzle.save(saveLocation);
+            puzzle.save(saveLocation, saveMode);
         } catch(IOException e) {
             view.showErrorMessage(
                 "The file at " + saveLocation.getAbsolutePath() + " could not " +
@@ -546,7 +587,7 @@ public class CLIController {
     /**
      * Saves the puzzle to a json file at a default location.
      */
-    private void save() {
+    private void save(SaveMode saveMode) {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
@@ -568,7 +609,7 @@ public class CLIController {
 
         filename.append(".json");
 
-        save(filename.toString());
+        save(filename.toString(), saveMode);
     }
 
     /**
@@ -630,5 +671,41 @@ public class CLIController {
         int earnedPoints = puzzle.getEarnedPoints();
 
         view.showPuzzle(primaryLetter, secondaryLetters, curRank, earnedPoints);
+    }
+
+    /**
+     * Saves the given high score with the given username
+     * and then prints the saved high scores.
+     * 
+     * @param userName The username to save the high score with.
+     */
+    private void saveScore(String userName) {
+        if (userName == null || userName.isEmpty()) {
+            view.showErrorMessage("No username provided.");
+            return;
+        }
+
+        Puzzle p = Puzzle.getInstance();
+        int score = p.getEarnedPoints();
+
+        if (!highScores.isHighScore(score)) {
+            view.showErrorMessage("Your score is not high enough to be a high score.");
+            return;
+        }
+
+        highScores.saveScore(userName, score);
+        viewScores();
+    }
+
+    /**
+     * Shows the current high scores.
+     */
+    private void viewScores() {
+        TreeMap<String, Integer> scores = highScores.getScores();
+        if (scores == null || scores.size() == 0) {
+            view.showErrorMessage("No high scores saved currently.");
+        }
+
+        view.showHighScores(scores);
     }
 }

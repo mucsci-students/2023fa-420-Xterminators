@@ -57,3 +57,18 @@ or run the application with the CLI:
       ever be in progress at any one time.
     - The `Puzzle.getInstance` function was used in the controllers to allow
       them not to store a puzzle themselves.
+- Iterator Pattern
+    - The iterator pattern was used extensively throughout the `Puzzle` class.
+      Very often `.stream()` and `.parallelStream()` are used to search, filter,
+      map, and collect lists of words. Both `Stream`s are backed by a
+      `Spliterator` of the collection they are called on, which is a
+      parallelized iterator pattern.
+- Abstract Factory Pattern
+    - The abstract factory pattern was used in `App` to create and run the UI.
+      If a CLI was requested, a `CLIFactory` was used, and if a GUI was
+      requested, a `GuiFactory` was used.
+- Factory Method Pattern
+    - The factory method pattern was used in `EncryptedPuzzleSave` as the
+      methods, `fromDefaults` and `fromKeyIV` which wrapped the private
+      constructor with default values and error handling, reducing complexity in
+      calling code.

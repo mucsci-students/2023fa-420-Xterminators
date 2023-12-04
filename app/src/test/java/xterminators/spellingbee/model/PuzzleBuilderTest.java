@@ -8,12 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class PuzzleBuilderTest {
     private static final File dictionaryFile = Paths.get(
@@ -96,6 +98,40 @@ public class PuzzleBuilderTest {
             builder.setRootWord("guardians"),
             "setRootWord on root with too many unique letters should return " +
             "false."
+        );
+    }
+
+    @Test
+    public void testSetRootWord_FileError(@TempDir File tempDir) {
+        File badFullDict = new File(tempDir, "badFullDict.txt");
+        
+        try (FileWriter badFullDictWriter = new FileWriter(badFullDict)) {
+            badFullDictWriter.write("This is not a valid dictionary.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        File badRootDict = new File(tempDir, "badRootDict.txt");
+
+        try (FileWriter badRootDictWriter = new FileWriter(badRootDict)) {
+            badRootDictWriter.write("This is not a valid root dictionary.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PuzzleBuilder builder = assertDoesNotThrow(
+            () -> new PuzzleBuilder(badFullDict, badRootDict),
+            "The PuzzleBuilder constructor should not throw if the dictionary " +
+            "files exist."
+        );
+
+        badFullDict.delete();
+        badRootDict.delete();
+
+        assertFalse(
+            builder.setRootWord("offhanded"),
+            "setRootWord should return false if the root dictionary file does " +
+            "not exist."
         );
     }
 

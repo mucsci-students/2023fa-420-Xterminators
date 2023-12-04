@@ -1,19 +1,13 @@
 package xterminators.spellingbee.gui;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.File;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import java.util.Map;
-import java.util.Scanner;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.gson.Gson;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -21,8 +15,11 @@ import xterminators.spellingbee.model.HelpData;
 import xterminators.spellingbee.model.Puzzle;
 import xterminators.spellingbee.model.PuzzleBuilder;
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.model.SaveMode;
+import xterminators.spellingbee.model.HighScores;
+import xterminators.spellingbee.ui.Controller;
 
-public class GuiController {
+public class GuiController extends Controller {
     /** The view that the user interacts with. */
     private GuiView guiView;
     /** The file pointing to the full dictionary of usable words. */
@@ -32,10 +29,27 @@ public class GuiController {
 
     private HelpData helpData;
 
+    private HighScores highScores;
+
     public GuiController(GuiView guic, File dictionaryFile, File rootsDictionaryFile) {
         this.guiView = guic;
         this.dictionaryFile = dictionaryFile;
         this.rootsDictionaryFile = rootsDictionaryFile;
+        this.highScores = new HighScores();
+    }
+
+    @Override
+    public void run() {
+        guiView.InitUI();
+    }
+
+    /**
+     * Sets the view that the controller interacts with.
+     * 
+     * @param view the new view
+     */
+    public void setView(GuiView view) {
+        this.guiView = view;
     }
 
     /**
@@ -117,32 +131,34 @@ public class GuiController {
         puzzle.shuffle();
     }
 
+    public String savePuzzle() throws IOException {
+        Puzzle puzzle = Puzzle.getInstance();
+        StringBuilder filename = new StringBuilder();
+
+        //This will create a title for the Json file consisting
+        // of the non-required letters followed by the required letter.
+        for (char c : puzzle.getSecondaryLetters()) {
+            filename.append(c);
+        }
+        filename.append(puzzle.getPrimaryLetter());
+        filename.append(".json");
+
+        return savePuzzle(filename.toString(), SaveMode.ENCRYPTED);
+    }
+
     /**
      * Saves the puzzle to a JSON format.
      * @throws IOException - if an I/O error occurs.
      */
-    public String savePuzzle() throws IOException {
+    public String savePuzzle(String saveFilepath, SaveMode saveMode) throws IOException {
         Puzzle puzzle = Puzzle.getInstance();
 
         if (puzzle == null) {
             return "There is no puzzle in progress. Please try again.";
         }
 
-        StringBuilder filename = new StringBuilder();
-
-        //This will create a title for the Json file consisting
-        // of the non-required letters followed by the required letter.
-        for (char c : puzzle.getSecondaryLetters()){
-            filename.append(c);
-        }
-
-        filename.append(puzzle.getPrimaryLetter());
-
-        filename.append(".json");
-
-        File saveLocation = new File(filename.toString());
-
-        puzzle.save(saveLocation);
+        File saveLocation = new File(saveFilepath);
+        puzzle.save(saveLocation, saveMode);
 
         return "File created: " + saveLocation.getAbsolutePath();
     }
@@ -378,6 +394,39 @@ public class GuiController {
         }
         
         return result;
+    }
+
+    /**
+     * Gets the high scores from the HighScores class.
+     */
+    public TreeMap<String, Integer> getHighScores() {
+        highScores.loadScores();
+        return highScores.getScores();
+    }
+
+    /**
+     * Saves a high score using the given user name
+     * and the current score in the puzzle.
+     * 
+     * @param userName The user's name that they gave.
+     */
+    public boolean saveHighScore(String userName) {
+        Puzzle puzzle = Puzzle.getInstance();
+        if (puzzle == null) return false;
+        
+        boolean result = highScores.saveScore(userName, puzzle.getEarnedPoints());
+        highScores.loadScores();
+        return result;
+    }
+
+    /**
+     * Checks if the puzzle's score is worthy of being a high score.
+     * If the score given is greater than or equal to the lowest 
+     * high score, this returns true.
+     */
+    public boolean isHighScore() {
+        Puzzle puzzle = Puzzle.getInstance();
+        return highScores.isHighScore(puzzle.getEarnedPoints());
     }
 
 }

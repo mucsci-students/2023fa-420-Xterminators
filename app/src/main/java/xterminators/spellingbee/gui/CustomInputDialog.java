@@ -1,9 +1,15 @@
 package xterminators.spellingbee.gui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 public class CustomInputDialog extends JDialog {
     private JTextField tbWord;
@@ -11,13 +17,18 @@ public class CustomInputDialog extends JDialog {
     private JButton okButton;
     private JButton cancelButton;
 
-    private String baseWord;
-    private String requiredLetter;
+    private String field1;
+    private String field2;
     private Boolean isCanceled;
 
-    public CustomInputDialog(Frame parent) {
-        super(parent, "Get Starting Word", true);
-        setLayout(new GridLayout(3, 2));
+    public CustomInputDialog(Frame parent, String header, String field1Label, String field2Label) {
+        super(parent, header, true);
+        
+        if (field2Label.isEmpty()) {
+            setLayout(new GridLayout(2, 2));
+        } else {
+            setLayout(new GridLayout(3, 2));
+        }
 
         isCanceled = true;
         tbWord = new JTextField();
@@ -37,8 +48,8 @@ public class CustomInputDialog extends JDialog {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                baseWord = null;
-                requiredLetter = null;
+                field1 = null;
+                field2 = null;
                 dispose();
             }
         });
@@ -53,10 +64,12 @@ public class CustomInputDialog extends JDialog {
             }
         });
 
-        add(new JLabel("Base Word:"));
+        add(new JLabel(field1Label + ":"));
         add(tbWord);
-        add(new JLabel("Required Letter:"));
-        add(tbRequiredLetter);
+        if (!field2Label.isEmpty()) {
+            add(new JLabel(field2Label + ":"));
+            add(tbRequiredLetter);
+        }
         add(okButton);
         add(cancelButton);
 
@@ -66,8 +79,8 @@ public class CustomInputDialog extends JDialog {
 
     private void setPropertiesAndClose() {
         isCanceled = false;
-        baseWord = tbWord.getText();
-        requiredLetter = tbRequiredLetter.getText();
+        field1 = tbWord.getText();
+        field2 = tbRequiredLetter.getText();
         dispose();
     }
 
@@ -75,11 +88,11 @@ public class CustomInputDialog extends JDialog {
         return isCanceled;
     }
 
-    public String getBaseWord() {
-        return baseWord;
+    public String getField1() {
+        return field1;
     }
 
-    public String getRequiredLetter() {
-        return requiredLetter;
+    public String getField2() {
+        return field2;
     }
 }

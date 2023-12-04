@@ -1,15 +1,18 @@
 package xterminators.spellingbee.cli;
 
+import java.util.TreeMap;
+import java.util.Map;
 import java.util.Arrays;
 import java.util.List;
 
 import xterminators.spellingbee.model.Rank;
+import xterminators.spellingbee.ui.View;
 
 /**
  * The view of the CLI mode of the Spelling Bee game. This class takes
  * instructions and data from the controller and displays output accordingly.
  */
-public class CLIView {
+public class CLIView extends View {
     public static final String ANSI_BOLD = "\u001B[1m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
@@ -58,7 +61,7 @@ public class CLIView {
      */
     public void showHelp() {
         for (Command c : Command.values()) {
-            System.out.println(c.getCommand() + ": " + c.getShortHelp());
+            System.out.println(c.keyword + ": " + c.shortHelp);
         }
     }
 
@@ -68,7 +71,7 @@ public class CLIView {
      * @param command The command to display help for
      */
     public void showHelp(Command command) {
-        System.out.println(command.getLongHelp());
+        System.out.println(command.longHelp);
     }
 
     /**
@@ -167,6 +170,17 @@ public class CLIView {
                 (reqPoints == 1 ? "" : "s") + " minimum"
             );
         }               
+    }
+
+    public void showHighScores(TreeMap<String, Integer> scores) {
+        System.out.println("Current High Scores");
+
+        int rank = 1;
+        for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+            System.out.println(padLeft(rank + "", 2) + ". " + 
+                entry.getKey() + ": " + entry.getValue());
+            rank++;
+        }
     }
 
     /**

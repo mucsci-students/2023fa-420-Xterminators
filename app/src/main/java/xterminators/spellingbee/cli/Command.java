@@ -69,8 +69,14 @@ public enum Command {
         "save",
         "Saves the puzzle to a file.",
         """
-        Saves the puzzle to a file. Requires one argument that is the path of
-        where to save the puzzle."""
+        Saves the puzzle to a file. If the first argument is either "encrypted"
+        or "unencrypted", the puzzle will be saved in the corresponding format
+        in a default location. If the first argument is a path, the puzzle will
+        be saved to that path. If no second argument is given, the puzzle will
+        be encrypted. If the second argument is "encrypted" or "unencrypted",
+        the puzzle will be saved in the corresponding format. If no arguments
+        are given, the puzzle will be saved in the default location in an
+        encrypted format."""
     ),
     /** The command to display the puzzle. */
     SHOW(
@@ -96,14 +102,27 @@ public enum Command {
         Takes the puzzle and compiles a grid to show the relationship between words
         and their length.
                 """
+    ),
+    SAVESCORE(
+        "saveScore",
+        "Saves the current score as a high score with the given username.",
+        """
+        Saves the current score as a high score with the given username.
+        If no username is given, an error message will be displayed.
+        """
+    ),
+    VIEWSCORES(
+        "viewScores",
+        "Displays the current high scores.",
+        "Displays the current high scores."
     );
 
     /** The keyword for the command. */
-    private String command;
+    public final String keyword;
     /** A short description of the command. */
-    private String shortHelp;
+    public final String shortHelp;
     /** The full description of the command and how to use it. */
-    private String longHelp;
+    public final String longHelp;
 
     /**
      * Initilizes a Command object.
@@ -112,44 +131,15 @@ public enum Command {
      * @param shortHelp The short help for the command
      * @param longHelp The long help for the command
      */
-    Command(String command, String shortHelp, String longHelp) {
-        this.command = command;
+    Command(String keyword, String shortHelp, String longHelp) {
+        this.keyword = keyword;
         this.shortHelp = shortHelp;
         this.longHelp = longHelp;
     }
 
-    /**
-     * Gets keyword to invoke the command.
-     * 
-     * @return The keyword to invoke the command
-     */
-    public String getCommand() {
-        return command;
-    }
-
-    /**
-     * Gets the short help for the command. Gives only basic information on how
-     * to use the command.
-     * 
-     * @return The short help of the command
-     */
-    public String getShortHelp() {
-        return shortHelp;
-    }
-
-    /**
-     * Gets the long help for the command. Gives full description of the command 
-     * and how to use it.
-     * 
-     * @return The long help of the command
-     */
-    public String getLongHelp() {
-        return longHelp;
-    }
-
     public static Optional<Command> fromString(String string) {
         for (Command command : values()) {
-            if (command.getCommand().equals(string)) {
+            if (command.keyword.equals(string)) {
                 return Optional.of(command);
             }
         }
